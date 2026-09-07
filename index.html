@@ -436,32 +436,32 @@
             <!-- Панель регулировок -->
             <div class="controls-panel">
                 <div class="knob-group">
-                    <label>ПОРОГ БИТА <span id="thresholdVal">0.3</span></label>
-                    <input type="range" id="threshold" min="0.01" max="0.9" step="0.01" value="0.3">
+                    <label>ПОРОГ БИТА <span id="thresholdVal">0.2</span></label>
+                    <input type="range" id="threshold" min="0.01" max="0.9" step="0.01" value="0.2">
                 </div>
                 <div class="knob-group">
-                    <label>ДЛИТЕЛЬНОСТЬ <span id="durationVal">0.2</span>с</label>
-                    <input type="range" id="burstDuration" min="0.02" max="0.6" step="0.01" value="0.2">
+                    <label>ДЛИТЕЛЬНОСТЬ <span id="durationVal">0.15</span>с</label>
+                    <input type="range" id="burstDuration" min="0.02" max="0.6" step="0.01" value="0.15">
                 </div>
                 <div class="knob-group">
-                    <label>АТАКА <span id="attackVal">0.002</span>с</label>
-                    <input type="range" id="attackTime" min="0.001" max="0.1" step="0.001" value="0.002">
+                    <label>АТАКА <span id="attackVal">0.001</span>с</label>
+                    <input type="range" id="attackTime" min="0.001" max="0.1" step="0.001" value="0.001">
                 </div>
                 <div class="knob-group">
-                    <label>РЕЛИЗ <span id="releaseVal">0.08</span>с</label>
-                    <input type="range" id="releaseTime" min="0.01" max="0.3" step="0.01" value="0.08">
+                    <label>РЕЛИЗ <span id="releaseVal">0.05</span>с</label>
+                    <input type="range" id="releaseTime" min="0.01" max="0.3" step="0.01" value="0.05">
                 </div>
                 <div class="knob-group">
                     <label>ДИСТОРШН (CLIP) <span id="distVal">80</span></label>
                     <input type="range" id="distortionAmount" min="0" max="250" step="1" value="80">
                 </div>
                 <div class="knob-group">
-                    <label>БИТКРАШ (BIT) <span id="bitcrusherVal">6</span></label>
-                    <input type="range" id="bitcrusherBits" min="1" max="16" step="1" value="6">
+                    <label>БИТКРАШ (BIT) <span id="bitcrusherVal">5</span></label>
+                    <input type="range" id="bitcrusherBits" min="1" max="16" step="1" value="5">
                 </div>
                 <div class="knob-group">
-                    <label>ДАУНСЕМПЛ (SR) <span id="downsampleVal">8000</span>Гц</label>
-                    <input type="range" id="downsampleRate" min="1000" max="22050" step="100" value="8000">
+                    <label>ДАУНСЕМПЛ (SR) <span id="downsampleVal">6000</span>Гц</label>
+                    <input type="range" id="downsampleRate" min="1000" max="22050" step="100" value="6000">
                 </div>
                 <div class="knob-group">
                     <label>РЕВЕРБ <span id="reverbVal">0.4</span></label>
@@ -538,7 +538,7 @@
                 lastBeatTime: 0,
                 rhythmCounter: 0,
                 loopEnabled: true,
-                beatHistory: [],
+                previousSpectrum: null,
                 spectralFluxHistory: [],
             };
 
@@ -580,7 +580,7 @@
             const muteNoiseBtn = document.getElementById('muteNoiseBtn');
             const loopBtn = document.getElementById('loopBtn');
 
-            // Отображение значений
+            // Функция обновления отображаемых значений
             function updateDisplay() {
                 document.getElementById('thresholdVal').textContent = thresholdSlider.value;
                 document.getElementById('durationVal').textContent = durationSlider.value;
@@ -914,7 +914,6 @@
                         const release = params.release || 0.08;
                         const now = audioCtx.currentTime;
 
-                        // Источник: цифровой шум + осцилляторные глитчи
                         const bufferSize = Math.floor(audioCtx.sampleRate * duration);
                         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                         const data = noiseBuffer.getChannelData(0);
@@ -981,8 +980,25 @@
                         state.isPlaying = true;
                         state.lastBeatTime = 0;
                         state.rhythmCounter = 0;
-                        state.beatHistory = [];
+                        state.previousSpectrum = null;
                         state.spectralFluxHistory = [];
+
+                        // Немедленно запускаем несколько тестовых бёрстов для демонстрации
+                        setTimeout(() => {
+                            if (state.isPlaying && state.noiseEngine) {
+                                for (let i = 0; i < 3; i++) {
+                                    setTimeout(() => {
+                                        if (state.isPlaying) {
+                                            state.noiseEngine.triggerBurst({
+                                                duration: parseFloat(durationSlider.value),
+                                                attack: parseFloat(attackSlider.value),
+                                                release: parseFloat(releaseSlider.value),
+                                            });
+                                        }
+                                    }, i * 200);
+                                }
+                            }
+                        }, 100);
 
                         source.onended = () => {
                             if (state.isPlaying && !state.loopEnabled) {
@@ -1046,7 +1062,7 @@
                 state.sourceNode = null;
             }
 
-            // ==================== ДЕТЕКТОР РИТМА (Спектральный поток) ====================
+            // ==================== ДЕТЕКТОР РИТМА (Спектральный поток + RMS) ====================
             function analyzeAndTrigger() {
                 if (!state.isPlaying || !state.musicAnalyser || !state.noiseEngine) return;
 
@@ -1061,7 +1077,7 @@
                     spectrum[i] = dataArray[i] / 255;
                 }
 
-                // Вычисляем спектральный поток (разница между текущим и предыдущим кадром)
+                // Вычисляем спектральный поток
                 let flux = 0;
                 if (state.previousSpectrum) {
                     for (let i = 0; i < bufferLength; i++) {
@@ -1072,11 +1088,23 @@
                 }
                 state.previousSpectrum = spectrum.slice();
 
-                // Сохраняем историю потока для адаптивного порога
-                state.spectralFluxHistory.push(flux);
+                // Вычисляем RMS низких частот (20-150 Гц)
+                const sampleRate = state.audioContext.sampleRate;
+                const lowStart = Math.floor(20 / (sampleRate / 2) * (bufferLength - 1));
+                const lowEnd = Math.floor(150 / (sampleRate / 2) * (bufferLength - 1));
+                let rms = 0;
+                for (let i = lowStart; i <= lowEnd; i++) {
+                    rms += dataArray[i] * dataArray[i];
+                }
+                rms = Math.sqrt(rms / (lowEnd - lowStart + 1)) / 255;
+
+                // Комбинированный сигнал: максимальный из спектрального потока и RMS
+                const combinedSignal = Math.max(flux, rms * 1.5);
+
+                // Сохраняем историю для адаптивного порога
+                state.spectralFluxHistory.push(combinedSignal);
                 if (state.spectralFluxHistory.length > 50) state.spectralFluxHistory.shift();
 
-                // Вычисляем среднее и стандартное отклонение
                 const mean = state.spectralFluxHistory.reduce((a, b) => a + b, 0) / state.spectralFluxHistory.length;
                 let variance = 0;
                 for (let val of state.spectralFluxHistory) {
@@ -1085,15 +1113,14 @@
                 variance /= state.spectralFluxHistory.length;
                 const std = Math.sqrt(variance);
 
-                // Порог = среднее + коэффициент * стандартное отклонение, но не ниже заданного пользователем порога
                 const userThreshold = parseFloat(thresholdSlider.value);
-                const adaptiveThreshold = mean + 1.2 * std;
+                const adaptiveThreshold = mean + 1.0 * std;
                 const threshold = Math.max(userThreshold, adaptiveThreshold);
 
                 const now = state.audioContext.currentTime;
                 const minInterval = parseFloat(intervalSlider.value) / 1000;
 
-                if (flux > threshold && (now - state.lastBeatTime) > minInterval) {
+                if (combinedSignal > threshold && (now - state.lastBeatTime) > minInterval) {
                     state.lastBeatTime = now;
                     state.rhythmCounter++;
                     let shouldTrigger = false;
@@ -1126,7 +1153,7 @@
                     }
                 }
 
-                // Обновляем доминирующую частоту для визуализации (по-прежнему от музыки)
+                // Обновляем доминирующую частоту для визуализации
                 let maxValue = 0;
                 let maxIndex = 0;
                 const startBin = Math.floor(bufferLength * 0.02);
@@ -1137,7 +1164,6 @@
                         maxIndex = i;
                     }
                 }
-                const sampleRate = state.audioContext.sampleRate;
                 const freq = (maxIndex * sampleRate) / (analyser.fftSize);
                 if (maxValue > 25 && freq > 30) {
                     state.dominantFreq = freq;
@@ -1172,13 +1198,13 @@
                 let newDistortion, newBitcrusher, newDownsample, newResonance, newCutoff;
                 switch (state.noiseType) {
                     case 0: // ДИСТОРШН
-                        newDistortion = 80; newBitcrusher = 6; newDownsample = 8000; newResonance = 4; newCutoff = 1800;
+                        newDistortion = 80; newBitcrusher = 5; newDownsample = 6000; newResonance = 4; newCutoff = 1800;
                         break;
                     case 1: // РЕЗОНАНС
-                        newDistortion = 40; newBitcrusher = 4; newDownsample = 6000; newResonance = 15; newCutoff = 1000;
+                        newDistortion = 40; newBitcrusher = 4; newDownsample = 5000; newResonance = 15; newCutoff = 1000;
                         break;
                     case 2: // БИТКРАШ
-                        newDistortion = 120; newBitcrusher = 3; newDownsample = 4000; newResonance = 5; newCutoff = 2500;
+                        newDistortion = 120; newBitcrusher = 3; newDownsample = 3000; newResonance = 5; newCutoff = 2500;
                         break;
                     case 3: // ХАОС
                         newDistortion = 200; newBitcrusher = 2; newDownsample = 2000; newResonance = 8; newCutoff = 4000;
