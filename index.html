@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Техно-дисторшн синтезатор | iTunes Preview</title>
+    <title>Ритм-дисторшн синтезатор | iTunes Preview</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +22,7 @@
         }
         .container {
             width: 100%;
-            max-width: 850px;
+            max-width: 1000px;
             background: #111118;
             border: 2px solid #2a2a3a;
             border-radius: 16px;
@@ -181,19 +181,10 @@
             color: #445566;
             white-space: nowrap;
         }
-        .results-dropdown::-webkit-scrollbar {
-            width: 6px;
-        }
-        .results-dropdown::-webkit-scrollbar-track {
-            background: #0d0d15;
-        }
-        .results-dropdown::-webkit-scrollbar-thumb {
-            background: #2a2a3a;
-            border-radius: 3px;
-        }
-        .results-dropdown::-webkit-scrollbar-thumb:hover {
-            background: #00ff6655;
-        }
+        .results-dropdown::-webkit-scrollbar { width: 6px; }
+        .results-dropdown::-webkit-scrollbar-track { background: #0d0d15; }
+        .results-dropdown::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+        .results-dropdown::-webkit-scrollbar-thumb:hover { background: #00ff6655; }
         .loading-indicator {
             display: none;
             padding: 25px;
@@ -241,10 +232,7 @@
             border: 1px solid #2a2a3a;
             background: #0d0d15;
         }
-        .now-playing .np-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .now-playing .np-info { flex: 1; min-width: 0; }
         .now-playing .np-track {
             font-size: 1rem;
             color: #e0ffe0;
@@ -292,13 +280,81 @@
             pointer-events: none;
             text-shadow: 0 0 8px #000;
         }
-        .controls {
+        .controls-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #0d0d15;
+            border: 1px solid #1a1a2a;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .knob-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1 0 150px;
+            min-width: 120px;
+        }
+        .knob-group label {
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #668888;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+        }
+        .knob-group input[type="range"] {
+            width: 100%;
+            accent-color: #00ff66;
+            background: #1a1a2a;
+            height: 4px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .knob-group select {
+            background: #1a1a2a;
+            color: #b0ffb0;
+            border: 1px solid #2a2a3a;
+            border-radius: 6px;
+            padding: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+        }
+        .mixer-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .mixer-buttons button {
+            background: transparent;
+            border: 1px solid #2a2a3a;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #b0ffb0;
+            font-size: 0.6rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .mixer-buttons button:hover {
+            border-color: #ff0066;
+            color: #ff6688;
+            box-shadow: 0 0 15px #ff006633;
+        }
+        .mixer-buttons button.active-mute {
+            background: #2a0a0a;
+            border-color: #ff0066;
+            color: #ff6688;
+        }
+        .playback-controls {
             display: flex;
             gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
-        .controls button {
+        .playback-controls button {
             background: #0d0d15;
             border: 1px solid #2a2a3a;
             border-radius: 8px;
@@ -312,17 +368,17 @@
             text-transform: uppercase;
             min-width: 100px;
         }
-        .controls button:hover {
+        .playback-controls button:hover {
             border-color: #00ff66;
             box-shadow: 0 0 20px #00ff6633;
         }
-        .controls button:disabled {
+        .playback-controls button:disabled {
             opacity: 0.3;
             cursor: not-allowed;
             border-color: #2a2a3a;
             box-shadow: none;
         }
-        .controls button.active-btn {
+        .playback-controls button.active-btn {
             background: #0f1a12;
             border-color: #00ff66;
             box-shadow: 0 0 25px #00ff6644;
@@ -337,80 +393,16 @@
             min-height: 20px;
             text-transform: uppercase;
         }
-        .mixer-panel {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: space-between;
-            background: #0d0d15;
-            border: 1px solid #1a1a2a;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-top: 5px;
-        }
-        .mixer-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 140px;
-            flex: 1;
-        }
-        .mixer-group label {
-            font-size: 0.65rem;
-            letter-spacing: 1.5px;
-            color: #668888;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .mixer-group input[type="range"] {
-            width: 100%;
-            accent-color: #00ff66;
-            background: #1a1a2a;
-            height: 4px;
-            border-radius: 2px;
-            cursor: pointer;
-        }
-        .mixer-group button {
-            background: transparent;
-            border: 1px solid #2a2a3a;
-            border-radius: 6px;
-            padding: 6px 12px;
-            color: #b0ffb0;
-            font-size: 0.6rem;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-        }
-        .mixer-group button:hover {
-            border-color: #ff0066;
-            color: #ff6688;
-            box-shadow: 0 0 15px #ff006633;
-        }
-        .mixer-group button.active-mute {
-            background: #2a0a0a;
-            border-color: #ff0066;
-            color: #ff6688;
-        }
-        @media (max-width: 600px) {
-            .container { padding: 18px; border-radius: 10px; }
-            h1 { font-size: 1.3rem; letter-spacing: 3px; }
-            .search-row { flex-direction: column; }
-            .search-row button { width: 100%; }
-            .result-item { padding: 10px 12px; gap: 10px; }
-            .result-item img { width: 40px; height: 40px; }
-            .visualizer-container { height: 80px; }
-            .controls button { padding: 10px 14px; font-size: 0.7rem; min-width: 70px; letter-spacing: 1px; }
-            .mixer-panel { flex-direction: column; }
+        @media (max-width: 700px) {
+            .container { padding: 15px; }
+            .knob-group { flex: 1 0 100px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⬡ ДИСТОРШН-СИНТЕЗАТОР</h1>
-        <div class="subtitle">Технические помехи · iTunes Preview</div>
+        <h1>⬡ РИТМ-ДИСТОРШН</h1>
+        <div class="subtitle">Прорывной шум · iTunes Preview</div>
 
         <!-- Поиск -->
         <div class="search-section">
@@ -438,24 +430,71 @@
 
             <div class="visualizer-container">
                 <canvas id="visualizer"></canvas>
-                <div class="visualizer-overlay">СПЕКТР · ДИСТОРШН-ГЕНЕРАЦИЯ</div>
+                <div class="visualizer-overlay">СПЕКТР · РИТМ-ДИСТОРШН</div>
             </div>
 
-            <!-- Микшер громкости -->
-            <div class="mixer-panel">
-                <div class="mixer-group">
+            <!-- Панель регулировок -->
+            <div class="controls-panel">
+                <div class="knob-group">
+                    <label>ПОРОГ БИТА <span id="thresholdVal">0.20</span></label>
+                    <input type="range" id="threshold" min="0.01" max="0.8" step="0.01" value="0.2">
+                </div>
+                <div class="knob-group">
+                    <label>ДЛИТЕЛЬНОСТЬ <span id="durationVal">0.25</span>с</label>
+                    <input type="range" id="burstDuration" min="0.05" max="1.0" step="0.01" value="0.25">
+                </div>
+                <div class="knob-group">
+                    <label>АТАКА <span id="attackVal">0.005</span>с</label>
+                    <input type="range" id="attackTime" min="0.001" max="0.2" step="0.001" value="0.005">
+                </div>
+                <div class="knob-group">
+                    <label>РЕЛИЗ <span id="releaseVal">0.15</span>с</label>
+                    <input type="range" id="releaseTime" min="0.01" max="0.5" step="0.01" value="0.15">
+                </div>
+                <div class="knob-group">
+                    <label>ДИСТОРШН <span id="distVal">60</span></label>
+                    <input type="range" id="distortionAmount" min="0" max="200" step="1" value="60">
+                </div>
+                <div class="knob-group">
+                    <label>РЕВЕРБ <span id="reverbVal">0.3</span></label>
+                    <input type="range" id="reverbLevel" min="0" max="1" step="0.01" value="0.3">
+                </div>
+                <div class="knob-group">
+                    <label>ЧАСТОТА ФИЛЬТРА <span id="cutoffVal">1200</span>Гц</label>
+                    <input type="range" id="cutoffFreq" min="200" max="5000" step="10" value="1200">
+                </div>
+                <div class="knob-group">
+                    <label>РЕЗОНАНС <span id="resVal">3</span></label>
+                    <input type="range" id="resonance" min="0.1" max="20" step="0.1" value="3">
+                </div>
+                <div class="knob-group">
+                    <label>МИН. ИНТЕРВАЛ <span id="intervalVal">120</span>мс</label>
+                    <input type="range" id="minInterval" min="30" max="500" step="5" value="120">
+                </div>
+                <div class="knob-group">
+                    <label>ТИП РИТМА</label>
+                    <select id="rhythmMode">
+                        <option value="every">Каждый бит</option>
+                        <option value="half">Каждый второй</option>
+                        <option value="quarter">Каждый четвёртый</option>
+                        <option value="random">Случайно</option>
+                    </select>
+                </div>
+                <div class="knob-group">
                     <label>ГРОМКОСТЬ МУЗЫКИ</label>
                     <input type="range" id="musicVolume" min="0" max="100" value="20">
-                    <button id="muteMusicBtn" class="mute-btn">🔇 МУЗЫКУ</button>
                 </div>
-                <div class="mixer-group">
+                <div class="knob-group">
                     <label>ГРОМКОСТЬ ШУМА</label>
-                    <input type="range" id="noiseVolume" min="0" max="100" value="70">
-                    <button id="muteNoiseBtn" class="mute-btn">🔇 ШУМ</button>
+                    <input type="range" id="noiseVolume" min="0" max="100" value="80">
+                </div>
+                <div class="mixer-buttons">
+                    <button id="muteMusicBtn">🔇 МУЗЫКА</button>
+                    <button id="muteNoiseBtn">🔇 ШУМ</button>
                 </div>
             </div>
 
-            <div class="controls">
+            <div class="playback-controls">
                 <button id="playBtn" disabled>▶ ЗАПУСК</button>
                 <button id="stopBtn" disabled>■ СТОП</button>
                 <button id="glitchBtn" disabled>⚡ ГЛИТЧ</button>
@@ -470,11 +509,11 @@
             // ==================== СОСТОЯНИЕ ====================
             const state = {
                 audioContext: null,
-                musicAnalyser: null,       // для анализа только музыки
-                outputAnalyser: null,      // для визуализации общего сигнала
+                musicAnalyser: null,
+                outputAnalyser: null,
                 sourceNode: null,
-                musicGain: null,           // громкость музыки
-                noiseGain: null,           // громкость шума
+                musicGain: null,
+                noiseGain: null,
                 masterGain: null,
                 noiseEngine: null,
                 isPlaying: false,
@@ -487,6 +526,8 @@
                 isGlitching: false,
                 musicMuted: false,
                 noiseMuted: false,
+                lastBeatTime: 0,
+                rhythmCounter: 0,
             };
 
             // DOM элементы
@@ -508,11 +549,42 @@
             const visualizer = document.getElementById('visualizer');
             const ctx = visualizer.getContext('2d');
 
-            // Микшер
+            // Регуляторы
+            const thresholdSlider = document.getElementById('threshold');
+            const durationSlider = document.getElementById('burstDuration');
+            const attackSlider = document.getElementById('attackTime');
+            const releaseSlider = document.getElementById('releaseTime');
+            const distortionSlider = document.getElementById('distortionAmount');
+            const reverbSlider = document.getElementById('reverbLevel');
+            const cutoffSlider = document.getElementById('cutoffFreq');
+            const resonanceSlider = document.getElementById('resonance');
+            const intervalSlider = document.getElementById('minInterval');
+            const rhythmModeSelect = document.getElementById('rhythmMode');
             const musicVolumeSlider = document.getElementById('musicVolume');
             const noiseVolumeSlider = document.getElementById('noiseVolume');
             const muteMusicBtn = document.getElementById('muteMusicBtn');
             const muteNoiseBtn = document.getElementById('muteNoiseBtn');
+
+            // Отображение значений
+            document.getElementById('thresholdVal').textContent = thresholdSlider.value;
+            document.getElementById('durationVal').textContent = durationSlider.value;
+            document.getElementById('attackVal').textContent = attackSlider.value;
+            document.getElementById('releaseVal').textContent = releaseSlider.value;
+            document.getElementById('distVal').textContent = distortionSlider.value;
+            document.getElementById('reverbVal').textContent = reverbSlider.value;
+            document.getElementById('cutoffVal').textContent = cutoffSlider.value;
+            document.getElementById('resVal').textContent = resonanceSlider.value;
+            document.getElementById('intervalVal').textContent = intervalSlider.value;
+
+            thresholdSlider.addEventListener('input', () => document.getElementById('thresholdVal').textContent = thresholdSlider.value);
+            durationSlider.addEventListener('input', () => document.getElementById('durationVal').textContent = durationSlider.value);
+            attackSlider.addEventListener('input', () => document.getElementById('attackVal').textContent = attackSlider.value);
+            releaseSlider.addEventListener('input', () => document.getElementById('releaseVal').textContent = releaseSlider.value);
+            distortionSlider.addEventListener('input', () => document.getElementById('distVal').textContent = distortionSlider.value);
+            reverbSlider.addEventListener('input', () => document.getElementById('reverbVal').textContent = reverbSlider.value);
+            cutoffSlider.addEventListener('input', () => document.getElementById('cutoffVal').textContent = cutoffSlider.value);
+            resonanceSlider.addEventListener('input', () => document.getElementById('resVal').textContent = resonanceSlider.value);
+            intervalSlider.addEventListener('input', () => document.getElementById('intervalVal').textContent = intervalSlider.value);
 
             // ==================== ВИЗУАЛИЗАЦИЯ ====================
             let animationId = null;
@@ -743,7 +815,6 @@
                 state.masterGain.gain.value = 0.9;
                 state.masterGain.connect(state.audioContext.destination);
 
-                // Усилители для музыки и шума
                 state.musicGain = state.audioContext.createGain();
                 state.musicGain.gain.value = musicVolumeSlider.value / 100;
                 state.musicGain.connect(state.masterGain);
@@ -752,7 +823,6 @@
                 state.noiseGain.gain.value = noiseVolumeSlider.value / 100;
                 state.noiseGain.connect(state.masterGain);
 
-                // Анализатор для визуализации (общий сигнал после гейнов)
                 state.outputAnalyser = state.audioContext.createAnalyser();
                 state.outputAnalyser.fftSize = 512;
                 state.outputAnalyser.smoothingTimeConstant = 0.75;
@@ -775,146 +845,107 @@
                 return curve;
             }
 
-            function createNoiseEngine(audioCtx, outputNode) {
-                // Создаём источники
-                const noiseBuffer = createNoiseBuffer(audioCtx);
-                const noiseSource = audioCtx.createBufferSource();
-                noiseSource.buffer = noiseBuffer;
-                noiseSource.loop = true;
-
-                // Фильтры и эффекты
-                const noiseFilter = audioCtx.createBiquadFilter();
-                noiseFilter.type = 'lowpass';
-                noiseFilter.frequency.value = 2000;
-                noiseFilter.Q.value = 0.8;
-
-                // Дисторшн waveshaper
-                const distortion = audioCtx.createWaveShaper();
-                distortion.curve = createDistortionCurve(50);
-                distortion.oversample = '4x';
-
-                const noisePreGain = audioCtx.createGain();
-                noisePreGain.gain.value = 1.5;
-
-                const noisePostGain = audioCtx.createGain();
-                noisePostGain.gain.value = 0.4;
-
-                noiseSource.connect(noiseFilter);
-                noiseFilter.connect(noisePreGain);
-                noisePreGain.connect(distortion);
-                distortion.connect(noisePostGain);
-                noisePostGain.connect(outputNode);
-
-                // Дополнительный низкочастотный осциллятор с дисторшном
-                const subOsc = audioCtx.createOscillator();
-                subOsc.type = 'sawtooth';
-                subOsc.frequency.value = 55; // низкий бас
-                const subFilter = audioCtx.createBiquadFilter();
-                subFilter.type = 'lowpass';
-                subFilter.frequency.value = 300;
-                const subDistortion = audioCtx.createWaveShaper();
-                subDistortion.curve = createDistortionCurve(80);
-                const subGain = audioCtx.createGain();
-                subGain.gain.value = 0.6;
-                subOsc.connect(subFilter);
-                subFilter.connect(subDistortion);
-                subDistortion.connect(subGain);
-                subGain.connect(outputNode);
-
-                // Резонансный пик
-                const resOsc = audioCtx.createOscillator();
-                resOsc.type = 'square';
-                resOsc.frequency.value = 110;
-                const resFilter = audioCtx.createBiquadFilter();
-                resFilter.type = 'peaking';
-                resFilter.frequency.value = 800;
-                resFilter.Q.value = 15;
-                const resGain = audioCtx.createGain();
-                resGain.gain.value = 0.25;
-                resOsc.connect(resFilter);
-                resFilter.connect(resGain);
-                resGain.connect(outputNode);
-
-                // Запуск
-                noiseSource.start();
-                subOsc.start();
-                resOsc.start();
-
-                return {
-                    noiseSource, noiseFilter, noisePreGain, distortion, noisePostGain,
-                    subOsc, subFilter, subDistortion, subGain,
-                    resOsc, resFilter, resGain,
-                    setNoiseType: (type) => {
-                        switch (type) {
-                            case 0: // ДИСТОРШН
-                                noiseFilter.frequency.value = 1800;
-                                noisePreGain.gain.value = 2.0;
-                                noisePostGain.gain.value = 0.5;
-                                subGain.gain.value = 0.7;
-                                resGain.gain.value = 0.2;
-                                distortion.curve = createDistortionCurve(70);
-                                subDistortion.curve = createDistortionCurve(100);
-                                break;
-                            case 1: // РЕЗОНАНС
-                                noiseFilter.frequency.value = 3000;
-                                noisePreGain.gain.value = 1.0;
-                                noisePostGain.gain.value = 0.4;
-                                subGain.gain.value = 0.3;
-                                resGain.gain.value = 0.6;
-                                resFilter.Q.value = 30;
-                                break;
-                            case 2: // БИТКРАШ
-                                noiseFilter.frequency.value = 1200;
-                                noisePreGain.gain.value = 1.8;
-                                noisePostGain.gain.value = 0.5;
-                                subGain.gain.value = 0.5;
-                                resGain.gain.value = 0.15;
-                                distortion.curve = createDistortionCurve(150);
-                                break;
-                            case 3: // ХАОС
-                                noiseFilter.frequency.value = 2500;
-                                noisePreGain.gain.value = 2.5;
-                                noisePostGain.gain.value = 0.6;
-                                subGain.gain.value = 0.9;
-                                resGain.gain.value = 0.35;
-                                distortion.curve = createDistortionCurve(200);
-                                break;
-                        }
-                    },
-                    stopAll: () => {
-                        try { noiseSource.stop(); } catch(e) {}
-                        try { subOsc.stop(); } catch(e) {}
-                        try { resOsc.stop(); } catch(e) {}
+            function createImpulseResponse(audioCtx, duration, decay) {
+                const length = audioCtx.sampleRate * duration;
+                const impulse = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
+                for (let channel = 0; channel < 2; channel++) {
+                    const data = impulse.getChannelData(channel);
+                    for (let i = 0; i < length; i++) {
+                        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
                     }
-                };
+                }
+                return impulse;
             }
 
-            function createNoiseBuffer(audioCtx) {
-                const bufferSize = audioCtx.sampleRate * 2;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
+            function createNoiseBurst(audioCtx, outputNode, params) {
+                // Создаём короткий буфер шума
+                const duration = params.duration || 0.25;
+                const bufferSize = Math.floor(audioCtx.sampleRate * duration);
+                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = noiseBuffer.getChannelData(0);
                 for (let i = 0; i < bufferSize; i++) {
                     data[i] = Math.random() * 2 - 1;
                 }
-                return buffer;
+
+                const source = audioCtx.createBufferSource();
+                source.buffer = noiseBuffer;
+
+                // Огибающая громкости
+                const gainNode = audioCtx.createGain();
+                const attack = params.attack || 0.005;
+                const release = params.release || 0.15;
+                const now = audioCtx.currentTime;
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(1.0, now + attack);
+                gainNode.gain.setValueAtTime(1.0, now + attack);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                source.connect(gainNode);
+                gainNode.connect(outputNode);
+                source.start(now);
+                source.stop(now + duration + release);
             }
 
-            function updateNoiseParameters(engine, freq, glitchAmount) {
-                if (!engine || !freq || freq <= 0) return;
-                const targetFreq = Math.min(Math.max(freq, 40), 3000);
-                const glitchFactor = glitchAmount * 0.8 + 0.2;
+            function createNoiseEngine(audioCtx, noiseGain) {
+                // Цепочка эффектов для шума
+                const inputNode = audioCtx.createGain();
 
-                engine.noiseFilter.frequency.setTargetAtTime(targetFreq * 1.5, state.audioContext.currentTime, 0.08);
-                engine.noiseFilter.Q.setTargetAtTime(0.5 + glitchAmount * 3, state.audioContext.currentTime, 0.1);
-                engine.subOsc.frequency.setTargetAtTime(Math.max(targetFreq * 0.25, 30), state.audioContext.currentTime, 0.08);
-                engine.resOsc.frequency.setTargetAtTime(targetFreq * 1.2, state.audioContext.currentTime, 0.08);
-                engine.resFilter.frequency.setTargetAtTime(targetFreq * 3, state.audioContext.currentTime, 0.1);
-                engine.resFilter.Q.setTargetAtTime(10 + glitchAmount * 25, state.audioContext.currentTime, 0.1);
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = parseFloat(cutoffSlider.value);
+                filter.Q.value = parseFloat(resonanceSlider.value);
 
-                // Динамическая громкость
-                engine.noisePostGain.gain.setTargetAtTime(0.3 + glitchAmount * 0.4, state.audioContext.currentTime, 0.1);
-                engine.subGain.gain.setTargetAtTime(0.4 + glitchAmount * 0.5, state.audioContext.currentTime, 0.1);
-                engine.resGain.gain.setTargetAtTime(0.15 + glitchAmount * 0.35, state.audioContext.currentTime, 0.1);
+                const distortion = audioCtx.createWaveShaper();
+                distortion.curve = createDistortionCurve(parseFloat(distortionSlider.value));
+                distortion.oversample = '4x';
+
+                const reverb = audioCtx.createConvolver();
+                reverb.buffer = createImpulseResponse(audioCtx, 2.0, 3.0);
+                const reverbGain = audioCtx.createGain();
+                reverbGain.gain.value = parseFloat(reverbSlider.value);
+
+                const dryGain = audioCtx.createGain();
+                dryGain.gain.value = 1.0;
+
+                // Маршрутизация: input -> filter -> distortion -> dryGain -> noiseGain
+                // и также -> reverb -> reverbGain -> noiseGain
+                inputNode.connect(filter);
+                filter.connect(distortion);
+                distortion.connect(dryGain);
+                dryGain.connect(noiseGain);
+
+                distortion.connect(reverb);
+                reverb.connect(reverbGain);
+                reverbGain.connect(noiseGain);
+
+                return {
+                    inputNode,
+                    filter,
+                    distortion,
+                    reverb,
+                    reverbGain,
+                    dryGain,
+                    setParameters: (params) => {
+                        if (params.distortion !== undefined) {
+                            distortion.curve = createDistortionCurve(params.distortion);
+                        }
+                        if (params.reverbLevel !== undefined) {
+                            reverbGain.gain.value = params.reverbLevel;
+                        }
+                        if (params.cutoff !== undefined) {
+                            filter.frequency.value = params.cutoff;
+                        }
+                        if (params.resonance !== undefined) {
+                            filter.Q.value = params.resonance;
+                        }
+                        if (params.reverbTime !== undefined) {
+                            reverb.buffer = createImpulseResponse(audioCtx, params.reverbTime, 3.0);
+                        }
+                    },
+                    triggerBurst: (params) => {
+                        createNoiseBurst(audioCtx, inputNode, params);
+                    }
+                };
             }
 
             function startPlayback() {
@@ -924,17 +955,14 @@
 
                 stopPlayback(true);
 
-                // Источник музыки
                 const source = audioCtx.createBufferSource();
-                // Анализатор только для музыки (для извлечения доминирующей частоты)
                 const musicAnalyser = audioCtx.createAnalyser();
                 musicAnalyser.fftSize = 512;
                 musicAnalyser.smoothingTimeConstant = 0.7;
 
                 source.connect(musicAnalyser);
-                musicAnalyser.connect(state.musicGain); // музыка слышна через musicGain
+                musicAnalyser.connect(state.musicGain);
 
-                // Шумовой движок подключаем к noiseGain
                 const noiseEngine = createNoiseEngine(audioCtx, state.noiseGain);
 
                 fetch(state.currentTrack.previewUrl)
@@ -948,6 +976,8 @@
                         state.musicAnalyser = musicAnalyser;
                         state.noiseEngine = noiseEngine;
                         state.isPlaying = true;
+                        state.lastBeatTime = 0;
+                        state.rhythmCounter = 0;
 
                         source.onended = () => {
                             if (state.isPlaying) {
@@ -960,7 +990,7 @@
                         stopBtn.disabled = false;
                         glitchBtn.disabled = false;
                         noiseTypeBtn.disabled = false;
-                        setStatus('▶ ИГРАЕТ · ДИСТОРШН АКТИВЕН');
+                        setStatus('▶ ИГРАЕТ · РИТМ-ДИСТОРШН АКТИВЕН');
                         npStatus.textContent = '▶ ИГРАЕТ';
                     })
                     .catch(err => {
@@ -977,7 +1007,7 @@
                     state.sourceNode = null;
                 }
                 if (state.noiseEngine) {
-                    try { state.noiseEngine.stopAll(); } catch (e) {}
+                    // Останавливаем все активные источники? Мы не храним ссылки, поэтому просто обнуляем
                     state.noiseEngine = null;
                 }
                 if (state.musicAnalyser) {
@@ -1007,21 +1037,20 @@
                 stopBtn.disabled = true;
                 glitchBtn.disabled = true;
                 noiseTypeBtn.disabled = true;
-                if (state.noiseEngine) {
-                    try { state.noiseEngine.stopAll(); } catch (e) {}
-                    state.noiseEngine = null;
-                }
+                state.noiseEngine = null;
                 state.musicAnalyser = null;
                 state.sourceNode = null;
             }
 
-            // ==================== АНАЛИЗ И ОБНОВЛЕНИЕ ====================
-            function analyzeAndUpdate() {
+            // ==================== ДЕТЕКТИРОВАНИЕ РИТМА И ЗАПУСК БЁРСТОВ ====================
+            function analyzeAndTrigger() {
                 if (!state.isPlaying || !state.musicAnalyser || !state.noiseEngine) return;
+
                 const bufferLength = state.musicAnalyser.frequencyBinCount;
                 const dataArray = new Uint8Array(bufferLength);
                 state.musicAnalyser.getByteFrequencyData(dataArray);
 
+                // Анализ частот для доминирующей частоты
                 let maxValue = 0;
                 let maxIndex = 0;
                 const startBin = Math.floor(bufferLength * 0.02);
@@ -1047,25 +1076,74 @@
                         variation /= state.frequencyHistory.length;
                         state.glitchIntensity = Math.min(Math.max(variation / 400, 0.05), 1.0);
                     }
-                    updateNoiseParameters(state.noiseEngine, avgFreq, state.glitchIntensity);
-                    if (Math.random() < state.glitchIntensity * 0.2) {
-                        const glitchFreq = avgFreq * (1 + (Math.random() - 0.5) * 4);
-                        updateNoiseParameters(state.noiseEngine, glitchFreq, 1.0);
-                        setTimeout(() => {
-                            if (state.isPlaying && state.noiseEngine) {
-                                updateNoiseParameters(state.noiseEngine, avgFreq, state.glitchIntensity);
-                            }
-                        }, 40 + Math.random() * 80);
-                    }
+                    // Обновляем параметры фильтра в реальном времени?
                 } else {
                     state.glitchIntensity = Math.max(state.glitchIntensity - 0.02, 0.05);
-                    if (state.dominantFreq > 0) {
-                        updateNoiseParameters(state.noiseEngine, state.dominantFreq, state.glitchIntensity);
+                }
+
+                // Детектирование бита по энергии в низкочастотной полосе (20-150 Гц)
+                const lowStart = Math.floor(20 / (sampleRate / 2) * (bufferLength - 1));
+                const lowEnd = Math.floor(150 / (sampleRate / 2) * (bufferLength - 1));
+                let sum = 0;
+                for (let i = lowStart; i <= lowEnd; i++) {
+                    sum += dataArray[i] * dataArray[i];
+                }
+                const rms = Math.sqrt(sum / (lowEnd - lowStart + 1)) / 255;
+
+                const threshold = parseFloat(thresholdSlider.value);
+                const minInterval = parseFloat(intervalSlider.value) / 1000; // в секундах
+                const now = state.audioContext.currentTime;
+
+                if (rms > threshold && (now - state.lastBeatTime) > minInterval) {
+                    state.lastBeatTime = now;
+                    state.rhythmCounter++;
+
+                    let shouldTrigger = false;
+                    switch (rhythmModeSelect.value) {
+                        case 'every':
+                            shouldTrigger = true;
+                            break;
+                        case 'half':
+                            shouldTrigger = (state.rhythmCounter % 2 === 0);
+                            break;
+                        case 'quarter':
+                            shouldTrigger = (state.rhythmCounter % 4 === 0);
+                            break;
+                        case 'random':
+                            shouldTrigger = (Math.random() < 0.7);
+                            break;
+                    }
+
+                    if (shouldTrigger) {
+                        const burstParams = {
+                            duration: parseFloat(durationSlider.value),
+                            attack: parseFloat(attackSlider.value),
+                            release: parseFloat(releaseSlider.value),
+                        };
+                        // Учитываем глитч-режим
+                        if (state.isGlitching) {
+                            burstParams.duration *= 1 + Math.random() * 0.8;
+                            burstParams.attack = Math.max(0.001, burstParams.attack * (0.5 + Math.random()));
+                        }
+                        state.noiseEngine.triggerBurst(burstParams);
+
+                        // Применяем параметры эффектов (если они менялись)
+                        state.noiseEngine.setParameters({
+                            distortion: parseFloat(distortionSlider.value),
+                            reverbLevel: parseFloat(reverbSlider.value),
+                            cutoff: parseFloat(cutoffSlider.value),
+                            resonance: parseFloat(resonanceSlider.value),
+                        });
+
+                        // Обновляем фильтр на основе доминирующей частоты (опционально)
+                        if (state.dominantFreq > 0) {
+                            // можно слегка модулировать cutoff
+                        }
                     }
                 }
             }
 
-            setInterval(analyzeAndUpdate, 50);
+            setInterval(analyzeAndTrigger, 30);
 
             // ==================== УПРАВЛЕНИЕ ====================
             playBtn.addEventListener('click', startPlayback);
@@ -1081,38 +1159,66 @@
                 } else {
                     glitchBtn.classList.remove('active-btn');
                     glitchBtn.textContent = '⚡ ГЛИТЧ';
-                    setStatus('▶ ДИСТОРШН ГЕНЕРАЦИЯ');
+                    setStatus('▶ РИТМ-ДИСТОРШН ГЕНЕРАЦИЯ');
                 }
             });
 
             noiseTypeBtn.addEventListener('click', () => {
                 state.noiseType = (state.noiseType + 1) % state.noiseTypeNames.length;
                 noiseTypeBtn.textContent = `ТИП: ${state.noiseTypeNames[state.noiseType]}`;
+                // Меняем характер дисторшна через параметры
+                let newDistortion, newResonance, newCutoff;
+                switch (state.noiseType) {
+                    case 0: // ДИСТОРШН
+                        newDistortion = 60; newResonance = 3; newCutoff = 1200;
+                        break;
+                    case 1: // РЕЗОНАНС
+                        newDistortion = 40; newResonance = 12; newCutoff = 800;
+                        break;
+                    case 2: // БИТКРАШ
+                        newDistortion = 150; newResonance = 5; newCutoff = 2000;
+                        break;
+                    case 3: // ХАОС
+                        newDistortion = 180; newResonance = 8; newCutoff = 3000;
+                        break;
+                }
+                distortionSlider.value = newDistortion;
+                resonanceSlider.value = newResonance;
+                cutoffSlider.value = newCutoff;
+                document.getElementById('distVal').textContent = newDistortion;
+                document.getElementById('resVal').textContent = newResonance;
+                document.getElementById('cutoffVal').textContent = newCutoff;
                 if (state.noiseEngine) {
-                    state.noiseEngine.setNoiseType(state.noiseType);
+                    state.noiseEngine.setParameters({
+                        distortion: newDistortion,
+                        reverbLevel: parseFloat(reverbSlider.value),
+                        cutoff: newCutoff,
+                        resonance: newResonance,
+                    });
                 }
                 setStatus(`ТИП ШУМА: ${state.noiseTypeNames[state.noiseType]}`);
             });
 
-            // Модификация updateNoiseParameters для учёта глитч-режима
-            const originalUpdate = updateNoiseParameters;
-            updateNoiseParameters = function(engine, freq, glitchAmount) {
-                if (state.isGlitching) {
-                    glitchAmount = Math.min(glitchAmount + 0.5, 1.0);
-                    if (Math.random() < 0.25) {
-                        freq = freq * (1 + (Math.random() - 0.5) * 3);
+            // Регуляторы в реальном времени
+            [distortionSlider, reverbSlider, cutoffSlider, resonanceSlider].forEach(slider => {
+                slider.addEventListener('input', () => {
+                    if (state.noiseEngine) {
+                        state.noiseEngine.setParameters({
+                            distortion: parseFloat(distortionSlider.value),
+                            reverbLevel: parseFloat(reverbSlider.value),
+                            cutoff: parseFloat(cutoffSlider.value),
+                            resonance: parseFloat(resonanceSlider.value),
+                        });
                     }
-                }
-                originalUpdate(engine, freq, glitchAmount);
-            };
+                });
+            });
 
-            // ==================== МИКШЕР ====================
+            // Громкость музыки и шума
             musicVolumeSlider.addEventListener('input', () => {
                 if (state.musicGain) {
                     state.musicGain.gain.value = state.musicMuted ? 0 : musicVolumeSlider.value / 100;
                 }
             });
-
             noiseVolumeSlider.addEventListener('input', () => {
                 if (state.noiseGain) {
                     state.noiseGain.gain.value = state.noiseMuted ? 0 : noiseVolumeSlider.value / 100;
@@ -1137,7 +1243,7 @@
                 setStatus(state.noiseMuted ? '🔇 ШУМ ОТКЛЮЧЕН' : '🔊 ШУМ ВКЛЮЧЕН');
             });
 
-            // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+            // Инициализация
             noiseTypeBtn.textContent = `ТИП: ${state.noiseTypeNames[state.noiseType]}`;
             setStatus('СИСТЕМА ГОТОВА · ВВЕДИТЕ ЗАПРОС');
             window.addEventListener('load', () => {
@@ -1146,8 +1252,7 @@
             window.addEventListener('beforeunload', () => {
                 if (state.audioContext) state.audioContext.close();
             });
-            console.log('⬡ ДИСТОРШН-СИНТЕЗАТОР ЗАГРУЖЕН · Технические помехи на основе iTunes Preview');
-            console.log('ℹ Введите запрос для поиска трека, выберите результат и нажмите ЗАПУСК');
+            console.log('⬡ РИТМ-ДИСТОРШН СИНТЕЗАТОР ЗАГРУЖЕН');
         })();
     </script>
 </body>
