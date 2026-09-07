@@ -1,1 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Техно-шум синтезатор | iTunes Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background: #0a0a0f;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #b0ffb0;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #111118;
+            border: 2px solid #2a2a3a;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 0 60px rgba(0, 255, 100, 0.08), 0 0 120px rgba(0, 150, 255, 0.05);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 18px;
+            background: linear-gradient(45deg, #00ff6622, #0066ff22, #ff006622, #00ff6622);
+            background-size: 400% 400%;
+            z-index: -1;
+            animation: borderGlow 8s ease infinite;
+            pointer-events: none;
+        }
+
+        @keyframes borderGlow {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #00ff88;
+            text-shadow: 0 0 20px #00ff6644, 0 0 40px #00ff6644;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: #668888;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        .search-section {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .search-row input {
+            flex: 1;
+            background: #0d0d15;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            padding: 14px 18px;
+            color: #b0ffb0;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .search-row input:focus {
+            border-color: #00ff66;
+            box-shadow: 0 0 20px #00ff6633;
+        }
+
+        .search-row input::placeholder {
+            color: #445566;
+        }
+
+        .search-row button {
+            background: #0d0d15;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            padding: 14px 25px;
+            color: #00ff88;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .search-row button:hover {
+            border-color: #00ff66;
+            box-shadow: 0 0 25px #00ff6644;
+            background: #0f1a12;
+        }
+
+        .results-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #151520;
+            border: 1px solid #2a2a3a;
+            border-radius: 12px;
+            max-height: 420px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px #00ff6611;
+            margin-top: 4px;
+        }
+
+        .results-dropdown.active {
+            display: block;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 18px;
+            cursor: pointer;
+            border-bottom: 1px solid #1a1a2a;
+            transition: all 0.2s;
+        }
+
+        .result-item:hover {
+            background: #1a1a2e;
+            box-shadow: inset 3px 0 0 #00ff66;
+        }
+
+        .result-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #2a2a3a;
+            background: #0d0d15;
+        }
+
+        .result-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .result-item .track-name {
+            font-size: 0.9rem;
+            color: #d0ffd0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.5px;
+        }
+
+        .result-item .artist-name {
+            font-size: 0.75rem;
+            color: #668888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .result-item .duration {
+            font-size: 0.7rem;
+            color: #445566;
+            white-space: nowrap;
+        }
+
+        .results-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .results-dropdown::-webkit-scrollbar-track {
+            background: #0d0d15;
+        }
+
+        .results-dropdown::-webkit-scrollbar-thumb {
+            background: #2a2a3a;
+            border-radius: 3px;
+        }
+
+        .results-dropdown::-webkit-scrollbar-thumb:hover {
+            background: #00ff6655;
+        }
+
+        .loading-indicator {
+            display: none;
+            padding: 25px;
+            text-align: center;
+            color: #668888;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        .loading-indicator.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .no-results {
+            display: none;
+            padding: 25px;
+            text-align: center;
+            color: #664444;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+
+        .no-results.active {
+            display: block;
+        }
+
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .now-playing {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #0d0d15;
+            border-radius: 10px;
+            border: 1px solid #1a1a2a;
+            min-height: 75px;
+        }
+
+        .now-playing img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #2a2a3a;
+            background: #0d0d15;
+        }
+
+        .now-playing .np-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .now-playing .np-track {
+            font-size: 1rem;
+            color: #e0ffe0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.5px;
+        }
+
+        .now-playing .np-artist {
+            font-size: 0.8rem;
+            color: #668888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .now-playing .np-status {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: #00ff88;
+            text-transform: uppercase;
+            animation: pulse 1.2s ease infinite;
+        }
+
+        .visualizer-container {
+            position: relative;
+            background: #0d0d15;
+            border-radius: 10px;
+            border: 1px solid #1a1a2a;
+            overflow: hidden;
+            height: 120px;
+        }
+
+        #visualizer {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: pointer;
+        }
+
+        .visualizer-overlay {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 0.6rem;
+            letter-spacing: 3px;
+            color: #445566;
+            text-transform: uppercase;
+            pointer-events: none;
+            text-shadow: 0 0 8px #000;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .controls button {
+            background: #0d0d15;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: #b0ffb0;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            min-width: 100px;
+        }
+
+        .controls button:hover {
+            border-color: #00ff66;
+            box-shadow: 0 0 20px #00ff6633;
+        }
+
+        .controls button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #2a2a3a;
+            box-shadow: none;
+        }
+
+        .controls button.active-btn {
+            background: #0f1a12;
+            border-color: #00ff66;
+            box-shadow: 0 0 25px #00ff6644;
+            color: #00ff88;
+        }
+
+        .status-text {
+            text-align: center;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: #445566;
+            margin-top: 8px;
+            min-height: 20px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px;
+                border-radius: 10px;
+            }
+            h1 {
+                font-size: 1.3rem;
+                letter-spacing: 3px;
+            }
+            .search-row {
+                flex-direction: column;
+            }
+            .search-row button {
+                width: 100%;
+            }
+            .result-item {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+            .result-item img {
+                width: 40px;
+                height: 40px;
+            }
+            .visualizer-container {
+                height: 80px;
+            }
+            .controls button {
+                padding: 10px 14px;
+                font-size: 0.7rem;
+                min-width: 70px;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⬡ ШУМ-СИНТЕЗАТОР</h1>
+        <div class="subtitle">Технические помехи · iTunes Preview</div>
+
+        <!-- Поиск -->
+        <div class="search-section">
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Поиск трека в iTunes..." autocomplete="off">
+                <button id="searchBtn">НАЙТИ</button>
+            </div>
+            <div class="results-dropdown" id="resultsDropdown">
+                <div class="loading-indicator" id="loadingIndicator">⏣ СКАНИРОВАНИЕ БАЗЫ...</div>
+                <div class="no-results" id="noResults">⚠ НИЧЕГО НЕ НАЙДЕНО</div>
+                <div id="resultsList"></div>
+            </div>
+        </div>
+
+        <!-- Плеер -->
+        <div class="player-section">
+            <div class="now-playing" id="nowPlaying">
+                <img id="npCover" src="" alt="" style="display:none;">
+                <div class="np-info">
+                    <div class="np-track" id="npTrack">Нет трека</div>
+                    <div class="np-artist" id="npArtist">Выберите трек из поиска</div>
+                    <div class="np-status" id="npStatus">ОЖИДАНИЕ</div>
+                </div>
+            </div>
+
+            <div class="visualizer-container">
+                <canvas id="visualizer"></canvas>
+                <div class="visualizer-overlay">СПЕКТР · ШУМ-ГЕНЕРАЦИЯ</div>
+            </div>
+
+            <div class="controls">
+                <button id="playBtn" disabled>▶ ЗАПУСК</button>
+                <button id="stopBtn" disabled>■ СТОП</button>
+                <button id="glitchBtn" disabled>⚡ ГЛИТЧ</button>
+                <button id="noiseTypeBtn" disabled>ТИП: FM-ШУМ</button>
+            </div>
+            <div class="status-text" id="statusText">СИСТЕМА ГОТОВА · ВВЕДИТЕ ЗАПРОС</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ==================== СОСТОЯНИЕ ====================
+            const state = {
+                audioContext: null,
+                analyser: null,
+                sourceNode: null,
+                gainNode: null,
+                noiseGainNode: null,
+                masterGain: null,
+                isPlaying: false,
+                currentTrack: null,
+                noiseType: 0, // 0: FM-шум, 1: Резонансный, 2: Биткраш, 3: Глитч-хаос
+                noiseTypeNames: ['FM-ШУМ', 'РЕЗОНАНС', 'БИТКРАШ', 'ГЛИТЧ-ХАОС'],
+                dominantFreq: 0,
+                frequencyHistory: [],
+                glitchIntensity: 0,
+                noiseNodes: [],
+                filterNodes: [],
+                oscNodes: [],
+                isGlitching: false,
+            };
+
+            // ==================== DOM ЭЛЕМЕНТЫ ====================
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const resultsDropdown = document.getElementById('resultsDropdown');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const noResults = document.getElementById('noResults');
+            const resultsList = document.getElementById('resultsList');
+            const npCover = document.getElementById('npCover');
+            const npTrack = document.getElementById('npTrack');
+            const npArtist = document.getElementById('npArtist');
+            const npStatus = document.getElementById('npStatus');
+            const playBtn = document.getElementById('playBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const glitchBtn = document.getElementById('glitchBtn');
+            const noiseTypeBtn = document.getElementById('noiseTypeBtn');
+            const statusText = document.getElementById('statusText');
+            const visualizer = document.getElementById('visualizer');
+            const ctx = visualizer.getContext('2d');
+
+            // ==================== ВИЗУАЛИЗАЦИЯ ====================
+            let animationId = null;
+            let visualizerData = new Uint8Array(128);
+
+            function resizeVisualizer() {
+                const rect = visualizer.parentElement.getBoundingClientRect();
+                visualizer.width = rect.width;
+                visualizer.height = rect.height;
+            }
+            resizeVisualizer();
+            window.addEventListener('resize', resizeVisualizer);
+
+            function drawVisualizer() {
+                const w = visualizer.width;
+                const h = visualizer.height;
+                ctx.fillStyle = '#0d0d15';
+                ctx.fillRect(0, 0, w, h);
+
+                if (state.analyser && state.isPlaying) {
+                    const bufferLength = state.analyser.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+                    state.analyser.getByteFrequencyData(dataArray);
+                    visualizerData = dataArray;
+
+                    const barWidth = w / bufferLength;
+                    const usableBars = Math.min(bufferLength, 160);
+                    const step = Math.floor(bufferLength / usableBars);
+
+                    // Спектрограмма
+                    for (let i = 0; i < usableBars; i++) {
+                        const dataIndex = i * step;
+                        const value = dataArray[dataIndex] || 0;
+                        const barHeight = (value / 255) * h * 0.9;
+                        const x = i * (w / usableBars);
+                        const hue = (i / usableBars) * 160 + 80;
+                        const saturation = 80 + (value / 255) * 20;
+                        const lightness = 20 + (value / 255) * 50;
+
+                        ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                        ctx.fillRect(x, h - barHeight, w / usableBars - 1, barHeight);
+
+                        // Свечение
+                        if (value > 180) {
+                            ctx.fillStyle = 'rgba(0,255,100,0.25)';
+                            ctx.fillRect(x, h - barHeight, w / usableBars - 1, barHeight);
+                        }
+                    }
+
+                    // Доминирующая частота
+                    if (state.dominantFreq > 0) {
+                        const freqX = (state.dominantFreq / 8000) * w;
+                        ctx.strokeStyle = '#00ff88';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([4, 4]);
+                        ctx.beginPath();
+                        ctx.moveTo(freqX, 0);
+                        ctx.lineTo(freqX, h);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+
+                        const noteName = freqToNoteName(state.dominantFreq);
+                        ctx.fillStyle = '#00ff88';
+                        ctx.font = '10px Courier New';
+                        ctx.fillText(`${noteName} (${Math.round(state.dominantFreq)}Hz)`, freqX + 5, 15);
+                        ctx.fillText(`ГЛИТЧ: ${Math.round(state.glitchIntensity * 100)}%`, 10, h - 10);
+                    }
+
+                    // Шумовой слой
+                    for (let i = 0; i < 30; i++) {
+                        const x = Math.random() * w;
+                        const y = Math.random() * h;
+                        const alpha = Math.random() * 0.15 + 0.02;
+                        ctx.fillStyle = `rgba(0,255,100,${alpha})`;
+                        ctx.fillRect(x, y, Math.random() * 3 + 1, Math.random() * 3 + 1);
+                    }
+                } else {
+                    // Статический шум при ожидании
+                    for (let i = 0; i < 80; i++) {
+                        const x = Math.random() * w;
+                        const y = Math.random() * h;
+                        const alpha = Math.random() * 0.06 + 0.01;
+                        ctx.fillStyle = `rgba(100,180,120,${alpha})`;
+                        ctx.fillRect(x, y, 2, 2);
+                    }
+                    ctx.fillStyle = '#1a2a1a';
+                    ctx.font = '16px Courier New';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('⊘ НЕТ СИГНАЛА', w / 2, h / 2 + 5);
+                    ctx.textAlign = 'left';
+                }
+            }
+
+            function startVisualizerLoop() {
+                if (animationId) return;
+                function animate() {
+                    drawVisualizer();
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
+            }
+            startVisualizerLoop();
+
+            // ==================== УТИЛИТЫ ====================
+            function freqToNoteName(freq) {
+                if (freq <= 0) return '--';
+                const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                const A4 = 440;
+                const A4Index = 69;
+                const semitonesFromA4 = 12 * Math.log2(freq / A4);
+                const midiNote = Math.round(A4Index + semitonesFromA4);
+                const noteIndex = ((midiNote % 12) + 12) % 12;
+                const octave = Math.floor(midiNote / 12) - 1;
+                return `${noteNames[noteIndex]}${octave}`;
+            }
+
+            function setStatus(text) {
+                statusText.textContent = text;
+                npStatus.textContent = text;
+            }
+
+            function formatDuration(ms) {
+                const totalSec = Math.floor(ms / 1000);
+                const min = Math.floor(totalSec / 60);
+                const sec = totalSec % 60;
+                return `${min}:${sec.toString().padStart(2, '0')}`;
+            }
+
+            // ==================== ITUNES ПОИСК ====================
+            let searchTimeout = null;
+
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') performSearch();
+                if (e.key === 'Escape') closeResults();
+            });
+            searchInput.addEventListener('input', () => {
+                if (searchTimeout) clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (searchInput.value.trim().length >= 2) performSearch();
+                    else closeResults();
+                }, 500);
+            });
+
+            async function performSearch() {
+                const query = searchInput.value.trim();
+                if (query.length < 2) return;
+
+                resultsDropdown.classList.add('active');
+                loadingIndicator.classList.add('active');
+                noResults.classList.remove('active');
+                resultsList.innerHTML = '';
+
+                try {
+                    const response = await fetch(
+                        `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=20&country=RU`
+                    );
+                    if (!response.ok) throw new Error('Network error');
+                    const data = await response.json();
+
+                    loadingIndicator.classList.remove('active');
+
+                    if (data.results && data.results.length > 0) {
+                        renderResults(data.results);
+                    } else {
+                        noResults.classList.add('active');
+                    }
+                } catch (error) {
+                    loadingIndicator.classList.remove('active');
+                    noResults.classList.add('active');
+                    noResults.textContent = '⚠ ОШИБКА СЕТИ · ПОВТОРИТЕ';
+                }
+            }
+
+            function renderResults(tracks) {
+                resultsList.innerHTML = '';
+                tracks.forEach((track) => {
+                    const item = document.createElement('div');
+                    item.className = 'result-item';
+                    item.dataset.trackId = track.trackId;
+
+                    const coverUrl = track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '200x200') : '';
+                    const duration = track.trackTimeMillis ? formatDuration(track.trackTimeMillis) : '--:--';
+
+                    item.innerHTML = `
+                        <img src="${coverUrl}" alt="cover" onerror="this.style.display='none'">
+                        <div class="info">
+                            <div class="track-name">${escapeHtml(track.trackName || 'Без названия')}</div>
+                            <div class="artist-name">${escapeHtml(track.artistName || 'Неизвестный исполнитель')} · ${escapeHtml(track.collectionName || '')}</div>
+                        </div>
+                        <div class="duration">${duration}</div>
+                    `;
+
+                    item.addEventListener('click', () => selectTrack(track));
+                    resultsList.appendChild(item);
+                });
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function closeResults() {
+                resultsDropdown.classList.remove('active');
+                loadingIndicator.classList.remove('active');
+                noResults.classList.remove('active');
+            }
+
+            // Закрытие при клике вне
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-section')) closeResults();
+            });
+
+            // ==================== ВЫБОР ТРЕКА ====================
+            function selectTrack(track) {
+                state.currentTrack = track;
+                closeResults();
+                searchInput.value = `${track.trackName} - ${track.artistName}`;
+
+                // Обновление UI
+                const coverUrl = track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '';
+                if (coverUrl) {
+                    npCover.src = coverUrl;
+                    npCover.style.display = 'block';
+                } else {
+                    npCover.style.display = 'none';
+                }
+                npTrack.textContent = track.trackName || 'Без названия';
+                npArtist.textContent = `${track.artistName || 'Неизвестный'} · ${track.collectionName || ''}`;
+                npStatus.textContent = 'ТРЕК ВЫБРАН · ГОТОВ К ЗАПУСКУ';
+                setStatus('ТРЕК ВЫБРАН · НАЖМИТЕ ЗАПУСК');
+
+                playBtn.disabled = false;
+                stopBtn.disabled = true;
+                glitchBtn.disabled = true;
+                noiseTypeBtn.disabled = true;
+
+                if (track.previewUrl) {
+                    setStatus('ПРЕВЬЮ ДОСТУПНО · 30 СЕК');
+                } else {
+                    setStatus('⚠ НЕТ ПРЕВЬЮ ДЛЯ ЭТОГО ТРЕКА');
+                    playBtn.disabled = true;
+                }
+            }
+
+            // ==================== АУДИО ДВИЖОК ====================
+            function initAudioContext() {
+                if (state.audioContext) return state.audioContext;
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                state.audioContext = new AudioCtx();
+                state.masterGain = state.audioContext.createGain();
+                state.masterGain.gain.value = 0.8;
+                state.masterGain.connect(state.audioContext.destination);
+                state.analyser = state.audioContext.createAnalyser();
+                state.analyser.fftSize = 512;
+                state.analyser.smoothingTimeConstant = 0.7;
+                state.analyser.connect(state.masterGain);
+                return state.audioContext;
+            }
+
+            function createNoiseBuffer(audioCtx) {
+                const bufferSize = audioCtx.sampleRate * 2;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                return buffer;
+            }
+
+            function createNoiseEngine(audioCtx, analyser) {
+                // Белый шум
+                const noiseBuffer = createNoiseBuffer(audioCtx);
+                const noiseSource = audioCtx.createBufferSource();
+                noiseSource.buffer = noiseBuffer;
+                noiseSource.loop = true;
+
+                // Фильтр для шума (bandpass, управляемый доминирующей частотой)
+                const noiseFilter = audioCtx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.value = 1000;
+                noiseFilter.Q.value = 5;
+
+                // Усиление шума
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.value = 0.15;
+
+                noiseSource.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(analyser);
+
+                // Осциллятор с FM-модуляцией
+                const carrier = audioCtx.createOscillator();
+                carrier.type = 'sawtooth';
+                carrier.frequency.value = 220;
+
+                const modulator = audioCtx.createOscillator();
+                modulator.type = 'square';
+                modulator.frequency.value = 110;
+
+                const modulatorGain = audioCtx.createGain();
+                modulatorGain.gain.value = 80;
+
+                modulator.connect(modulatorGain);
+                modulatorGain.connect(carrier.frequency);
+
+                const carrierFilter = audioCtx.createBiquadFilter();
+                carrierFilter.type = 'lowpass';
+                carrierFilter.frequency.value = 2000;
+                carrierFilter.Q.value = 3;
+
+                const carrierGain = audioCtx.createGain();
+                carrierGain.gain.value = 0.08;
+
+                carrier.connect(carrierFilter);
+                carrierFilter.connect(carrierGain);
+                carrierGain.connect(analyser);
+
+                // Дополнительный резонансный осциллятор
+                const resOsc = audioCtx.createOscillator();
+                resOsc.type = 'triangle';
+                resOsc.frequency.value = 440;
+
+                const resFilter = audioCtx.createBiquadFilter();
+                resFilter.type = 'peaking';
+                resFilter.frequency.value = 1000;
+                resFilter.Q.value = 12;
+
+                const resGain = audioCtx.createGain();
+                resGain.gain.value = 0.06;
+
+                resOsc.connect(resFilter);
+                resFilter.connect(resGain);
+                resGain.connect(analyser);
+
+                // Bitcrusher (через waveshaper)
+                const crusher = audioCtx.createWaveShaper();
+                const curveLength = 1024;
+                const curve = new Float32Array(curveLength);
+                for (let i = 0; i < curveLength; i++) {
+                    const x = (i / curveLength) * 2 - 1;
+                    curve[i] = Math.floor(x * 8) / 8;
+                }
+                crusher.curve = curve;
+
+                const crusherGain = audioCtx.createGain();
+                crusherGain.gain.value = 0.05;
+
+                // Подключение crusher к шуму
+                const crusherFilter = audioCtx.createBiquadFilter();
+                crusherFilter.type = 'highpass';
+                crusherFilter.frequency.value = 300;
+
+                noiseFilter.connect(crusher);
+                crusher.connect(crusherFilter);
+                crusherFilter.connect(crusherGain);
+                crusherGain.connect(analyser);
+
+                // Старт всех источников
+                noiseSource.start();
+                carrier.start();
+                modulator.start();
+                resOsc.start();
+
+                return {
+                    noiseSource,
+                    noiseFilter,
+                    noiseGain,
+                    carrier,
+                    modulator,
+                    modulatorGain,
+                    carrierFilter,
+                    carrierGain,
+                    resOsc,
+                    resFilter,
+                    resGain,
+                    crusher,
+                    crusherFilter,
+                    crusherGain,
+                    stopAll: () => {
+                        try {
+                            noiseSource.stop();
+                            carrier.stop();
+                            modulator.stop();
+                            resOsc.stop();
+                        } catch (e) {}
+                    },
+                    setNoiseType: (type) => {
+                        switch (type) {
+                            case 0: // FM-шум
+                                noiseGain.gain.value = 0.15;
+                                carrierGain.gain.value = 0.08;
+                                resGain.gain.value = 0.06;
+                                crusherGain.gain.value = 0.02;
+                                noiseFilter.Q.value = 5;
+                                carrierFilter.frequency.value = 2000;
+                                break;
+                            case 1: // Резонансный
+                                noiseGain.gain.value = 0.06;
+                                carrierGain.gain.value = 0.03;
+                                resGain.gain.value = 0.18;
+                                crusherGain.gain.value = 0.02;
+                                noiseFilter.Q.value = 20;
+                                carrierFilter.frequency.value = 4000;
+                                break;
+                            case 2: // Биткраш
+                                noiseGain.gain.value = 0.08;
+                                carrierGain.gain.value = 0.04;
+                                resGain.gain.value = 0.03;
+                                crusherGain.gain.value = 0.15;
+                                noiseFilter.Q.value = 3;
+                                carrierFilter.frequency.value = 1500;
+                                break;
+                            case 3: // Глитч-хаос
+                                noiseGain.gain.value = 0.2;
+                                carrierGain.gain.value = 0.12;
+                                resGain.gain.value = 0.08;
+                                crusherGain.gain.value = 0.1;
+                                noiseFilter.Q.value = 2;
+                                carrierFilter.frequency.value = 3000;
+                                break;
+                        }
+                    }
+                };
+            }
+
+            function updateNoiseParameters(engine, freq, glitchAmount) {
+                if (!engine || !freq || freq <= 0) return;
+
+                const targetFreq = Math.min(Math.max(freq, 80), 4000);
+                const glitchFactor = glitchAmount * 0.8 + 0.2;
+
+                // Обновление фильтров
+                engine.noiseFilter.frequency.setTargetAtTime(targetFreq, state.audioContext.currentTime, 0.05);
+                engine.noiseFilter.Q.setTargetAtTime(3 + glitchAmount * 15, state.audioContext.currentTime, 0.08);
+
+                engine.carrierFilter.frequency.setTargetAtTime(targetFreq * 3, state.audioContext.currentTime, 0.05);
+                engine.carrierFilter.Q.setTargetAtTime(2 + glitchAmount * 8, state.audioContext.currentTime, 0.08);
+
+                engine.resFilter.frequency.setTargetAtTime(targetFreq * 2, state.audioContext.currentTime, 0.06);
+                engine.resFilter.Q.setTargetAtTime(8 + glitchAmount * 15, state.audioContext.currentTime, 0.1);
+
+                engine.crusherFilter.frequency.setTargetAtTime(targetFreq * 0.5, state.audioContext.currentTime, 0.05);
+
+                // Обновление осцилляторов
+                engine.carrier.frequency.setTargetAtTime(targetFreq * (1 + glitchAmount * 0.5), state.audioContext
+                    .currentTime, 0.06);
+                engine.modulator.frequency.setTargetAtTime(targetFreq * (0.3 + glitchAmount * 0.7), state.audioContext
+                    .currentTime, 0.06);
+                engine.modulatorGain.gain.setTargetAtTime(50 + glitchAmount * 200, state.audioContext.currentTime, 0.07);
+
+                engine.resOsc.frequency.setTargetAtTime(targetFreq * (2 + glitchAmount), state.audioContext.currentTime, 0.05);
+
+                // Гейны
+                const baseNoiseGain = 0.06 + glitchAmount * 0.2;
+                engine.noiseGain.gain.setTargetAtTime(baseNoiseGain, state.audioContext.currentTime, 0.08);
+                engine.carrierGain.gain.setTargetAtTime(0.03 + glitchAmount * 0.12, state.audioContext.currentTime, 0.08);
+                engine.resGain.gain.setTargetAtTime(0.04 + glitchAmount * 0.14, state.audioContext.currentTime, 0.08);
+                engine.crusherGain.gain.setTargetAtTime(0.02 + glitchAmount * 0.18, state.audioContext.currentTime, 0.08);
+            }
+
+            function startPlayback() {
+                if (!state.currentTrack || !state.currentTrack.previewUrl) return;
+
+                const audioCtx = initAudioContext();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                // Остановка предыдущего
+                stopPlayback(true);
+
+                // Создание источника аудио из URL
+                const source = audioCtx.createBufferSource();
+                const analyserNode = audioCtx.createAnalyser();
+                analyserNode.fftSize = 512;
+                analyserNode.smoothingTimeConstant = 0.75;
+
+                // Создание шумового движка
+                const noiseEngine = createNoiseEngine(audioCtx, analyserNode);
+
+                // Загрузка аудио
+                fetch(state.currentTrack.previewUrl)
+                    .then(response => response.arrayBuffer())
+                    .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+                    .then(audioBuffer => {
+                        source.buffer = audioBuffer;
+                        source.connect(analyserNode);
+                        analyserNode.connect(state.masterGain);
+                        source.start(0);
+
+                        state.sourceNode = source;
+                        state.analyser = analyserNode;
+                        state.noiseEngine = noiseEngine;
+                        state.isPlaying = true;
+
+                        source.onended = () => {
+                            if (state.isPlaying) {
+                                stopPlayback(false);
+                                setStatus('⏹ ПРЕВЬЮ ЗАВЕРШЕНО');
+                            }
+                        };
+
+                        playBtn.disabled = true;
+                        stopBtn.disabled = false;
+                        glitchBtn.disabled = false;
+                        noiseTypeBtn.disabled = false;
+                        setStatus('▶ ИГРАЕТ · ШУМ-ГЕНЕРАЦИЯ АКТИВНА');
+                        npStatus.textContent = '▶ ИГРАЕТ';
+                    })
+                    .catch(err => {
+                        console.error('Ошибка загрузки аудио:', err);
+                        setStatus('⚠ ОШИБКА ЗАГРУЗКИ ПРЕВЬЮ');
+                        cleanupAudio();
+                    });
+
+                state.isPlaying = true;
+            }
+
+            function stopPlayback(silent = false) {
+                if (state.sourceNode) {
+                    try { state.sourceNode.stop(); } catch (e) {}
+                    state.sourceNode.disconnect();
+                    state.sourceNode = null;
+                }
+                if (state.noiseEngine) {
+                    try { state.noiseEngine.stopAll(); } catch (e) {}
+                    state.noiseEngine = null;
+                }
+                if (state.analyser) {
+                    try { state.analyser.disconnect(); } catch (e) {}
+                    state.analyser = null;
+                }
+                state.isPlaying = false;
+                state.dominantFreq = 0;
+                state.frequencyHistory = [];
+                state.glitchIntensity = 0;
+
+                if (!silent) {
+                    playBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    glitchBtn.disabled = true;
+                    noiseTypeBtn.disabled = true;
+                    setStatus('■ ОСТАНОВЛЕНО');
+                    npStatus.textContent = 'ОСТАНОВЛЕНО';
+                    if (state.currentTrack) {
+                        npStatus.textContent = 'ТРЕК ВЫБРАН · ГОТОВ';
+                    }
+                }
+            }
+
+            function cleanupAudio() {
+                state.isPlaying = false;
+                playBtn.disabled = false;
+                stopBtn.disabled = true;
+                glitchBtn.disabled = true;
+                noiseTypeBtn.disabled = true;
+                if (state.noiseEngine) {
+                    try { state.noiseEngine.stopAll(); } catch (e) {}
+                    state.noiseEngine = null;
+                }
+                state.analyser = null;
+                state.sourceNode = null;
+            }
+
+            // ==================== АНАЛИЗ И ОБНОВЛЕНИЕ ====================
+            function analyzeAndUpdate() {
+                if (!state.isPlaying || !state.analyser || !state.noiseEngine) return;
+
+                const bufferLength = state.analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                state.analyser.getByteFrequencyData(dataArray);
+
+                // Находим доминирующую частоту в среднем диапазоне
+                let maxValue = 0;
+                let maxIndex = 0;
+                const startBin = Math.floor(bufferLength * 0.03);
+                const endBin = Math.floor(bufferLength * 0.6);
+
+                for (let i = startBin; i < endBin; i++) {
+                    if (dataArray[i] > maxValue) {
+                        maxValue = dataArray[i];
+                        maxIndex = i;
+                    }
+                }
+
+                const sampleRate = state.audioContext.sampleRate;
+                const freq = (maxIndex * sampleRate) / (state.analyser.fftSize);
+
+                if (maxValue > 30 && freq > 30) {
+                    state.dominantFreq = freq;
+                    state.frequencyHistory.push(freq);
+                    if (state.frequencyHistory.length > 20) state.frequencyHistory.shift();
+
+                    // Вычисляем среднюю частоту для сглаживания
+                    const avgFreq = state.frequencyHistory.reduce((a, b) => a + b, 0) / state.frequencyHistory
+                    .length;
+
+                    // Вычисляем глитч-интенсивность на основе вариаций
+                    if (state.frequencyHistory.length > 3) {
+                        let variation = 0;
+                        for (let i = 1; i < state.frequencyHistory.length; i++) {
+                            variation += Math.abs(state.frequencyHistory[i] - state.frequencyHistory[i - 1]);
+                        }
+                        variation /= state.frequencyHistory.length;
+                        state.glitchIntensity = Math.min(Math.max(variation / 500, 0.05), 1.0);
+                    }
+
+                    // Обновляем шумовой движок
+                    updateNoiseParameters(state.noiseEngine, avgFreq, state.glitchIntensity);
+
+                    // Случайные глитч-импульсы
+                    if (Math.random() < state.glitchIntensity * 0.15) {
+                        const glitchFreq = avgFreq * (1 + (Math.random() - 0.5) * 3);
+                        updateNoiseParameters(state.noiseEngine, glitchFreq, 1.0);
+                        setTimeout(() => {
+                            if (state.isPlaying && state.noiseEngine) {
+                                updateNoiseParameters(state.noiseEngine, avgFreq, state.glitchIntensity);
+                            }
+                        }, 50 + Math.random() * 100);
+                    }
+                } else {
+                    state.glitchIntensity = Math.max(state.glitchIntensity - 0.02, 0.05);
+                    if (state.dominantFreq > 0) {
+                        updateNoiseParameters(state.noiseEngine, state.dominantFreq, state.glitchIntensity);
+                    }
+                }
+            }
+
+            // Запуск цикла анализа
+            setInterval(analyzeAndUpdate, 50);
+
+            // ==================== УПРАВЛЕНИЕ ====================
+            playBtn.addEventListener('click', startPlayback);
+            stopBtn.addEventListener('click', () => stopPlayback(false));
+
+            glitchBtn.addEventListener('click', () => {
+                if (!state.isPlaying || !state.noiseEngine) return;
+                state.isGlitching = !state.isGlitching;
+                if (state.isGlitching) {
+                    glitchBtn.classList.add('active-btn');
+                    glitchBtn.textContent = '⚡ ГЛИТЧ: ВКЛ';
+                    setStatus('⚡ ГЛИТЧ-РЕЖИМ АКТИВЕН');
+                } else {
+                    glitchBtn.classList.remove('active-btn');
+                    glitchBtn.textContent = '⚡ ГЛИТЧ';
+                    setStatus('▶ ШУМ-ГЕНЕРАЦИЯ');
+                }
+            });
+
+            noiseTypeBtn.addEventListener('click', () => {
+                state.noiseType = (state.noiseType + 1) % state.noiseTypeNames.length;
+                noiseTypeBtn.textContent = `ТИП: ${state.noiseTypeNames[state.noiseType]}`;
+                if (state.noiseEngine) {
+                    state.noiseEngine.setNoiseType(state.noiseType);
+                }
+                setStatus(`ТИП ШУМА: ${state.noiseTypeNames[state.noiseType]}`);
+            });
+
+            // Глитч-режим дополнительно влияет на параметры
+            const originalUpdate = updateNoiseParameters;
+            updateNoiseParameters = function(engine, freq, glitchAmount) {
+                if (state.isGlitching) {
+                    glitchAmount = Math.min(glitchAmount + 0.4, 1.0);
+                    // Случайные скачки
+                    if (Math.random() < 0.2) {
+                        freq = freq * (1 + (Math.random() - 0.5) * 2);
+                    }
+                }
+                originalUpdate(engine, freq, glitchAmount);
+            };
+
+            // Инициализация
+            noiseTypeBtn.textContent = `ТИП: ${state.noiseTypeNames[state.noiseType]}`;
+            setStatus('СИСТЕМА ГОТОВА · ВВЕДИТЕ ЗАПРОС');
+
+            // Пробный поиск при загрузке
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 500);
+            });
+
+            // Очистка при закрытии страницы
+            window.addEventListener('beforeunload', () => {
+                if (state.audioContext) {
+                    state.audioContext.close();
+                }
+            });
+
+            console.log('⬡ ШУМ-СИНТЕЗАТОР ЗАГРУЖЕН · Технические помехи на основе iTunes Preview');
+            console.log('ℹ Введите запрос для поиска трека, выберите результат и нажмите ЗАПУСК');
+            console.log('⚡ Типы шума: FM-ШУМ, РЕЗОНАНС, БИТКРАШ, ГЛИТЧ-ХАОС');
+        })();
+    </script>
+</body>
+</html>
