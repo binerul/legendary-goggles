@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analog Distortion Synth — iTunes Rythm + Pitch Tracking</title>
+    <title>Analog Distortion Synth — Pitch Rhythm Engine</title>
     <style>
-        /* ====== Стили как в предыдущем ответе, но добавлены новые элементы ====== */
         :root {
             --bg: #0a0a0f;
             --panel: #12121a;
@@ -38,7 +37,7 @@
         }
         .rack {
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
             background: var(--panel);
             border: 1px solid var(--panel-border);
             border-radius: 18px;
@@ -108,10 +107,7 @@
             outline: none;
             transition: border-color 0.25s, box-shadow 0.25s;
         }
-        .search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px var(--accent-glow);
-        }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
         .search-input::placeholder { color: var(--muted); }
         .btn {
             padding: 10px 20px;
@@ -156,13 +152,7 @@
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
         }
-        .modal h3 {
-            color: var(--text-bright);
-            margin-bottom: 14px;
-            font-size: 16px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+        .modal h3 { color: var(--text-bright); margin-bottom: 14px; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; }
         .result-item {
             display: flex;
             align-items: center;
@@ -175,34 +165,12 @@
             margin-bottom: 6px;
         }
         .result-item:hover { background: var(--knob-bg); border-color: var(--accent); transform: translateX(4px); }
-        .result-item img {
-            width: 50px; height: 50px;
-            border-radius: 6px;
-            object-fit: cover;
-            background: var(--knob-ring);
-            flex-shrink: 0;
-        }
+        .result-item img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; background: var(--knob-ring); flex-shrink: 0; }
         .result-item .info { flex: 1; min-width: 0; }
-        .result-item .track-name {
-            font-weight: 600;
-            color: var(--text-bright);
-            font-size: 14px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+        .result-item .track-name { font-weight: 600; color: var(--text-bright); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .result-item .artist-name { font-size: 12px; color: var(--muted); margin-top: 2px; }
         .result-item .duration { font-size: 11px; color: var(--accent); font-weight: 600; flex-shrink: 0; }
-        .modal-close {
-            margin-top: 14px;
-            width: 100%;
-            padding: 10px;
-            background: var(--knob-ring);
-            color: var(--text);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-        }
+        .modal-close { margin-top: 14px; width: 100%; padding: 10px; background: var(--knob-ring); color: var(--text); border: none; border-radius: 8px; cursor: pointer; font-size: 13px; letter-spacing: 0.5px; }
         .modal-close:hover { background: var(--panel-border); color: var(--text-bright); }
 
         .now-playing {
@@ -217,20 +185,9 @@
             flex-wrap: wrap;
         }
         .now-playing .np-info { flex: 1; min-width: 150px; }
-        .now-playing .np-track {
-            font-weight: 600;
-            color: var(--text-bright);
-            font-size: 14px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+        .now-playing .np-track { font-weight: 600; color: var(--text-bright); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .now-playing .np-artist { font-size: 12px; color: var(--muted); }
-        .now-playing .np-status {
-            font-size: 11px;
-            color: var(--accent);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            flex-shrink: 0;
-        }
+        .now-playing .np-status { font-size: 11px; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; flex-shrink: 0; }
 
         .visualizer-wrap {
             margin-bottom: 18px;
@@ -239,7 +196,7 @@
             border: 1px solid var(--panel-border);
             background: #000;
             position: relative;
-            height: 80px;
+            height: 100px;
         }
         .visualizer-wrap canvas { width: 100%; height: 100%; display: block; }
 
@@ -313,18 +270,9 @@
             color: var(--muted);
             letter-spacing: 0.5px;
         }
-        .footer-status .bpm-display {
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 13px;
-        }
+        .footer-status .bpm-display { color: var(--accent); font-weight: 700; font-size: 13px; }
         .footer-status .status-indicator { display: flex; align-items: center; gap: 6px; }
-        .footer-status .status-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--danger);
-            transition: background 0.3s;
-        }
+        .footer-status .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); transition: background 0.3s; }
         .footer-status .status-dot.playing { background: var(--success); box-shadow: 0 0 8px var(--success); }
         .footer-status .status-dot.triggered { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
 
@@ -338,23 +286,20 @@
 </head>
 <body>
 <div class="rack">
-    <!-- Header -->
     <div class="rack-header">
         <div class="rack-title"><span class="led"></span> ANALOG DISTORTION SYNTH</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-mute" id="btnMuteMusic" title="Отключить/включить музыку">🔇 Музыка</button>
-            <button class="btn btn-loop" id="btnLoop" title="Зациклить трек">🔁 Loop</button>
-            <button class="btn btn-stop" id="btnStop" title="Остановить всё">⏹ Stop</button>
+            <button class="btn btn-mute" id="btnMuteMusic">🔇 Музыка</button>
+            <button class="btn btn-loop" id="btnLoop">🔁 Loop</button>
+            <button class="btn btn-stop" id="btnStop">⏹ Stop</button>
         </div>
     </div>
 
-    <!-- Search -->
     <div class="search-section">
-        <input type="text" class="search-input" id="searchInput" placeholder="Поиск трека в iTunes... Например, Nirvana, Daft Punk, Aphex Twin..." />
+        <input type="text" class="search-input" id="searchInput" placeholder="Поиск трека в iTunes..." />
         <button class="btn btn-search" id="btnSearch">🔍 Найти</button>
     </div>
 
-    <!-- Now Playing -->
     <div class="now-playing" id="nowPlaying">
         <div class="np-info">
             <div class="np-track" id="npTrack">— Нет трека —</div>
@@ -363,15 +308,12 @@
         <div class="np-status" id="npStatus">IDLE</div>
     </div>
 
-    <!-- Visualizer -->
     <div class="visualizer-wrap">
         <canvas id="visualizerCanvas"></canvas>
     </div>
 
-    <!-- Knobs -->
     <div class="knobs-section" id="knobsContainer"></div>
 
-    <!-- Footer -->
     <div class="footer-status">
         <span class="bpm-display" id="bpmDisplay">BPM: 120</span>
         <span class="status-indicator">
@@ -379,10 +321,10 @@
             <span id="statusText">Готов</span>
         </span>
         <span id="triggerCounter">Триггеров: 0</span>
+        <span id="toneTriggerCounter">Тон-триггеров: 0</span>
     </div>
 </div>
 
-<!-- Search Results Modal -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h3>🔎 Результаты поиска iTunes</h3>
@@ -393,7 +335,7 @@
 
 <script>
 (function() {
-    // ==================== АУДИО КОНТЕКСТ И УЗЛЫ ====================
+    // ==================== АУДИО ====================
     let audioCtx = null;
     let mediaElement = null;
     let mediaSource = null;
@@ -406,24 +348,34 @@
     let convolver = null;
     let noiseFilter = null;
     let noiseFilter2 = null;
-    let pitchFilter = null;   // Bandpass для питч-трекинга
+    let pitchFilter = null;
     let waveshaper1 = null;
     let waveshaper2 = null;
-    let gateGain = null;
+    let gateGain = null;          // гейт для шума
     let noiseBufferSource = null;
     let noiseBuffer = null;
+
+    // Тональный генератор
     let toneOscillator = null;
     let toneGain = null;
+    let toneGate = null;          // отдельный гейт для тона
+    let toneFilter = null;        // фильтр для тона
+    let toneDistortion = null;    // дополнительный waveshaper для тона
+
+    // Радио и треск
     let crackleBuffer = null;
     let crackleSource = null;
     let crackleGain = null;
     let radioStaticGain = null;
     let radioStaticFilter = null;
     let radioStaticSource = null;
+
+    // Питч-трекинг
     let pitchSmoothValue = 0.8;
-    let currentPitch = 440; // Hz
+    let currentPitch = 440;
     let pitchHistory = [];
 
+    // Состояние
     let isPlaying = false;
     let isMusicMuted = false;
     let isLooping = false;
@@ -441,8 +393,13 @@
     let animationFrameId = null;
     let analyserUpdateInterval = null;
 
+    // Счётчики
+    let triggerCount = 0;
+    let toneTriggerCount = 0;
+
     // Параметры
     const params = {
+        // Основные
         musicVolume: 0.15,
         noiseVolume: 0.7,
         drive: 0.65,
@@ -466,53 +423,86 @@
         bpmManual: 120,
         triggerPattern: 1,
         patternCounter: 0,
-        // Новые параметры
-        pitchTracking: 0.5,     // 0..1
-        pitchSmoothing: 0.9,    // 0..0.99
-        pitchQ: 4.0,            // Добротность bandpass
-        toneMix: 0.3,           // 0..1
-        toneWaveform: 0,        // 0=sine,1=triangle,2=sawtooth,3=square
-        radioStatic: 0.2,       // 0..1
-        crackleDensity: 0.15,   // 0..1
-        crackleVolume: 0.4,     // 0..1
+
+        // Питч и тон
+        pitchTracking: 0.6,
+        pitchSmoothing: 0.9,
+        pitchQ: 4.0,
+        toneMix: 0.4,
+        toneWaveform: 0,
+
+        // Радио
+        radioStatic: 0.2,
+        crackleDensity: 0.15,
+        crackleVolume: 0.4,
+
+        // Тональный ритм (новый движок)
+        toneRate: 0.8,            // вероятность срабатывания на каждый бит
+        tonePattern: 1,           // паттерн (каждый N-й бит)
+        tonePatternCounter: 0,
+        toneSensitivity: 0.5,     // независимая чувствительность для тона
+        toneAttack: 0.015,
+        toneDecay: 0.22,
+        toneHumanize: 0.2,        // случайность тайминга
+        toneOctaveShift: 0,       // -12..+12 полутонов
+        toneGlide: 0.3,           // сглаживание изменения высоты
+        toneSwing: 0.0,           // -0.3..+0.3 свинг
+        toneAccent: 0.25,         // акцент (усиление громкости на сильные доли)
+        toneVolume: 0.5,          // базовая громкость тона
     };
 
-    // Определения крутилок
+    // Определения крутилок (добавлены новые)
     const knobDefs = [
-        { key: 'musicVolume', label: 'Громкость музыки', min: 0, max: 1, step: 0.01, default: 0.15, unit: '' },
-        { key: 'noiseVolume', label: 'Громкость шума', min: 0, max: 1.5, step: 0.01, default: 0.7, unit: '' },
-        { key: 'drive', label: 'Дисторшн Drive', min: 0, max: 3, step: 0.01, default: 0.65, unit: '' },
-        { key: 'drive2', label: 'Дисторшн Stage 2', min: 0, max: 2, step: 0.01, default: 0.4, unit: '' },
-        { key: 'reverbMix', label: 'Реверб Mix', min: 0, max: 1, step: 0.01, default: 0.35, unit: '' },
-        { key: 'reverbDecay', label: 'Реверб Decay', min: 0.5, max: 6, step: 0.1, default: 2.5, unit: 's' },
-        { key: 'filterCutoff', label: 'Фильтр LP (шум)', min: 100, max: 8000, step: 10, default: 1200, unit: 'Hz' },
-        { key: 'filterResonance', label: 'Резонанс фильтра', min: 0.1, max: 20, step: 0.1, default: 2.0, unit: 'Q' },
-        { key: 'filter2Cutoff', label: 'Фильтр HP', min: 100, max: 6000, step: 10, default: 3500, unit: 'Hz' },
-        { key: 'attack', label: 'Атака', min: 0.001, max: 0.1, step: 0.001, default: 0.008, unit: 's' },
-        { key: 'decay', label: 'Затухание', min: 0.05, max: 1.5, step: 0.01, default: 0.25, unit: 's' },
-        { key: 'triggerSensitivity', label: 'Чувств. ритма', min: 0.1, max: 1.5, step: 0.01, default: 0.45, unit: '' },
-        { key: 'triggerRate', label: 'Частота срабатыв.', min: 0.1, max: 2, step: 0.01, default: 0.7, unit: '' },
-        { key: 'noiseColor', label: 'Цвет шума', min: 0, max: 1, step: 0.01, default: 0.5, unit: '' },
-        { key: 'gateThreshold', label: 'Гейт порог', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
-        { key: 'tone', label: 'Тон', min: 0, max: 1, step: 0.01, default: 0.6, unit: '' },
-        { key: 'chaos', label: 'Хаос', min: 0, max: 0.5, step: 0.01, default: 0.25, unit: '' },
-        { key: 'asymmetry', label: 'Асимметрия', min: 0, max: 1, step: 0.01, default: 0.45, unit: '' },
-        { key: 'lowBoost', label: 'НЧ буст', min: 0, max: 1, step: 0.01, default: 0.4, unit: '' },
-        { key: 'highBoost', label: 'ВЧ буст', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
-        { key: 'bpmManual', label: 'BPM (ручной)', min: 60, max: 200, step: 1, default: 120, unit: '' },
-        { key: 'triggerPattern', label: 'Паттерн (1-4)', min: 1, max: 4, step: 1, default: 1, unit: '' },
-        // Новые ручки
-        { key: 'pitchTracking', label: 'Pitch Tracking', min: 0, max: 1, step: 0.01, default: 0.5, unit: '' },
-        { key: 'pitchSmoothing', label: 'Pitch Smoothing', min: 0, max: 0.99, step: 0.01, default: 0.9, unit: '' },
-        { key: 'pitchQ', label: 'Pitch Q', min: 0.5, max: 20, step: 0.1, default: 4.0, unit: '' },
-        { key: 'toneMix', label: 'Tone Mix', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
-        { key: 'toneWaveform', label: 'Tone Wave', min: 0, max: 3, step: 1, default: 0, unit: '' },
-        { key: 'radioStatic', label: 'Radio Static', min: 0, max: 1, step: 0.01, default: 0.2, unit: '' },
-        { key: 'crackleDensity', label: 'Crackle Density', min: 0, max: 1, step: 0.01, default: 0.15, unit: '' },
-        { key: 'crackleVolume', label: 'Crackle Volume', min: 0, max: 1, step: 0.01, default: 0.4, unit: '' },
+        { key: 'musicVolume', label: 'Громкость музыки', min: 0, max: 1, step: 0.01, default: 0.15 },
+        { key: 'noiseVolume', label: 'Громкость шума', min: 0, max: 1.5, step: 0.01, default: 0.7 },
+        { key: 'drive', label: 'Дисторшн Drive', min: 0, max: 3, step: 0.01, default: 0.65 },
+        { key: 'drive2', label: 'Дисторшн Stage 2', min: 0, max: 2, step: 0.01, default: 0.4 },
+        { key: 'reverbMix', label: 'Реверб Mix', min: 0, max: 1, step: 0.01, default: 0.35 },
+        { key: 'reverbDecay', label: 'Реверб Decay', min: 0.5, max: 6, step: 0.1, default: 2.5 },
+        { key: 'filterCutoff', label: 'Фильтр LP (шум)', min: 100, max: 8000, step: 10, default: 1200 },
+        { key: 'filterResonance', label: 'Резонанс фильтра', min: 0.1, max: 20, step: 0.1, default: 2.0 },
+        { key: 'filter2Cutoff', label: 'Фильтр HP', min: 100, max: 6000, step: 10, default: 3500 },
+        { key: 'attack', label: 'Атака', min: 0.001, max: 0.1, step: 0.001, default: 0.008 },
+        { key: 'decay', label: 'Затухание', min: 0.05, max: 1.5, step: 0.01, default: 0.25 },
+        { key: 'triggerSensitivity', label: 'Чувств. ритма (шум)', min: 0.1, max: 1.5, step: 0.01, default: 0.45 },
+        { key: 'triggerRate', label: 'Частота срабатыв. (шум)', min: 0.1, max: 2, step: 0.01, default: 0.7 },
+        { key: 'noiseColor', label: 'Цвет шума', min: 0, max: 1, step: 0.01, default: 0.5 },
+        { key: 'gateThreshold', label: 'Гейт порог', min: 0, max: 1, step: 0.01, default: 0.3 },
+        { key: 'tone', label: 'Тон', min: 0, max: 1, step: 0.01, default: 0.6 },
+        { key: 'chaos', label: 'Хаос', min: 0, max: 0.5, step: 0.01, default: 0.25 },
+        { key: 'asymmetry', label: 'Асимметрия', min: 0, max: 1, step: 0.01, default: 0.45 },
+        { key: 'lowBoost', label: 'НЧ буст', min: 0, max: 1, step: 0.01, default: 0.4 },
+        { key: 'highBoost', label: 'ВЧ буст', min: 0, max: 1, step: 0.01, default: 0.3 },
+        { key: 'bpmManual', label: 'BPM (ручной)', min: 60, max: 200, step: 1, default: 120 },
+        { key: 'triggerPattern', label: 'Паттерн шума (1-4)', min: 1, max: 4, step: 1, default: 1 },
+
+        // Новые питч и тон
+        { key: 'pitchTracking', label: 'Pitch Tracking', min: 0, max: 1, step: 0.01, default: 0.6 },
+        { key: 'pitchSmoothing', label: 'Pitch Smoothing', min: 0, max: 0.99, step: 0.01, default: 0.9 },
+        { key: 'pitchQ', label: 'Pitch Q', min: 0.5, max: 20, step: 0.1, default: 4.0 },
+        { key: 'toneMix', label: 'Tone Mix', min: 0, max: 1, step: 0.01, default: 0.4 },
+        { key: 'toneWaveform', label: 'Tone Wave', min: 0, max: 3, step: 1, default: 0 },
+
+        // Радио и треск
+        { key: 'radioStatic', label: 'Radio Static', min: 0, max: 1, step: 0.01, default: 0.2 },
+        { key: 'crackleDensity', label: 'Crackle Density', min: 0, max: 1, step: 0.01, default: 0.15 },
+        { key: 'crackleVolume', label: 'Crackle Volume', min: 0, max: 1, step: 0.01, default: 0.4 },
+
+        // Тональный ритм (отдельный движок)
+        { key: 'toneRate', label: 'Tone Rate', min: 0, max: 1, step: 0.01, default: 0.8 },
+        { key: 'tonePattern', label: 'Tone Pattern', min: 1, max: 8, step: 1, default: 1 },
+        { key: 'toneSensitivity', label: 'Tone Sensitivity', min: 0.1, max: 1.5, step: 0.01, default: 0.5 },
+        { key: 'toneAttack', label: 'Tone Attack', min: 0.001, max: 0.1, step: 0.001, default: 0.015 },
+        { key: 'toneDecay', label: 'Tone Decay', min: 0.05, max: 1.0, step: 0.01, default: 0.22 },
+        { key: 'toneHumanize', label: 'Tone Humanize', min: 0, max: 0.5, step: 0.01, default: 0.2 },
+        { key: 'toneOctaveShift', label: 'Tone Octave Shift', min: -12, max: 12, step: 1, default: 0 },
+        { key: 'toneGlide', label: 'Tone Glide', min: 0, max: 1, step: 0.01, default: 0.3 },
+        { key: 'toneSwing', label: 'Tone Swing', min: -0.3, max: 0.3, step: 0.01, default: 0.0 },
+        { key: 'toneAccent', label: 'Tone Accent', min: 0, max: 1, step: 0.01, default: 0.25 },
+        { key: 'toneVolume', label: 'Tone Volume', min: 0, max: 1, step: 0.01, default: 0.5 },
     ];
 
-    // ==================== ИНИЦИАЛИЗАЦИЯ АУДИО ====================
+    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
     function initAudio() {
         if (audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -520,31 +510,27 @@
         masterGain.gain.value = 0.9;
         masterGain.connect(audioCtx.destination);
 
-        // Music chain
         musicGain = audioCtx.createGain();
         musicGain.gain.value = params.musicVolume;
         musicGain.connect(masterGain);
 
-        // Analyser
         analyserNode = audioCtx.createAnalyser();
-        analyserNode.fftSize = 1024; // большее разрешение для питча
+        analyserNode.fftSize = 1024;
         analyserNode.smoothingTimeConstant = 0.5;
         analyserNode.connect(musicGain);
         analyserDataArray = new Uint8Array(analyserNode.fftSize);
         freqDataArray = new Float32Array(analyserNode.frequencyBinCount);
 
-        // Noise chain
+        // Шумовая цепь
         noiseGain = audioCtx.createGain();
         noiseGain.gain.value = params.noiseVolume;
         noiseGain.connect(masterGain);
-
         noiseDryGain = audioCtx.createGain();
         noiseDryGain.gain.value = 0.5;
         noiseDryGain.connect(noiseGain);
         noiseWetGain = audioCtx.createGain();
         noiseWetGain.gain.value = 0.5;
         noiseWetGain.connect(noiseGain);
-
         convolver = audioCtx.createConvolver();
         convolver.connect(noiseWetGain);
         updateImpulseResponse();
@@ -553,13 +539,10 @@
         noiseFilter.type = 'lowpass';
         noiseFilter.frequency.value = params.filterCutoff;
         noiseFilter.Q.value = params.filterResonance;
-
         noiseFilter2 = audioCtx.createBiquadFilter();
         noiseFilter2.type = 'highpass';
         noiseFilter2.frequency.value = params.filter2Cutoff;
         noiseFilter2.Q.value = 0.7;
-
-        // Pitch filter (bandpass) для следования за тоном
         pitchFilter = audioCtx.createBiquadFilter();
         pitchFilter.type = 'bandpass';
         pitchFilter.frequency.value = 440;
@@ -568,56 +551,20 @@
         waveshaper1 = audioCtx.createWaveShaper();
         waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
         waveshaper1.oversample = '4x';
-
         waveshaper2 = audioCtx.createWaveShaper();
         waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
         waveshaper2.oversample = '4x';
-
         gateGain = audioCtx.createGain();
         gateGain.gain.value = 0;
 
-        // Noise buffer
+        // Буфер шума
         const bufferSize = audioCtx.sampleRate * 2;
         noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = noiseBuffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
         noiseBufferSource = audioCtx.createBufferSource();
         noiseBufferSource.buffer = noiseBuffer;
         noiseBufferSource.loop = true;
-        noiseBufferSource.start(0);
-
-        // Tone oscillator
-        toneOscillator = audioCtx.createOscillator();
-        toneOscillator.type = 'sine';
-        toneOscillator.frequency.value = 440;
-        toneGain = audioCtx.createGain();
-        toneGain.gain.value = 0;
-
-        // Crackle noise (импульсные щелчки)
-        crackleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
-        const cdata = crackleBuffer.getChannelData(0);
-        for (let i = 0; i < cdata.length; i++) {
-            cdata[i] = (Math.random() * 2 - 1) * (Math.random() > 0.9 ? 1 : 0.1);
-        }
-        crackleSource = audioCtx.createBufferSource();
-        crackleSource.buffer = crackleBuffer;
-        crackleSource.loop = true;
-        crackleGain = audioCtx.createGain();
-        crackleGain.gain.value = 0;
-
-        // Radio static (модулируемый шум)
-        radioStaticSource = audioCtx.createBufferSource();
-        radioStaticSource.buffer = noiseBuffer; // используем тот же буфер
-        radioStaticSource.loop = true;
-        radioStaticFilter = audioCtx.createBiquadFilter();
-        radioStaticFilter.type = 'bandpass';
-        radioStaticFilter.frequency.value = 800;
-        radioStaticFilter.Q.value = 0.5;
-        radioStaticGain = audioCtx.createGain();
-        radioStaticGain.gain.value = 0;
-
-        // Соединения: шум -> HP -> waveshaper1 -> LP -> waveshaper2 -> gate -> dry/wet
         noiseBufferSource.connect(noiseFilter2);
         noiseFilter2.connect(waveshaper1);
         waveshaper1.connect(noiseFilter);
@@ -626,34 +573,57 @@
         pitchFilter.connect(gateGain);
         gateGain.connect(noiseDryGain);
         gateGain.connect(convolver);
+        noiseBufferSource.start(0);
 
-        // Тон: oscillator -> waveshaper (общий дисторшн) -> toneGain -> noiseGain
-        toneOscillator.connect(waveshaper1); // пропускаем через первый дисторшн
+        // Тональный генератор с отдельной цепочкой
+        toneOscillator = audioCtx.createOscillator();
+        toneOscillator.type = 'sine';
+        toneOscillator.frequency.value = 440;
+        toneFilter = audioCtx.createBiquadFilter();
+        toneFilter.type = 'lowpass';
+        toneFilter.frequency.value = 3000;
+        toneDistortion = audioCtx.createWaveShaper();
+        toneDistortion.curve = makeDistortionCurve(params.drive * 1.2, params.asymmetry);
+        toneDistortion.oversample = '4x';
+        toneGate = audioCtx.createGain();
+        toneGate.gain.value = 0;
+        toneGain = audioCtx.createGain();
+        toneGain.gain.value = params.toneVolume * params.toneMix;
+
+        toneOscillator.connect(toneFilter);
+        toneFilter.connect(toneDistortion);
+        toneDistortion.connect(toneGate);
+        toneGate.connect(toneGain);
+        toneGain.connect(noiseGain); // смешиваем с общим выходом
         toneOscillator.start(0);
-        // но toneGain нужно подключить к noiseGain после waveshaper2? Нет, лучше отдельно
-        // Переопределим: toneOscillator -> toneGain -> waveshaper2 (или просто к noiseGain)
-        toneOscillator.disconnect();
-        toneOscillator.connect(toneGain);
-        toneGain.connect(noiseGain); // смешиваем с шумом после реверберации (или до)
-        // Для большей дисторшн-обработки можно toneGain -> waveshaper2 -> noiseGain, но пока так.
 
-        // Crackle
-        crackleSource.connect(crackleGain);
-        crackleGain.connect(noiseGain);
-        crackleSource.start(0);
-
-        // Radio static
+        // Радио статик
+        radioStaticSource = audioCtx.createBufferSource();
+        radioStaticSource.buffer = noiseBuffer;
+        radioStaticSource.loop = true;
+        radioStaticFilter = audioCtx.createBiquadFilter();
+        radioStaticFilter.type = 'bandpass';
+        radioStaticFilter.frequency.value = 800;
+        radioStaticFilter.Q.value = 0.5;
+        radioStaticGain = audioCtx.createGain();
+        radioStaticGain.gain.value = params.radioStatic * 0.15;
         radioStaticSource.connect(radioStaticFilter);
         radioStaticFilter.connect(radioStaticGain);
         radioStaticGain.connect(noiseGain);
         radioStaticSource.start(0);
 
-        // Начальные значения
-        gateGain.gain.value = 0;
-        noiseGain.gain.value = params.noiseVolume;
-        toneGain.gain.value = params.toneMix * params.noiseVolume * 0.5;
-        crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
-        radioStaticGain.gain.value = params.radioStatic * 0.15;
+        // Треск
+        crackleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
+        const cdata = crackleBuffer.getChannelData(0);
+        for (let i = 0; i < cdata.length; i++) cdata[i] = (Math.random() * 2 - 1) * (Math.random() > 0.9 ? 1 : 0.1);
+        crackleSource = audioCtx.createBufferSource();
+        crackleSource.buffer = crackleBuffer;
+        crackleSource.loop = true;
+        crackleGain = audioCtx.createGain();
+        crackleGain.gain.value = 0;
+        crackleSource.connect(crackleGain);
+        crackleGain.connect(noiseGain);
+        crackleSource.start(0);
 
         startAnalyserLoop();
         startVisualizerLoop();
@@ -697,14 +667,7 @@
         convolver.buffer = impulse;
     }
 
-    // ==================== РИТМ И ПИТЧ-ТРЕКИНГ ====================
-    let lastRMS = 0;
-    let adaptiveThreshold = 0.1;
-    let thresholdHistory = [];
-    let lastTriggerFromMusic = 0;
-    let beatIntervals = [];
-    let lastBeatTime = 0;
-
+    // ==================== РИТМ И ПИТЧ ====================
     function detectBeat() {
         if (!analyserNode || !analyserDataArray) return false;
         analyserNode.getByteTimeDomainData(analyserDataArray);
@@ -721,20 +684,22 @@
         const avg = thresholdHistory.reduce((a, b) => a + b, 0) / thresholdHistory.length;
         const std = Math.sqrt(thresholdHistory.reduce((a, b) => a + (b - avg) * (b - avg), 0) / thresholdHistory.length);
         adaptiveThreshold = avg + std * 0.7 + 0.015;
-
-        const sensitivity = params.triggerSensitivity;
-        const threshold = adaptiveThreshold * (1.8 - sensitivity * 0.9);
+        const threshold = adaptiveThreshold * (1.8 - params.triggerSensitivity * 0.9);
 
         if (rms > threshold && now - lastTriggerFromMusic > refractoryPeriod) {
             lastTriggerFromMusic = now;
             const interval = now - lastBeatTime;
-            if (lastBeatTime > 0 && interval > 200 && interval < 2000) {
+            if (lastBeatTime > 0 && interval > 250 && interval < 2000) {
                 beatIntervals.push(interval);
                 if (beatIntervals.length > beatHistoryMax) beatIntervals.shift();
-                const avgInterval = beatIntervals.reduce((a, b) => a + b, 0) / beatIntervals.length;
-                savedBPM = Math.round(60000 / avgInterval);
-                savedBPM = Math.max(60, Math.min(200, savedBPM));
-                lastBeatInterval = avgInterval;
+                if (beatIntervals.length >= 3) {
+                    // Медианный фильтр
+                    const sorted = [...beatIntervals].sort((a,b)=>a-b);
+                    const median = sorted[Math.floor(sorted.length / 2)];
+                    savedBPM = Math.round(60000 / median);
+                    savedBPM = Math.max(60, Math.min(200, savedBPM));
+                    lastBeatInterval = median;
+                }
                 updateBPMDisplay();
             }
             lastBeatTime = now;
@@ -745,16 +710,6 @@
         return false;
     }
 
-    function updateBPMDisplay() {
-        document.getElementById('bpmDisplay').textContent = 'BPM: ' + savedBPM;
-        // Обновляем ручное поле BPM, если пользователь не изменяет его
-        const bpmInput = document.querySelector('[data-key="bpmManual"]');
-        if (bpmInput && document.activeElement !== bpmInput) {
-            bpmInput.value = savedBPM;
-            document.getElementById('knob-val-bpmManual').textContent = savedBPM + ' BPM';
-        }
-    }
-
     function getPitch() {
         if (!analyserNode || !freqDataArray || !params.pitchTracking) return 440;
         analyserNode.getFloatFrequencyData(freqDataArray);
@@ -762,7 +717,6 @@
         const binSize = sampleRate / analyserNode.fftSize;
         let maxVal = -Infinity;
         let maxIndex = -1;
-        // Ищем в диапазоне 80-1500 Гц (индексы)
         const startBin = Math.floor(80 / binSize);
         const endBin = Math.min(Math.floor(1500 / binSize), freqDataArray.length - 1);
         for (let i = startBin; i <= endBin; i++) {
@@ -772,7 +726,6 @@
             }
         }
         let freq = maxIndex * binSize;
-        // Простое параболическое интерполирование для точности
         if (maxIndex > 0 && maxIndex < freqDataArray.length - 1) {
             const a = freqDataArray[maxIndex - 1];
             const b = freqDataArray[maxIndex];
@@ -780,12 +733,20 @@
             const delta = 0.5 * (a - c) / (a - 2 * b + c);
             if (delta > -0.5 && delta < 0.5) freq = (maxIndex + delta) * binSize;
         }
-        // Сглаживание
-        if (pitchHistory.length > 10) pitchHistory.shift();
         pitchHistory.push(freq);
-        const avg = pitchHistory.reduce((s, x) => s + x, 0) / pitchHistory.length;
-        currentPitch = avg;
+        if (pitchHistory.length > 15) pitchHistory.shift();
+        currentPitch = pitchHistory.reduce((s, x) => s + x, 0) / pitchHistory.length;
         return currentPitch;
+    }
+
+    function updateBPMDisplay() {
+        document.getElementById('bpmDisplay').textContent = 'BPM: ' + savedBPM;
+        const bpmInput = document.querySelector('[data-key="bpmManual"]');
+        if (bpmInput && document.activeElement !== bpmInput) {
+            bpmInput.value = savedBPM;
+            const valSpan = document.getElementById('knob-val-bpmManual');
+            if (valSpan) valSpan.textContent = savedBPM + ' BPM';
+        }
     }
 
     function startAnalyserLoop() {
@@ -793,9 +754,9 @@
         analyserUpdateInterval = setInterval(() => {
             if (!audioCtx || !analyserNode) return;
 
-            // Beat detection
             const beatDetected = detectBeat();
             if (beatDetected && isPlaying) {
+                // Шумовой триггер
                 params.patternCounter++;
                 if (params.patternCounter >= params.triggerPattern) {
                     params.patternCounter = 0;
@@ -806,28 +767,39 @@
                         triggerNoise(audioCtx.currentTime + 0.02);
                     }
                 }
+
+                // Тональный триггер (новый движок)
+                params.tonePatternCounter++;
+                if (params.tonePatternCounter >= params.tonePattern) {
+                    params.tonePatternCounter = 0;
+                    if (Math.random() < params.toneRate) {
+                        triggerTone(audioCtx.currentTime);
+                    }
+                    // Дополнительные случайные тона
+                    if (params.toneHumanize > 0.3 && Math.random() < params.toneHumanize * 0.2) {
+                        triggerTone(audioCtx.currentTime + 0.03);
+                    }
+                }
             }
 
-            // Pitch tracking and modulation
+            // Питч-трекинг и модуляция частоты
             if (params.pitchTracking > 0) {
                 const pitch = getPitch();
                 const smoothed = currentPitch * params.pitchSmoothing + pitch * (1 - params.pitchSmoothing);
                 if (pitchFilter) {
                     pitchFilter.frequency.setTargetAtTime(smoothed, audioCtx.currentTime, 0.05);
-                    pitchFilter.Q.value = params.pitchQ;
                 }
-                // Модуляция частоты тонального осциллятора
                 if (toneOscillator) {
-                    toneOscillator.frequency.setTargetAtTime(smoothed, audioCtx.currentTime, 0.05);
+                    const octaveShift = Math.pow(2, params.toneOctaveShift / 12);
+                    const targetFreq = smoothed * octaveShift;
+                    toneOscillator.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, params.toneGlide * 0.1);
                 }
-                // Модуляция radio static фильтра
                 if (radioStaticFilter) {
                     radioStaticFilter.frequency.setTargetAtTime(smoothed * 1.5 + 200, audioCtx.currentTime, 0.1);
                 }
             }
-        }, 30); // каждые 30 мс
+        }, 30);
 
-        // Внутренний метроном при выключенной музыке
         setInterval(() => {
             if (isMusicMuted && isPlaying) {
                 internalMetronomeTick();
@@ -842,7 +814,7 @@
         triggerNoise(audioCtx ? audioCtx.currentTime : 0);
     }
 
-    // ==================== ТРИГГЕР И ОГИБАЮЩАЯ ====================
+    // ==================== ТРИГГЕРЫ ====================
     function triggerNoise(now) {
         if (!audioCtx || !gateGain) return;
         const t = now || audioCtx.currentTime;
@@ -867,7 +839,6 @@
             setTimeout(() => dot.classList.remove('triggered'), 80);
         }
 
-        // Обновляем кривые дисторшна случайно
         if (waveshaper1 && waveshaper2) {
             const d1 = params.drive * (1 + (Math.random() - 0.5) * chaosAmt * 0.6);
             const d2 = params.drive2 * (1 + (Math.random() - 0.5) * chaosAmt * 0.4);
@@ -878,17 +849,47 @@
             const fc = params.filterCutoff * (1 + (Math.random() - 0.5) * chaosAmt * 0.3);
             noiseFilter.frequency.setTargetAtTime(fc, t, 0.01);
         }
-        // Треск случайный при триггере
         if (Math.random() < params.crackleDensity) {
-            const crackleGainTmp = crackleGain.gain;
-            crackleGainTmp.cancelScheduledValues(t);
-            crackleGainTmp.setValueAtTime(0, t);
-            crackleGainTmp.linearRampToValueAtTime(params.crackleVolume * 0.8, t + 0.005);
-            crackleGainTmp.exponentialRampToValueAtTime(0.001, t + 0.03);
+            const cg = crackleGain.gain;
+            cg.cancelScheduledValues(t);
+            cg.setValueAtTime(0, t);
+            cg.linearRampToValueAtTime(params.crackleVolume * 0.8, t + 0.005);
+            cg.exponentialRampToValueAtTime(0.001, t + 0.03);
         }
     }
 
-    // ==================== МУЗЫКАЛЬНОЕ ВОСПРОИЗВЕДЕНИЕ ====================
+    function triggerTone(now) {
+        if (!audioCtx || !toneGate || !toneOscillator) return;
+        const t = now || audioCtx.currentTime;
+        const attack = params.toneAttack;
+        const decay = params.toneDecay;
+        const humanize = params.toneHumanize;
+        const randomAttack = attack * (1 + (Math.random() - 0.5) * humanize * 2);
+        const randomDecay = decay * (1 + (Math.random() - 0.5) * humanize * 3);
+        const accentBoost = 1 + params.toneAccent * 0.8;
+        const vol = params.toneVolume * accentBoost;
+
+        toneGate.gain.cancelScheduledValues(t);
+        toneGate.gain.setValueAtTime(0, t);
+        toneGate.gain.linearRampToValueAtTime(vol, t + Math.max(0.001, randomAttack));
+        toneGate.gain.exponentialRampToValueAtTime(0.001, t + Math.max(0.02, randomAttack + randomDecay));
+        toneGate.gain.setValueAtTime(0, t + randomAttack + randomDecay + 0.01);
+
+        toneTriggerCount++;
+        document.getElementById('toneTriggerCounter').textContent = 'Тон-триггеров: ' + toneTriggerCount;
+
+        // Обновляем дисторшн тона
+        if (toneDistortion) {
+            const d = params.drive * 1.2 * (1 + (Math.random() - 0.5) * humanize * 0.5);
+            toneDistortion.curve = makeDistortionCurve(d, params.asymmetry);
+        }
+        if (toneFilter) {
+            const fc = 1000 + params.tone * 4000;
+            toneFilter.frequency.setTargetAtTime(fc, t, 0.02);
+        }
+    }
+
+    // ==================== МУЗЫКА ====================
     function loadTrack(previewUrl, title, artist) {
         if (!audioCtx) initAudio();
         if (!mediaElement) {
@@ -920,9 +921,7 @@
             try {
                 mediaSource = audioCtx.createMediaElementSource(mediaElement);
                 mediaSource.connect(analyserNode);
-            } catch (e) {
-                console.warn('MediaElementSource already created or error:', e);
-            }
+            } catch (e) {}
         }
 
         mediaElement.src = previewUrl;
@@ -939,7 +938,6 @@
             document.getElementById('npStatus').textContent = '▶ PLAYING';
             resetRhythmDetection();
         }).catch(err => {
-            console.warn('Playback error:', err);
             document.getElementById('npStatus').textContent = '⚠ ERROR';
         });
     }
@@ -958,6 +956,7 @@
             mediaElement.currentTime = 0;
         }
         if (gateGain) gateGain.gain.value = 0;
+        if (toneGate) toneGate.gain.value = 0;
         isPlaying = false;
         updateStatusDot();
         document.getElementById('npStatus').textContent = '⏹ STOPPED';
@@ -970,7 +969,6 @@
         } else {
             mediaElement.pause();
         }
-        // Обновление произойдёт через события
     }
 
     function toggleMuteMusic() {
@@ -979,10 +977,8 @@
             musicGain.gain.value = isMusicMuted ? 0 : params.musicVolume;
         }
         const btn = document.getElementById('btnMuteMusic');
-        if (btn) {
-            btn.textContent = isMusicMuted ? '🔇 Выкл' : '🔊 Вкл';
-            btn.classList.toggle('active', isMusicMuted);
-        }
+        btn.textContent = isMusicMuted ? '🔇 Выкл' : '🔊 Вкл';
+        btn.classList.toggle('active', isMusicMuted);
         internalMetronomeActive = isMusicMuted;
         if (isMusicMuted) {
             lastBeatInterval = 60000 / savedBPM;
@@ -992,8 +988,7 @@
     function toggleLoop() {
         isLooping = !isLooping;
         if (mediaElement) mediaElement.loop = isLooping;
-        const btn = document.getElementById('btnLoop');
-        if (btn) btn.classList.toggle('active', isLooping);
+        document.getElementById('btnLoop').classList.toggle('active', isLooping);
     }
 
     function updateStatusDot() {
@@ -1010,7 +1005,6 @@
         const canvas = document.getElementById('visualizerCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-
         function resize() {
             const rect = canvas.parentElement.getBoundingClientRect();
             canvas.width = rect.width * window.devicePixelRatio;
@@ -1043,13 +1037,22 @@
                 ctx.stroke();
             }
 
+            // Шумовой гейт
             if (gateGain) {
                 const g = gateGain.gain.value;
                 ctx.fillStyle = `rgba(255,106,0,${Math.min(0.6, g * 0.8)})`;
-                ctx.fillRect(w * 0.7, h * 0.15, Math.min(w * 0.25, g * w * 0.3), h * 0.7);
+                ctx.fillRect(w * 0.6, h * 0.15, Math.min(w * 0.2, g * w * 0.2), h * 0.6);
                 ctx.strokeStyle = '#ff6a0030';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(w * 0.7, h * 0.15, w * 0.25, h * 0.7);
+                ctx.strokeRect(w * 0.6, h * 0.15, w * 0.2, h * 0.6);
+            }
+
+            // Тональный гейт
+            if (toneGate) {
+                const tg = toneGate.gain.value;
+                ctx.fillStyle = `rgba(0,200,255,${Math.min(0.6, tg * 0.8)})`;
+                ctx.fillRect(w * 0.85, h * 0.15, Math.min(w * 0.12, tg * w * 0.12), h * 0.6);
+                ctx.strokeStyle = '#00c8ff30';
+                ctx.strokeRect(w * 0.85, h * 0.15, w * 0.12, h * 0.6);
             }
         }
         draw();
@@ -1071,7 +1074,7 @@
         if (results.length === 0) {
             container.innerHTML = '<p style="color:#6a6a7a;text-align:center;padding:20px;">Ничего не найдено</p>';
         } else {
-            results.forEach((r, idx) => {
+            results.forEach(r => {
                 const item = document.createElement('div');
                 item.className = 'result-item';
                 const imgUrl = r.artworkUrl100 || r.artworkUrl60 || '';
@@ -1088,12 +1091,8 @@
                     <div class="duration">${dur}</div>
                 `;
                 item.addEventListener('click', () => {
-                    if (preview) {
-                        loadTrack(preview, title, artist);
-                        closeModal();
-                    } else {
-                        alert('Нет превью для этого трека');
-                    }
+                    if (preview) { loadTrack(preview, title, artist); closeModal(); }
+                    else alert('Нет превью для этого трека');
                 });
                 container.appendChild(item);
             });
@@ -1105,7 +1104,7 @@
         document.getElementById('modalOverlay').classList.remove('open');
     }
 
-    // ==================== ПОСТРОЕНИЕ КНОПОК ====================
+    // ==================== UI ====================
     function buildKnobs() {
         const container = document.getElementById('knobsContainer');
         container.innerHTML = '';
@@ -1138,7 +1137,8 @@
             container.appendChild(group);
             params[def.key] = def.default;
         });
-        // Установить обработчик для toneWaveform как дискретный
+
+        // Специальный обработчик для toneWaveform
         const waveInput = document.querySelector('[data-key="toneWaveform"]');
         if (waveInput) {
             waveInput.addEventListener('input', (e) => {
@@ -1155,108 +1155,59 @@
             const names = ['Sine', 'Triangle', 'Saw', 'Square'];
             return names[Math.round(val)] || 'Sine';
         }
-        if (def.unit === 's') return val.toFixed(3) + 's';
-        if (def.unit === 'Hz') return Math.round(val) + 'Hz';
-        if (def.key === 'pitchQ') return val.toFixed(1) + 'Q';
+        if (def.key === 'toneOctaveShift') return (val > 0 ? '+' : '') + Math.round(val) + ' st';
+        if (def.key === 'toneSwing') return (val * 100).toFixed(0) + '%';
         if (def.key === 'bpmManual') return Math.round(val) + ' BPM';
-        if (def.key === 'triggerPattern') return Math.round(val) + 'x';
-        if (def.key === 'attack' || def.key === 'decay') return (val * 1000).toFixed(0) + 'ms';
+        if (def.key === 'attack' || def.key === 'decay' || def.key === 'toneAttack' || def.key === 'toneDecay') return (val * 1000).toFixed(0) + 'ms';
+        if (def.unit === 'Hz') return Math.round(val) + 'Hz';
+        if (def.unit === 'Q') return val.toFixed(1);
         return val.toFixed(2);
     }
 
     function applyParam(key, val) {
         if (!audioCtx) return;
         switch (key) {
-            case 'musicVolume':
-                if (musicGain && !isMusicMuted) musicGain.gain.value = val;
+            case 'musicVolume': if (musicGain && !isMusicMuted) musicGain.gain.value = val; break;
+            case 'noiseVolume': if (noiseGain) noiseGain.gain.value = val; break;
+            case 'drive': if (waveshaper1) waveshaper1.curve = makeDistortionCurve(val, params.asymmetry); break;
+            case 'drive2': if (waveshaper2) waveshaper2.curve = makeDistortionCurve(val, params.asymmetry * 0.7); break;
+            case 'reverbMix': if (noiseDryGain && noiseWetGain) { noiseDryGain.gain.value = 1 - val; noiseWetGain.gain.value = val; } break;
+            case 'reverbDecay': updateImpulseResponse(); break;
+            case 'filterCutoff': if (noiseFilter) noiseFilter.frequency.value = val; break;
+            case 'filterResonance': if (noiseFilter) noiseFilter.Q.value = val; break;
+            case 'filter2Cutoff': if (noiseFilter2) noiseFilter2.frequency.value = val; break;
+            case 'attack': case 'decay': break;
+            case 'triggerSensitivity': case 'triggerRate': break;
+            case 'noiseColor': if (noiseFilter2) noiseFilter2.frequency.value = 200 + val * 1500; break;
+            case 'gateThreshold': break;
+            case 'tone': if (noiseFilter) noiseFilter.frequency.value = params.filterCutoff + val * 2000; break;
+            case 'chaos': break;
+            case 'asymmetry': 
+                if (waveshaper1) waveshaper1.curve = makeDistortionCurve(params.drive, val);
+                if (waveshaper2) waveshaper2.curve = makeDistortionCurve(params.drive2, val * 0.7);
+                if (toneDistortion) toneDistortion.curve = makeDistortionCurve(params.drive * 1.2, val);
                 break;
-            case 'noiseVolume':
-                if (noiseGain) noiseGain.gain.value = val;
-                if (toneGain) toneGain.gain.value = params.toneMix * val * 0.5;
-                if (crackleGain) crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
-                if (radioStaticGain) radioStaticGain.gain.value = params.radioStatic * 0.15;
-                break;
-            case 'drive':
-                if (waveshaper1) waveshaper1.curve = makeDistortionCurve(val, params.asymmetry);
-                break;
-            case 'drive2':
-                if (waveshaper2) waveshaper2.curve = makeDistortionCurve(val, params.asymmetry * 0.7);
-                break;
-            case 'reverbMix':
-                if (noiseDryGain && noiseWetGain) {
-                    noiseDryGain.gain.value = 1 - val;
-                    noiseWetGain.gain.value = val;
-                }
-                break;
-            case 'reverbDecay':
-                updateImpulseResponse();
-                break;
-            case 'filterCutoff':
-                if (noiseFilter) noiseFilter.frequency.value = val;
-                break;
-            case 'filterResonance':
-                if (noiseFilter) noiseFilter.Q.value = val;
-                break;
-            case 'filter2Cutoff':
-                if (noiseFilter2) noiseFilter2.frequency.value = val;
-                break;
-            case 'pitchTracking':
-                // просто параметр, используется в цикле
-                break;
-            case 'pitchSmoothing':
-                pitchSmoothValue = val;
-                break;
-            case 'pitchQ':
-                if (pitchFilter) pitchFilter.Q.value = val;
-                break;
-            case 'toneMix':
-                if (toneGain) toneGain.gain.value = val * params.noiseVolume * 0.5;
-                break;
-            case 'toneWaveform':
-                // обрабатывается отдельным слушателем
-                break;
-            case 'radioStatic':
-                if (radioStaticGain) radioStaticGain.gain.value = val * 0.15;
-                break;
-            case 'crackleDensity':
-            case 'crackleVolume':
-                if (crackleGain) crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
-                break;
-            case 'attack':
-            case 'decay':
-            case 'chaos':
-            case 'asymmetry':
-                if (waveshaper1) waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
-                if (waveshaper2) waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
-                break;
-            case 'bpmManual':
-                savedBPM = Math.round(val);
-                lastBeatInterval = 60000 / savedBPM;
-                updateBPMDisplay();
-                break;
-            case 'triggerPattern':
-                params.patternCounter = 0;
-                break;
-            case 'noiseColor':
-                if (noiseFilter2) {
-                    const hpFreq = 200 + val * 1500;
-                    noiseFilter2.frequency.value = hpFreq;
-                }
-                break;
-            case 'gateThreshold':
-                break;
-            case 'tone':
-                if (noiseFilter) {
-                    const shift = val * 2000;
-                    noiseFilter.frequency.value = params.filterCutoff + shift;
-                }
-                break;
-            case 'lowBoost':
-                if (noiseFilter) noiseFilter.Q.value = params.filterResonance * (1 + val * 0.3);
-                break;
-            case 'highBoost':
-                if (noiseFilter2) noiseFilter2.Q.value = 0.5 + val * 0.6;
-                break;
+            case 'lowBoost': if (noiseFilter) noiseFilter.Q.value = params.filterResonance * (1 + val * 0.3); break;
+            case 'highBoost': if (noiseFilter2) noiseFilter2.Q.value = 0.5 + val * 0.6; break;
+            case 'bpmManual': savedBPM = Math.round(val); lastBeatInterval = 60000 / savedBPM; updateBPMDisplay(); break;
+            case 'triggerPattern': params.patternCounter = 0; break;
+            case 'pitchTracking': break;
+            case 'pitchSmoothing': break;
+            case 'pitchQ': if (pitchFilter) pitchFilter.Q.value = val; break;
+            case 'toneMix': if (toneGain) toneGain.gain.value = params.toneVolume * val; break;
+            case 'toneWaveform': break;
+            case 'radioStatic': if (radioStaticGain) radioStaticGain.gain.value = val * 0.15; break;
+            case 'crackleDensity': case 'crackleVolume': if (crackleGain) crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3; break;
+            case 'toneRate': break;
+            case 'tonePattern': params.tonePatternCounter = 0; break;
+            case 'toneSensitivity': break;
+            case 'toneAttack': case 'toneDecay': break;
+            case 'toneHumanize': break;
+            case 'toneOctaveShift': if (toneOscillator) { /* применяется при следующем апдейте частоты */ } break;
+            case 'toneGlide': break;
+            case 'toneSwing': break;
+            case 'toneAccent': break;
+            case 'toneVolume': if (toneGain) toneGain.gain.value = params.toneMix * val; break;
         }
     }
 
@@ -1269,12 +1220,8 @@
             if (!term) return;
             document.getElementById('btnSearch').textContent = '⏳ Поиск...';
             document.getElementById('btnSearch').disabled = true;
-            try {
-                const results = await searchiTunes(term);
-                showResults(results);
-            } catch (e) {
-                alert('Ошибка поиска: ' + e.message);
-            }
+            try { const results = await searchiTunes(term); showResults(results); }
+            catch (e) { alert('Ошибка поиска: ' + e.message); }
             document.getElementById('btnSearch').textContent = '🔍 Найти';
             document.getElementById('btnSearch').disabled = false;
         });
@@ -1292,154 +1239,43 @@
             if (!audioCtx) initAudio();
             toggleMuteMusic();
         });
-
         document.getElementById('btnLoop').addEventListener('click', toggleLoop);
         document.getElementById('btnStop').addEventListener('click', stopAll);
 
-        // Обработчик клавиш
         document.addEventListener('keydown', (e) => {
-            // Не перехватываем, если фокус в поле ввода
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            if (e.key === ' ' || e.key === 'Space') {
-                e.preventDefault();
-                playPauseToggle();
-            } else if (e.key === 'm' || e.key === 'M') {
-                if (audioCtx) toggleMuteMusic();
-            } else if (e.key === 'l' || e.key === 'L') {
-                toggleLoop();
-            } else if (e.key === 's' || e.key === 'S') {
-                stopAll();
-            }
+            if (e.key === ' ' || e.key === 'Space') { e.preventDefault(); playPauseToggle(); }
+            else if (e.key === 'm' || e.key === 'M') { if (audioCtx) toggleMuteMusic(); }
+            else if (e.key === 'l' || e.key === 'L') { toggleLoop(); }
+            else if (e.key === 's' || e.key === 'S') { stopAll(); }
         });
 
         updateBPMDisplay();
     });
 
-    // ==================== АВТО-ИНИЦИАЛИЗАЦИЯ ====================
+    // ==================== АВТОИНИЦИАЛИЗАЦИЯ ====================
     document.addEventListener('click', () => {
         if (!audioCtx) initAudio();
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     }, { once: true });
-
     document.addEventListener('touchstart', () => {
         if (!audioCtx) initAudio();
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     }, { once: true });
 
-    // ==================== ПРЕДВАРИТЕЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ====================
+    // Предварительная инициализация после загрузки
     window.addEventListener('load', () => {
         try {
             if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                // Создаём всю цепочку, но приостанавливаем контекст
-                masterGain = audioCtx.createGain();
-                masterGain.gain.value = 0.9;
-                masterGain.connect(audioCtx.destination);
-                musicGain = audioCtx.createGain();
-                musicGain.gain.value = params.musicVolume;
-                musicGain.connect(masterGain);
-                analyserNode = audioCtx.createAnalyser();
-                analyserNode.fftSize = 1024;
-                analyserNode.smoothingTimeConstant = 0.5;
-                analyserNode.connect(musicGain);
-                analyserDataArray = new Uint8Array(analyserNode.fftSize);
-                freqDataArray = new Float32Array(analyserNode.frequencyBinCount);
-
-                noiseGain = audioCtx.createGain();
-                noiseGain.gain.value = params.noiseVolume;
-                noiseGain.connect(masterGain);
-                noiseDryGain = audioCtx.createGain();
-                noiseDryGain.gain.value = 0.5;
-                noiseDryGain.connect(noiseGain);
-                noiseWetGain = audioCtx.createGain();
-                noiseWetGain.gain.value = 0.5;
-                noiseWetGain.connect(noiseGain);
-                convolver = audioCtx.createConvolver();
-                convolver.connect(noiseWetGain);
-                updateImpulseResponse();
-                noiseFilter = audioCtx.createBiquadFilter();
-                noiseFilter.type = 'lowpass';
-                noiseFilter.frequency.value = params.filterCutoff;
-                noiseFilter.Q.value = params.filterResonance;
-                noiseFilter2 = audioCtx.createBiquadFilter();
-                noiseFilter2.type = 'highpass';
-                noiseFilter2.frequency.value = params.filter2Cutoff;
-                noiseFilter2.Q.value = 0.7;
-                pitchFilter = audioCtx.createBiquadFilter();
-                pitchFilter.type = 'bandpass';
-                pitchFilter.frequency.value = 440;
-                pitchFilter.Q.value = params.pitchQ;
-                waveshaper1 = audioCtx.createWaveShaper();
-                waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
-                waveshaper1.oversample = '4x';
-                waveshaper2 = audioCtx.createWaveShaper();
-                waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
-                waveshaper2.oversample = '4x';
-                gateGain = audioCtx.createGain();
-                gateGain.gain.value = 0;
-
-                const bufferSize = audioCtx.sampleRate * 2;
-                noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-                noiseBufferSource = audioCtx.createBufferSource();
-                noiseBufferSource.buffer = noiseBuffer;
-                noiseBufferSource.loop = true;
-                noiseBufferSource.connect(noiseFilter2);
-                noiseFilter2.connect(waveshaper1);
-                waveshaper1.connect(noiseFilter);
-                noiseFilter.connect(waveshaper2);
-                waveshaper2.connect(pitchFilter);
-                pitchFilter.connect(gateGain);
-                gateGain.connect(noiseDryGain);
-                gateGain.connect(convolver);
-                noiseBufferSource.start(0);
-
-                toneOscillator = audioCtx.createOscillator();
-                toneOscillator.type = 'sine';
-                toneOscillator.frequency.value = 440;
-                toneGain = audioCtx.createGain();
-                toneGain.gain.value = params.toneMix * params.noiseVolume * 0.5;
-                toneOscillator.connect(toneGain);
-                toneGain.connect(noiseGain);
-                toneOscillator.start(0);
-
-                crackleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
-                const cdata = crackleBuffer.getChannelData(0);
-                for (let i = 0; i < cdata.length; i++) cdata[i] = (Math.random() * 2 - 1) * (Math.random() > 0.9 ? 1 : 0.1);
-                crackleSource = audioCtx.createBufferSource();
-                crackleSource.buffer = crackleBuffer;
-                crackleSource.loop = true;
-                crackleGain = audioCtx.createGain();
-                crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
-                crackleSource.connect(crackleGain);
-                crackleGain.connect(noiseGain);
-                crackleSource.start(0);
-
-                radioStaticSource = audioCtx.createBufferSource();
-                radioStaticSource.buffer = noiseBuffer;
-                radioStaticSource.loop = true;
-                radioStaticFilter = audioCtx.createBiquadFilter();
-                radioStaticFilter.type = 'bandpass';
-                radioStaticFilter.frequency.value = 800;
-                radioStaticFilter.Q.value = 0.5;
-                radioStaticGain = audioCtx.createGain();
-                radioStaticGain.gain.value = params.radioStatic * 0.15;
-                radioStaticSource.connect(radioStaticFilter);
-                radioStaticFilter.connect(radioStaticGain);
-                radioStaticGain.connect(noiseGain);
-                radioStaticSource.start(0);
-
+                initAudio();
                 audioCtx.suspend();
                 startAnalyserLoop();
                 startVisualizerLoop();
             }
-        } catch (e) {
-            console.warn('Pre-init error:', e);
-        }
+        } catch (e) {}
     });
 
-    console.log('🎛️ Analog Distortion Synth — v2 с Pitch Tracking, Radio Static, Crackle');
+    console.log('🎛️ Analog Distortion Synth — v3 с отдельным тональным ритмом и улучшенным BPM');
 })();
 </script>
 </body>
