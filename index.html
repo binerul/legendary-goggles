@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analog Distortion Synth — iTunes Rythm</title>
+    <title>Analog Distortion Synth — iTunes Rythm + Pitch Tracking</title>
     <style>
+        /* ====== Стили как в предыдущем ответе, но добавлены новые элементы ====== */
         :root {
             --bg: #0a0a0f;
             --panel: #12121a;
@@ -21,11 +22,7 @@
             --led: #ff4400;
             --led-glow: #ff440080;
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: var(--bg);
             color: var(--text);
@@ -89,15 +86,8 @@
             animation: pulse-led 1.2s ease-in-out infinite;
         }
         @keyframes pulse-led {
-            0%,
-            100% {
-                opacity: 1;
-                box-shadow: 0 0 8px var(--led-glow), 0 0 20px var(--led-glow);
-            }
-            50% {
-                opacity: 0.4;
-                box-shadow: 0 0 4px var(--led-glow), 0 0 10px var(--led-glow);
-            }
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--led-glow), 0 0 20px var(--led-glow); }
+            50% { opacity: 0.4; box-shadow: 0 0 4px var(--led-glow), 0 0 10px var(--led-glow); }
         }
         .search-section {
             display: flex;
@@ -122,9 +112,7 @@
             border-color: var(--accent);
             box-shadow: 0 0 0 2px var(--accent-glow);
         }
-        .search-input::placeholder {
-            color: var(--muted);
-        }
+        .search-input::placeholder { color: var(--muted); }
         .btn {
             padding: 10px 20px;
             border: none;
@@ -137,58 +125,26 @@
             transition: all 0.25s;
             white-space: nowrap;
         }
-        .btn-search {
-            background: var(--accent);
-            color: #1a1a1a;
-        }
-        .btn-search:hover {
-            background: #ff8830;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .btn-mute {
-            background: var(--knob-ring);
-            color: var(--text);
-            min-width: 110px;
-        }
-        .btn-mute.active {
-            background: var(--danger);
-            color: #fff;
-        }
-        .btn-loop {
-            background: var(--knob-ring);
-            color: var(--text);
-            min-width: 90px;
-        }
-        .btn-loop.active {
-            background: var(--success);
-            color: #1a1a1a;
-        }
-        .btn-stop {
-            background: #3a1a1a;
-            color: var(--danger);
-        }
-        .btn-stop:hover {
-            background: var(--danger);
-            color: #fff;
-        }
+        .btn-search { background: var(--accent); color: #1a1a1a; }
+        .btn-search:hover { background: #ff8830; box-shadow: 0 0 20px var(--accent-glow); }
+        .btn-mute { background: var(--knob-ring); color: var(--text); min-width: 110px; }
+        .btn-mute.active { background: var(--danger); color: #fff; }
+        .btn-loop { background: var(--knob-ring); color: var(--text); min-width: 90px; }
+        .btn-loop.active { background: var(--success); color: #1a1a1a; }
+        .btn-stop { background: #3a1a1a; color: var(--danger); }
+        .btn-stop:hover { background: var(--danger); color: #fff; }
 
-        /* Search Results Modal */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.75);
             z-index: 1000;
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(4px);
         }
-        .modal-overlay.open {
-            display: flex;
-        }
+        .modal-overlay.open { display: flex; }
         .modal {
             background: var(--panel);
             border: 1px solid var(--panel-border);
@@ -218,42 +174,23 @@
             border: 1px solid transparent;
             margin-bottom: 6px;
         }
-        .result-item:hover {
-            background: var(--knob-bg);
-            border-color: var(--accent);
-            transform: translateX(4px);
-        }
+        .result-item:hover { background: var(--knob-bg); border-color: var(--accent); transform: translateX(4px); }
         .result-item img {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border-radius: 6px;
             object-fit: cover;
             background: var(--knob-ring);
             flex-shrink: 0;
         }
-        .result-item .info {
-            flex: 1;
-            min-width: 0;
-        }
+        .result-item .info { flex: 1; min-width: 0; }
         .result-item .track-name {
             font-weight: 600;
             color: var(--text-bright);
             font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .result-item .artist-name {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-        .result-item .duration {
-            font-size: 11px;
-            color: var(--accent);
-            font-weight: 600;
-            flex-shrink: 0;
-        }
+        .result-item .artist-name { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        .result-item .duration { font-size: 11px; color: var(--accent); font-weight: 600; flex-shrink: 0; }
         .modal-close {
             margin-top: 14px;
             width: 100%;
@@ -266,12 +203,8 @@
             font-size: 13px;
             letter-spacing: 0.5px;
         }
-        .modal-close:hover {
-            background: var(--panel-border);
-            color: var(--text-bright);
-        }
+        .modal-close:hover { background: var(--panel-border); color: var(--text-bright); }
 
-        /* Now Playing */
         .now-playing {
             display: flex;
             align-items: center;
@@ -283,22 +216,14 @@
             margin-bottom: 16px;
             flex-wrap: wrap;
         }
-        .now-playing .np-info {
-            flex: 1;
-            min-width: 150px;
-        }
+        .now-playing .np-info { flex: 1; min-width: 150px; }
         .now-playing .np-track {
             font-weight: 600;
             color: var(--text-bright);
             font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .now-playing .np-artist {
-            font-size: 12px;
-            color: var(--muted);
-        }
+        .now-playing .np-artist { font-size: 12px; color: var(--muted); }
         .now-playing .np-status {
             font-size: 11px;
             color: var(--accent);
@@ -307,7 +232,6 @@
             flex-shrink: 0;
         }
 
-        /* Canvas Visualizer */
         .visualizer-wrap {
             margin-bottom: 18px;
             border-radius: 10px;
@@ -317,13 +241,8 @@
             position: relative;
             height: 80px;
         }
-        .visualizer-wrap canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
+        .visualizer-wrap canvas { width: 100%; height: 100%; display: block; }
 
-        /* Knob Controls */
         .knobs-section {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -366,21 +285,17 @@
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 22px;
-            height: 22px;
+            width: 22px; height: 22px;
             border-radius: 50%;
             background: var(--accent);
             cursor: pointer;
-            box-shadow: 0 0 10px var(--accent-glow), 0 0 4px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 10px var(--accent-glow), 0 0 4px rgba(0,0,0,0.6);
             border: 2px solid #fff2;
             transition: transform 0.15s;
         }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.15);
-        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
         input[type="range"]::-moz-range-thumb {
-            width: 22px;
-            height: 22px;
+            width: 22px; height: 22px;
             border-radius: 50%;
             background: var(--accent);
             cursor: pointer;
@@ -403,977 +318,1129 @@
             font-weight: 700;
             font-size: 13px;
         }
-        .footer-status .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .footer-status .status-indicator { display: flex; align-items: center; gap: 6px; }
         .footer-status .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             border-radius: 50%;
             background: var(--danger);
             transition: background 0.3s;
         }
-        .footer-status .status-dot.playing {
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
-        .footer-status .status-dot.triggered {
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent-glow);
-        }
+        .footer-status .status-dot.playing { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .footer-status .status-dot.triggered { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
 
         @media (max-width: 600px) {
-            .rack {
-                padding: 14px 12px 12px;
-                border-radius: 12px;
-            }
-            .knobs-section {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-                gap: 10px 12px;
-            }
-            .rack-title {
-                font-size: 16px;
-                letter-spacing: 1px;
-            }
-            .btn {
-                padding: 8px 14px;
-                font-size: 11px;
-            }
+            .rack { padding: 14px 12px 12px; border-radius: 12px; }
+            .knobs-section { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px 12px; }
+            .rack-title { font-size: 16px; letter-spacing: 1px; }
+            .btn { padding: 8px 14px; font-size: 11px; }
         }
     </style>
 </head>
 <body>
-
-    <div class="rack">
-        <!-- Header -->
-        <div class="rack-header">
-            <div class="rack-title">
-                <span class="led"></span>
-                ANALOG DISTORTION SYNTH
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="btn btn-mute" id="btnMuteMusic" title="Отключить/включить музыку">🔇 Музыка</button>
-                <button class="btn btn-loop" id="btnLoop" title="Зациклить трек">🔁 Loop</button>
-                <button class="btn btn-stop" id="btnStop" title="Остановить всё">⏹ Stop</button>
-            </div>
-        </div>
-
-        <!-- Search -->
-        <div class="search-section">
-            <input type="text" class="search-input" id="searchInput" placeholder="Поиск трека в iTunes... Например: Nirvana, Daft Punk, Aphex Twin..." />
-            <button class="btn btn-search" id="btnSearch">🔍 Найти</button>
-        </div>
-
-        <!-- Now Playing -->
-        <div class="now-playing" id="nowPlaying">
-            <div class="np-info">
-                <div class="np-track" id="npTrack">— Нет трека —</div>
-                <div class="np-artist" id="npArtist">Загрузите трек из iTunes</div>
-            </div>
-            <div class="np-status" id="npStatus">IDLE</div>
-        </div>
-
-        <!-- Visualizer -->
-        <div class="visualizer-wrap">
-            <canvas id="visualizerCanvas"></canvas>
-        </div>
-
-        <!-- Knobs -->
-        <div class="knobs-section" id="knobsContainer">
-            <!-- Генерируются JS -->
-        </div>
-
-        <!-- Footer -->
-        <div class="footer-status">
-            <span class="bpm-display" id="bpmDisplay">BPM: 120</span>
-            <span class="status-indicator">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Готов</span>
-            </span>
-            <span id="triggerCounter">Триггеров: 0</span>
+<div class="rack">
+    <!-- Header -->
+    <div class="rack-header">
+        <div class="rack-title"><span class="led"></span> ANALOG DISTORTION SYNTH</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-mute" id="btnMuteMusic" title="Отключить/включить музыку">🔇 Музыка</button>
+            <button class="btn btn-loop" id="btnLoop" title="Зациклить трек">🔁 Loop</button>
+            <button class="btn btn-stop" id="btnStop" title="Остановить всё">⏹ Stop</button>
         </div>
     </div>
 
-    <!-- Search Results Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h3>🔎 Результаты поиска iTunes</h3>
-            <div id="searchResults"></div>
-            <button class="modal-close" id="modalClose">Закрыть</button>
-        </div>
+    <!-- Search -->
+    <div class="search-section">
+        <input type="text" class="search-input" id="searchInput" placeholder="Поиск трека в iTunes... Например, Nirvana, Daft Punk, Aphex Twin..." />
+        <button class="btn btn-search" id="btnSearch">🔍 Найти</button>
     </div>
 
-    <script>
-        (function() {
-            // ==================== AUDIO ENGINE ====================
-            let audioCtx = null;
-            let mediaElement = null;
-            let mediaSource = null;
-            let analyserNode = null;
-            let masterGain = null;
-            let musicGain = null;
-            let noiseGain = null;
-            let noiseDryGain = null;
-            let noiseWetGain = null;
-            let convolver = null;
-            let noiseFilter = null;
-            let noiseFilter2 = null;
-            let waveshaper1 = null;
-            let waveshaper2 = null;
-            let noiseBufferSource = null;
-            let noiseBuffer = null;
-            let gateGain = null;
-            let envelopeActive = false;
-            let triggerCount = 0;
-            let isPlaying = false;
-            let isMusicMuted = false;
-            let isLooping = false;
-            let currentTrackTitle = '';
-            let currentTrackArtist = '';
-            let savedBPM = 120;
-            let lastTriggerTime = 0;
-            let refractoryPeriod = 80; // ms
-            let internalMetronomeActive = false;
-            let lastBeatInterval = 500;
-            let beatHistory = [];
-            let beatHistoryMax = 30;
-            let analyserDataArray = null;
-            let animationFrameId = null;
-            let analyserUpdateInterval = null;
+    <!-- Now Playing -->
+    <div class="now-playing" id="nowPlaying">
+        <div class="np-info">
+            <div class="np-track" id="npTrack">— Нет трека —</div>
+            <div class="np-artist" id="npArtist">Загрузите трек из iTunes</div>
+        </div>
+        <div class="np-status" id="npStatus">IDLE</div>
+    </div>
 
-            // Параметры
-            const params = {
-                musicVolume: 0.15,
-                noiseVolume: 0.7,
-                drive: 0.65,
-                drive2: 0.4,
-                reverbMix: 0.35,
-                reverbDecay: 2.5,
-                filterCutoff: 1200,
-                filterResonance: 2.0,
-                filter2Cutoff: 3500,
-                attack: 0.008,
-                decay: 0.25,
-                triggerSensitivity: 0.45,
-                triggerRate: 0.7,
-                noiseColor: 0.5,
-                gateThreshold: 0.3,
-                tone: 0.6,
-                chaos: 0.25,
-                asymmetry: 0.45,
-                lowBoost: 0.4,
-                highBoost: 0.3,
-                bpmManual: 120,
-                triggerPattern: 1, // 1 = every beat, 2 = every 2nd, 3 = every 3rd, 4 = every 4th
-                patternCounter: 0,
-            };
+    <!-- Visualizer -->
+    <div class="visualizer-wrap">
+        <canvas id="visualizerCanvas"></canvas>
+    </div>
 
-            // UI Knob Definitions
-            const knobDefs = [
-                { key: 'musicVolume', label: 'Громкость музыки', min: 0, max: 1, step: 0.01, default: 0.15, unit: '' },
-                { key: 'noiseVolume', label: 'Громкость шума', min: 0, max: 1.5, step: 0.01, default: 0.7,
-                unit: '' },
-                { key: 'drive', label: 'Дисторшн Drive', min: 0, max: 3, step: 0.01, default: 0.65, unit: '' },
-                { key: 'drive2', label: 'Дисторшн Stage 2', min: 0, max: 2, step: 0.01, default: 0.4, unit: '' },
-                { key: 'reverbMix', label: 'Реверб Mix', min: 0, max: 1, step: 0.01, default: 0.35, unit: '' },
-                { key: 'reverbDecay', label: 'Реверб Decay', min: 0.5, max: 6, step: 0.1, default: 2.5, unit: 's' },
-                { key: 'filterCutoff', label: 'Фильтр LP (шум)', min: 100, max: 8000, step: 10, default: 1200,
-                    unit: 'Hz' },
-                { key: 'filterResonance', label: 'Резонанс фильтра', min: 0.1, max: 20, step: 0.1, default: 2.0,
-                    unit: 'Q' },
-                { key: 'filter2Cutoff', label: 'Фильтр HP', min: 100, max: 6000, step: 10, default: 3500, unit: 'Hz' },
-                { key: 'attack', label: 'Атака', min: 0.001, max: 0.1, step: 0.001, default: 0.008, unit: 's' },
-                { key: 'decay', label: 'Затухание', min: 0.05, max: 1.5, step: 0.01, default: 0.25, unit: 's' },
-                { key: 'triggerSensitivity', label: 'Чувств. ритма', min: 0.1, max: 1.5, step: 0.01, default: 0.45,
-                    unit: '' },
-                { key: 'triggerRate', label: 'Частота срабатыв.', min: 0.1, max: 2, step: 0.01, default: 0.7,
-                    unit: '' },
-                { key: 'noiseColor', label: 'Цвет шума', min: 0, max: 1, step: 0.01, default: 0.5, unit: '' },
-                { key: 'gateThreshold', label: 'Гейт порог', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
-                { key: 'tone', label: 'Тон', min: 0, max: 1, step: 0.01, default: 0.6, unit: '' },
-                { key: 'chaos', label: 'Хаос', min: 0, max: 0.5, step: 0.01, default: 0.25, unit: '' },
-                { key: 'asymmetry', label: 'Асимметрия', min: 0, max: 1, step: 0.01, default: 0.45, unit: '' },
-                { key: 'lowBoost', label: 'НЧ буст', min: 0, max: 1, step: 0.01, default: 0.4, unit: '' },
-                { key: 'highBoost', label: 'ВЧ буст', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
-                { key: 'bpmManual', label: 'BPM (ручной)', min: 60, max: 200, step: 1, default: 120, unit: '' },
-                { key: 'triggerPattern', label: 'Паттерн (1-4)', min: 1, max: 4, step: 1, default: 1, unit: '' },
-            ];
+    <!-- Knobs -->
+    <div class="knobs-section" id="knobsContainer"></div>
 
-            // ==================== INIT AUDIO ====================
-            function initAudio() {
-                if (audioCtx) return;
-                audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+    <!-- Footer -->
+    <div class="footer-status">
+        <span class="bpm-display" id="bpmDisplay">BPM: 120</span>
+        <span class="status-indicator">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Готов</span>
+        </span>
+        <span id="triggerCounter">Триггеров: 0</span>
+    </div>
+</div>
+
+<!-- Search Results Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h3>🔎 Результаты поиска iTunes</h3>
+        <div id="searchResults"></div>
+        <button class="modal-close" id="modalClose">Закрыть</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    // ==================== АУДИО КОНТЕКСТ И УЗЛЫ ====================
+    let audioCtx = null;
+    let mediaElement = null;
+    let mediaSource = null;
+    let analyserNode = null;
+    let masterGain = null;
+    let musicGain = null;
+    let noiseGain = null;
+    let noiseDryGain = null;
+    let noiseWetGain = null;
+    let convolver = null;
+    let noiseFilter = null;
+    let noiseFilter2 = null;
+    let pitchFilter = null;   // Bandpass для питч-трекинга
+    let waveshaper1 = null;
+    let waveshaper2 = null;
+    let gateGain = null;
+    let noiseBufferSource = null;
+    let noiseBuffer = null;
+    let toneOscillator = null;
+    let toneGain = null;
+    let crackleBuffer = null;
+    let crackleSource = null;
+    let crackleGain = null;
+    let radioStaticGain = null;
+    let radioStaticFilter = null;
+    let radioStaticSource = null;
+    let pitchSmoothValue = 0.8;
+    let currentPitch = 440; // Hz
+    let pitchHistory = [];
+
+    let isPlaying = false;
+    let isMusicMuted = false;
+    let isLooping = false;
+    let currentTrackTitle = '';
+    let currentTrackArtist = '';
+    let savedBPM = 120;
+    let lastTriggerTime = 0;
+    let refractoryPeriod = 80;
+    let internalMetronomeActive = false;
+    let lastBeatInterval = 500;
+    let beatHistory = [];
+    let beatHistoryMax = 30;
+    let analyserDataArray = null;
+    let freqDataArray = null;
+    let animationFrameId = null;
+    let analyserUpdateInterval = null;
+
+    // Параметры
+    const params = {
+        musicVolume: 0.15,
+        noiseVolume: 0.7,
+        drive: 0.65,
+        drive2: 0.4,
+        reverbMix: 0.35,
+        reverbDecay: 2.5,
+        filterCutoff: 1200,
+        filterResonance: 2.0,
+        filter2Cutoff: 3500,
+        attack: 0.008,
+        decay: 0.25,
+        triggerSensitivity: 0.45,
+        triggerRate: 0.7,
+        noiseColor: 0.5,
+        gateThreshold: 0.3,
+        tone: 0.6,
+        chaos: 0.25,
+        asymmetry: 0.45,
+        lowBoost: 0.4,
+        highBoost: 0.3,
+        bpmManual: 120,
+        triggerPattern: 1,
+        patternCounter: 0,
+        // Новые параметры
+        pitchTracking: 0.5,     // 0..1
+        pitchSmoothing: 0.9,    // 0..0.99
+        pitchQ: 4.0,            // Добротность bandpass
+        toneMix: 0.3,           // 0..1
+        toneWaveform: 0,        // 0=sine,1=triangle,2=sawtooth,3=square
+        radioStatic: 0.2,       // 0..1
+        crackleDensity: 0.15,   // 0..1
+        crackleVolume: 0.4,     // 0..1
+    };
+
+    // Определения крутилок
+    const knobDefs = [
+        { key: 'musicVolume', label: 'Громкость музыки', min: 0, max: 1, step: 0.01, default: 0.15, unit: '' },
+        { key: 'noiseVolume', label: 'Громкость шума', min: 0, max: 1.5, step: 0.01, default: 0.7, unit: '' },
+        { key: 'drive', label: 'Дисторшн Drive', min: 0, max: 3, step: 0.01, default: 0.65, unit: '' },
+        { key: 'drive2', label: 'Дисторшн Stage 2', min: 0, max: 2, step: 0.01, default: 0.4, unit: '' },
+        { key: 'reverbMix', label: 'Реверб Mix', min: 0, max: 1, step: 0.01, default: 0.35, unit: '' },
+        { key: 'reverbDecay', label: 'Реверб Decay', min: 0.5, max: 6, step: 0.1, default: 2.5, unit: 's' },
+        { key: 'filterCutoff', label: 'Фильтр LP (шум)', min: 100, max: 8000, step: 10, default: 1200, unit: 'Hz' },
+        { key: 'filterResonance', label: 'Резонанс фильтра', min: 0.1, max: 20, step: 0.1, default: 2.0, unit: 'Q' },
+        { key: 'filter2Cutoff', label: 'Фильтр HP', min: 100, max: 6000, step: 10, default: 3500, unit: 'Hz' },
+        { key: 'attack', label: 'Атака', min: 0.001, max: 0.1, step: 0.001, default: 0.008, unit: 's' },
+        { key: 'decay', label: 'Затухание', min: 0.05, max: 1.5, step: 0.01, default: 0.25, unit: 's' },
+        { key: 'triggerSensitivity', label: 'Чувств. ритма', min: 0.1, max: 1.5, step: 0.01, default: 0.45, unit: '' },
+        { key: 'triggerRate', label: 'Частота срабатыв.', min: 0.1, max: 2, step: 0.01, default: 0.7, unit: '' },
+        { key: 'noiseColor', label: 'Цвет шума', min: 0, max: 1, step: 0.01, default: 0.5, unit: '' },
+        { key: 'gateThreshold', label: 'Гейт порог', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
+        { key: 'tone', label: 'Тон', min: 0, max: 1, step: 0.01, default: 0.6, unit: '' },
+        { key: 'chaos', label: 'Хаос', min: 0, max: 0.5, step: 0.01, default: 0.25, unit: '' },
+        { key: 'asymmetry', label: 'Асимметрия', min: 0, max: 1, step: 0.01, default: 0.45, unit: '' },
+        { key: 'lowBoost', label: 'НЧ буст', min: 0, max: 1, step: 0.01, default: 0.4, unit: '' },
+        { key: 'highBoost', label: 'ВЧ буст', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
+        { key: 'bpmManual', label: 'BPM (ручной)', min: 60, max: 200, step: 1, default: 120, unit: '' },
+        { key: 'triggerPattern', label: 'Паттерн (1-4)', min: 1, max: 4, step: 1, default: 1, unit: '' },
+        // Новые ручки
+        { key: 'pitchTracking', label: 'Pitch Tracking', min: 0, max: 1, step: 0.01, default: 0.5, unit: '' },
+        { key: 'pitchSmoothing', label: 'Pitch Smoothing', min: 0, max: 0.99, step: 0.01, default: 0.9, unit: '' },
+        { key: 'pitchQ', label: 'Pitch Q', min: 0.5, max: 20, step: 0.1, default: 4.0, unit: '' },
+        { key: 'toneMix', label: 'Tone Mix', min: 0, max: 1, step: 0.01, default: 0.3, unit: '' },
+        { key: 'toneWaveform', label: 'Tone Wave', min: 0, max: 3, step: 1, default: 0, unit: '' },
+        { key: 'radioStatic', label: 'Radio Static', min: 0, max: 1, step: 0.01, default: 0.2, unit: '' },
+        { key: 'crackleDensity', label: 'Crackle Density', min: 0, max: 1, step: 0.01, default: 0.15, unit: '' },
+        { key: 'crackleVolume', label: 'Crackle Volume', min: 0, max: 1, step: 0.01, default: 0.4, unit: '' },
+    ];
+
+    // ==================== ИНИЦИАЛИЗАЦИЯ АУДИО ====================
+    function initAudio() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.9;
+        masterGain.connect(audioCtx.destination);
+
+        // Music chain
+        musicGain = audioCtx.createGain();
+        musicGain.gain.value = params.musicVolume;
+        musicGain.connect(masterGain);
+
+        // Analyser
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 1024; // большее разрешение для питча
+        analyserNode.smoothingTimeConstant = 0.5;
+        analyserNode.connect(musicGain);
+        analyserDataArray = new Uint8Array(analyserNode.fftSize);
+        freqDataArray = new Float32Array(analyserNode.frequencyBinCount);
+
+        // Noise chain
+        noiseGain = audioCtx.createGain();
+        noiseGain.gain.value = params.noiseVolume;
+        noiseGain.connect(masterGain);
+
+        noiseDryGain = audioCtx.createGain();
+        noiseDryGain.gain.value = 0.5;
+        noiseDryGain.connect(noiseGain);
+        noiseWetGain = audioCtx.createGain();
+        noiseWetGain.gain.value = 0.5;
+        noiseWetGain.connect(noiseGain);
+
+        convolver = audioCtx.createConvolver();
+        convolver.connect(noiseWetGain);
+        updateImpulseResponse();
+
+        noiseFilter = audioCtx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.value = params.filterCutoff;
+        noiseFilter.Q.value = params.filterResonance;
+
+        noiseFilter2 = audioCtx.createBiquadFilter();
+        noiseFilter2.type = 'highpass';
+        noiseFilter2.frequency.value = params.filter2Cutoff;
+        noiseFilter2.Q.value = 0.7;
+
+        // Pitch filter (bandpass) для следования за тоном
+        pitchFilter = audioCtx.createBiquadFilter();
+        pitchFilter.type = 'bandpass';
+        pitchFilter.frequency.value = 440;
+        pitchFilter.Q.value = params.pitchQ;
+
+        waveshaper1 = audioCtx.createWaveShaper();
+        waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
+        waveshaper1.oversample = '4x';
+
+        waveshaper2 = audioCtx.createWaveShaper();
+        waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
+        waveshaper2.oversample = '4x';
+
+        gateGain = audioCtx.createGain();
+        gateGain.gain.value = 0;
+
+        // Noise buffer
+        const bufferSize = audioCtx.sampleRate * 2;
+        noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        noiseBufferSource = audioCtx.createBufferSource();
+        noiseBufferSource.buffer = noiseBuffer;
+        noiseBufferSource.loop = true;
+        noiseBufferSource.start(0);
+
+        // Tone oscillator
+        toneOscillator = audioCtx.createOscillator();
+        toneOscillator.type = 'sine';
+        toneOscillator.frequency.value = 440;
+        toneGain = audioCtx.createGain();
+        toneGain.gain.value = 0;
+
+        // Crackle noise (импульсные щелчки)
+        crackleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
+        const cdata = crackleBuffer.getChannelData(0);
+        for (let i = 0; i < cdata.length; i++) {
+            cdata[i] = (Math.random() * 2 - 1) * (Math.random() > 0.9 ? 1 : 0.1);
+        }
+        crackleSource = audioCtx.createBufferSource();
+        crackleSource.buffer = crackleBuffer;
+        crackleSource.loop = true;
+        crackleGain = audioCtx.createGain();
+        crackleGain.gain.value = 0;
+
+        // Radio static (модулируемый шум)
+        radioStaticSource = audioCtx.createBufferSource();
+        radioStaticSource.buffer = noiseBuffer; // используем тот же буфер
+        radioStaticSource.loop = true;
+        radioStaticFilter = audioCtx.createBiquadFilter();
+        radioStaticFilter.type = 'bandpass';
+        radioStaticFilter.frequency.value = 800;
+        radioStaticFilter.Q.value = 0.5;
+        radioStaticGain = audioCtx.createGain();
+        radioStaticGain.gain.value = 0;
+
+        // Соединения: шум -> HP -> waveshaper1 -> LP -> waveshaper2 -> gate -> dry/wet
+        noiseBufferSource.connect(noiseFilter2);
+        noiseFilter2.connect(waveshaper1);
+        waveshaper1.connect(noiseFilter);
+        noiseFilter.connect(waveshaper2);
+        waveshaper2.connect(pitchFilter);
+        pitchFilter.connect(gateGain);
+        gateGain.connect(noiseDryGain);
+        gateGain.connect(convolver);
+
+        // Тон: oscillator -> waveshaper (общий дисторшн) -> toneGain -> noiseGain
+        toneOscillator.connect(waveshaper1); // пропускаем через первый дисторшн
+        toneOscillator.start(0);
+        // но toneGain нужно подключить к noiseGain после waveshaper2? Нет, лучше отдельно
+        // Переопределим: toneOscillator -> toneGain -> waveshaper2 (или просто к noiseGain)
+        toneOscillator.disconnect();
+        toneOscillator.connect(toneGain);
+        toneGain.connect(noiseGain); // смешиваем с шумом после реверберации (или до)
+        // Для большей дисторшн-обработки можно toneGain -> waveshaper2 -> noiseGain, но пока так.
+
+        // Crackle
+        crackleSource.connect(crackleGain);
+        crackleGain.connect(noiseGain);
+        crackleSource.start(0);
+
+        // Radio static
+        radioStaticSource.connect(radioStaticFilter);
+        radioStaticFilter.connect(radioStaticGain);
+        radioStaticGain.connect(noiseGain);
+        radioStaticSource.start(0);
+
+        // Начальные значения
+        gateGain.gain.value = 0;
+        noiseGain.gain.value = params.noiseVolume;
+        toneGain.gain.value = params.toneMix * params.noiseVolume * 0.5;
+        crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
+        radioStaticGain.gain.value = params.radioStatic * 0.15;
+
+        startAnalyserLoop();
+        startVisualizerLoop();
+    }
+
+    function makeDistortionCurve(drive, asym) {
+        const n = 2048;
+        const curve = new Float32Array(n);
+        const d = Math.max(0.1, drive);
+        const a = Math.max(0, Math.min(1, asym));
+        for (let i = 0; i < n; i++) {
+            const x = (i / (n - 1)) * 2 - 1;
+            let y;
+            if (x >= 0) {
+                y = Math.tanh(x * d * 2.5) / Math.tanh(d * 2.5);
+                y = y * (1 - a * 0.25);
+            } else {
+                y = Math.tanh(x * d * 2.0 * (1 + a * 0.8)) / Math.tanh(d * 2.0 * (1 + a * 0.8));
+                y = y * (1 + a * 0.2);
+            }
+            if (y > 1) y = 1;
+            if (y < -1) y = -1;
+            curve[i] = y;
+        }
+        return curve;
+    }
+
+    function updateImpulseResponse() {
+        if (!audioCtx || !convolver) return;
+        const duration = Math.max(0.5, params.reverbDecay);
+        const rate = audioCtx.sampleRate;
+        const length = Math.floor(rate * duration);
+        const impulse = audioCtx.createBuffer(2, length, rate);
+        for (let ch = 0; ch < 2; ch++) {
+            const d = impulse.getChannelData(ch);
+            for (let i = 0; i < length; i++) {
+                const t = i / length;
+                d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, params.reverbDecay * 0.8);
+            }
+        }
+        convolver.buffer = impulse;
+    }
+
+    // ==================== РИТМ И ПИТЧ-ТРЕКИНГ ====================
+    let lastRMS = 0;
+    let adaptiveThreshold = 0.1;
+    let thresholdHistory = [];
+    let lastTriggerFromMusic = 0;
+    let beatIntervals = [];
+    let lastBeatTime = 0;
+
+    function detectBeat() {
+        if (!analyserNode || !analyserDataArray) return false;
+        analyserNode.getByteTimeDomainData(analyserDataArray);
+        let sumSquares = 0;
+        for (let i = 0; i < analyserDataArray.length; i++) {
+            const val = (analyserDataArray[i] - 128) / 128;
+            sumSquares += val * val;
+        }
+        const rms = Math.sqrt(sumSquares / analyserDataArray.length);
+        const now = performance.now();
+
+        thresholdHistory.push(rms);
+        if (thresholdHistory.length > 40) thresholdHistory.shift();
+        const avg = thresholdHistory.reduce((a, b) => a + b, 0) / thresholdHistory.length;
+        const std = Math.sqrt(thresholdHistory.reduce((a, b) => a + (b - avg) * (b - avg), 0) / thresholdHistory.length);
+        adaptiveThreshold = avg + std * 0.7 + 0.015;
+
+        const sensitivity = params.triggerSensitivity;
+        const threshold = adaptiveThreshold * (1.8 - sensitivity * 0.9);
+
+        if (rms > threshold && now - lastTriggerFromMusic > refractoryPeriod) {
+            lastTriggerFromMusic = now;
+            const interval = now - lastBeatTime;
+            if (lastBeatTime > 0 && interval > 200 && interval < 2000) {
+                beatIntervals.push(interval);
+                if (beatIntervals.length > beatHistoryMax) beatIntervals.shift();
+                const avgInterval = beatIntervals.reduce((a, b) => a + b, 0) / beatIntervals.length;
+                savedBPM = Math.round(60000 / avgInterval);
+                savedBPM = Math.max(60, Math.min(200, savedBPM));
+                lastBeatInterval = avgInterval;
+                updateBPMDisplay();
+            }
+            lastBeatTime = now;
+            lastRMS = rms;
+            return true;
+        }
+        lastRMS = rms;
+        return false;
+    }
+
+    function updateBPMDisplay() {
+        document.getElementById('bpmDisplay').textContent = 'BPM: ' + savedBPM;
+        // Обновляем ручное поле BPM, если пользователь не изменяет его
+        const bpmInput = document.querySelector('[data-key="bpmManual"]');
+        if (bpmInput && document.activeElement !== bpmInput) {
+            bpmInput.value = savedBPM;
+            document.getElementById('knob-val-bpmManual').textContent = savedBPM + ' BPM';
+        }
+    }
+
+    function getPitch() {
+        if (!analyserNode || !freqDataArray || !params.pitchTracking) return 440;
+        analyserNode.getFloatFrequencyData(freqDataArray);
+        const sampleRate = audioCtx.sampleRate;
+        const binSize = sampleRate / analyserNode.fftSize;
+        let maxVal = -Infinity;
+        let maxIndex = -1;
+        // Ищем в диапазоне 80-1500 Гц (индексы)
+        const startBin = Math.floor(80 / binSize);
+        const endBin = Math.min(Math.floor(1500 / binSize), freqDataArray.length - 1);
+        for (let i = startBin; i <= endBin; i++) {
+            if (freqDataArray[i] > maxVal) {
+                maxVal = freqDataArray[i];
+                maxIndex = i;
+            }
+        }
+        let freq = maxIndex * binSize;
+        // Простое параболическое интерполирование для точности
+        if (maxIndex > 0 && maxIndex < freqDataArray.length - 1) {
+            const a = freqDataArray[maxIndex - 1];
+            const b = freqDataArray[maxIndex];
+            const c = freqDataArray[maxIndex + 1];
+            const delta = 0.5 * (a - c) / (a - 2 * b + c);
+            if (delta > -0.5 && delta < 0.5) freq = (maxIndex + delta) * binSize;
+        }
+        // Сглаживание
+        if (pitchHistory.length > 10) pitchHistory.shift();
+        pitchHistory.push(freq);
+        const avg = pitchHistory.reduce((s, x) => s + x, 0) / pitchHistory.length;
+        currentPitch = avg;
+        return currentPitch;
+    }
+
+    function startAnalyserLoop() {
+        if (analyserUpdateInterval) clearInterval(analyserUpdateInterval);
+        analyserUpdateInterval = setInterval(() => {
+            if (!audioCtx || !analyserNode) return;
+
+            // Beat detection
+            const beatDetected = detectBeat();
+            if (beatDetected && isPlaying) {
+                params.patternCounter++;
+                if (params.patternCounter >= params.triggerPattern) {
+                    params.patternCounter = 0;
+                    if (Math.random() < params.triggerRate) {
+                        triggerNoise(audioCtx.currentTime);
+                    }
+                    if (params.chaos > 0.3 && Math.random() < params.chaos * 0.4) {
+                        triggerNoise(audioCtx.currentTime + 0.02);
+                    }
+                }
+            }
+
+            // Pitch tracking and modulation
+            if (params.pitchTracking > 0) {
+                const pitch = getPitch();
+                const smoothed = currentPitch * params.pitchSmoothing + pitch * (1 - params.pitchSmoothing);
+                if (pitchFilter) {
+                    pitchFilter.frequency.setTargetAtTime(smoothed, audioCtx.currentTime, 0.05);
+                    pitchFilter.Q.value = params.pitchQ;
+                }
+                // Модуляция частоты тонального осциллятора
+                if (toneOscillator) {
+                    toneOscillator.frequency.setTargetAtTime(smoothed, audioCtx.currentTime, 0.05);
+                }
+                // Модуляция radio static фильтра
+                if (radioStaticFilter) {
+                    radioStaticFilter.frequency.setTargetAtTime(smoothed * 1.5 + 200, audioCtx.currentTime, 0.1);
+                }
+            }
+        }, 30); // каждые 30 мс
+
+        // Внутренний метроном при выключенной музыке
+        setInterval(() => {
+            if (isMusicMuted && isPlaying) {
+                internalMetronomeTick();
+            }
+        }, 50);
+    }
+
+    function internalMetronomeTick() {
+        if (!isPlaying || !internalMetronomeActive) return;
+        const now = performance.now();
+        if (now - lastTriggerFromMusic < lastBeatInterval * 0.7) return;
+        triggerNoise(audioCtx ? audioCtx.currentTime : 0);
+    }
+
+    // ==================== ТРИГГЕР И ОГИБАЮЩАЯ ====================
+    function triggerNoise(now) {
+        if (!audioCtx || !gateGain) return;
+        const t = now || audioCtx.currentTime;
+        const attack = params.attack;
+        const decay = params.decay;
+        const chaosAmt = params.chaos;
+        const randomAttack = attack * (1 + (Math.random() - 0.5) * chaosAmt * 3);
+        const randomDecay = decay * (1 + (Math.random() - 0.5) * chaosAmt * 4);
+
+        gateGain.gain.cancelScheduledValues(t);
+        gateGain.gain.setValueAtTime(0, t);
+        gateGain.gain.linearRampToValueAtTime(0.95, t + Math.max(0.001, randomAttack));
+        gateGain.gain.exponentialRampToValueAtTime(0.001, t + Math.max(0.02, randomAttack + randomDecay));
+        gateGain.gain.setValueAtTime(0, t + randomAttack + randomDecay + 0.01);
+
+        triggerCount++;
+        document.getElementById('triggerCounter').textContent = 'Триггеров: ' + triggerCount;
+
+        const dot = document.getElementById('statusDot');
+        if (dot) {
+            dot.classList.add('triggered');
+            setTimeout(() => dot.classList.remove('triggered'), 80);
+        }
+
+        // Обновляем кривые дисторшна случайно
+        if (waveshaper1 && waveshaper2) {
+            const d1 = params.drive * (1 + (Math.random() - 0.5) * chaosAmt * 0.6);
+            const d2 = params.drive2 * (1 + (Math.random() - 0.5) * chaosAmt * 0.4);
+            waveshaper1.curve = makeDistortionCurve(d1, params.asymmetry);
+            waveshaper2.curve = makeDistortionCurve(d2, params.asymmetry * 0.7);
+        }
+        if (noiseFilter) {
+            const fc = params.filterCutoff * (1 + (Math.random() - 0.5) * chaosAmt * 0.3);
+            noiseFilter.frequency.setTargetAtTime(fc, t, 0.01);
+        }
+        // Треск случайный при триггере
+        if (Math.random() < params.crackleDensity) {
+            const crackleGainTmp = crackleGain.gain;
+            crackleGainTmp.cancelScheduledValues(t);
+            crackleGainTmp.setValueAtTime(0, t);
+            crackleGainTmp.linearRampToValueAtTime(params.crackleVolume * 0.8, t + 0.005);
+            crackleGainTmp.exponentialRampToValueAtTime(0.001, t + 0.03);
+        }
+    }
+
+    // ==================== МУЗЫКАЛЬНОЕ ВОСПРОИЗВЕДЕНИЕ ====================
+    function loadTrack(previewUrl, title, artist) {
+        if (!audioCtx) initAudio();
+        if (!mediaElement) {
+            mediaElement = new Audio();
+            mediaElement.crossOrigin = 'anonymous';
+            mediaElement.preload = 'auto';
+            mediaElement.loop = isLooping;
+            mediaElement.addEventListener('ended', () => {
+                if (isLooping && mediaElement) {
+                    mediaElement.currentTime = 0;
+                    mediaElement.play().catch(() => {});
+                } else {
+                    isPlaying = false;
+                    updateStatusDot();
+                    document.getElementById('npStatus').textContent = '⏹ STOPPED';
+                }
+            });
+            mediaElement.addEventListener('playing', () => {
+                isPlaying = true;
+                updateStatusDot();
+                document.getElementById('npStatus').textContent = '▶ PLAYING';
+                resetRhythmDetection();
+            });
+            mediaElement.addEventListener('pause', () => {
+                isPlaying = false;
+                updateStatusDot();
+                document.getElementById('npStatus').textContent = '⏸ PAUSED';
+            });
+            try {
+                mediaSource = audioCtx.createMediaElementSource(mediaElement);
+                mediaSource.connect(analyserNode);
+            } catch (e) {
+                console.warn('MediaElementSource already created or error:', e);
+            }
+        }
+
+        mediaElement.src = previewUrl;
+        mediaElement.loop = isLooping;
+        currentTrackTitle = title || 'Неизвестный трек';
+        currentTrackArtist = artist || 'Неизвестный исполнитель';
+        document.getElementById('npTrack').textContent = currentTrackTitle;
+        document.getElementById('npArtist').textContent = currentTrackArtist;
+        document.getElementById('npStatus').textContent = '⏳ LOADING...';
+
+        mediaElement.play().then(() => {
+            isPlaying = true;
+            updateStatusDot();
+            document.getElementById('npStatus').textContent = '▶ PLAYING';
+            resetRhythmDetection();
+        }).catch(err => {
+            console.warn('Playback error:', err);
+            document.getElementById('npStatus').textContent = '⚠ ERROR';
+        });
+    }
+
+    function resetRhythmDetection() {
+        thresholdHistory = [];
+        beatIntervals = [];
+        lastBeatTime = 0;
+        lastTriggerFromMusic = 0;
+        pitchHistory = [];
+    }
+
+    function stopAll() {
+        if (mediaElement) {
+            mediaElement.pause();
+            mediaElement.currentTime = 0;
+        }
+        if (gateGain) gateGain.gain.value = 0;
+        isPlaying = false;
+        updateStatusDot();
+        document.getElementById('npStatus').textContent = '⏹ STOPPED';
+    }
+
+    function playPauseToggle() {
+        if (!mediaElement) return;
+        if (mediaElement.paused) {
+            mediaElement.play().catch(() => {});
+        } else {
+            mediaElement.pause();
+        }
+        // Обновление произойдёт через события
+    }
+
+    function toggleMuteMusic() {
+        isMusicMuted = !isMusicMuted;
+        if (musicGain) {
+            musicGain.gain.value = isMusicMuted ? 0 : params.musicVolume;
+        }
+        const btn = document.getElementById('btnMuteMusic');
+        if (btn) {
+            btn.textContent = isMusicMuted ? '🔇 Выкл' : '🔊 Вкл';
+            btn.classList.toggle('active', isMusicMuted);
+        }
+        internalMetronomeActive = isMusicMuted;
+        if (isMusicMuted) {
+            lastBeatInterval = 60000 / savedBPM;
+        }
+    }
+
+    function toggleLoop() {
+        isLooping = !isLooping;
+        if (mediaElement) mediaElement.loop = isLooping;
+        const btn = document.getElementById('btnLoop');
+        if (btn) btn.classList.toggle('active', isLooping);
+    }
+
+    function updateStatusDot() {
+        const dot = document.getElementById('statusDot');
+        if (dot) {
+            if (isPlaying) dot.classList.add('playing');
+            else dot.classList.remove('playing');
+        }
+        document.getElementById('statusText').textContent = isPlaying ? 'Играет' : 'Остановлено';
+    }
+
+    // ==================== ВИЗУАЛИЗАТОР ====================
+    function startVisualizerLoop() {
+        const canvas = document.getElementById('visualizerCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function draw() {
+            animationFrameId = requestAnimationFrame(draw);
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+
+            if (analyserNode && analyserDataArray) {
+                analyserNode.getByteTimeDomainData(analyserDataArray);
+                const step = Math.floor(analyserDataArray.length / 300);
+                ctx.beginPath();
+                ctx.strokeStyle = '#ff6a0080';
+                ctx.lineWidth = 1.5;
+                for (let i = 0, x = 0; i < analyserDataArray.length; i += step, x += 2) {
+                    const val = (analyserDataArray[i] - 128) / 128;
+                    const y = (h / 2) + val * (h / 2.2);
+                    if (x === 0) ctx.moveTo(x * (w / 300), y);
+                    else ctx.lineTo(x * (w / 300), y);
+                }
+                ctx.stroke();
+            }
+
+            if (gateGain) {
+                const g = gateGain.gain.value;
+                ctx.fillStyle = `rgba(255,106,0,${Math.min(0.6, g * 0.8)})`;
+                ctx.fillRect(w * 0.7, h * 0.15, Math.min(w * 0.25, g * w * 0.3), h * 0.7);
+                ctx.strokeStyle = '#ff6a0030';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(w * 0.7, h * 0.15, w * 0.25, h * 0.7);
+            }
+        }
+        draw();
+    }
+
+    // ==================== ПОИСК ====================
+    async function searchiTunes(term) {
+        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&limit=25&entity=song`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('Network error');
+        const data = await resp.json();
+        return data.results || [];
+    }
+
+    function showResults(results) {
+        const modal = document.getElementById('modalOverlay');
+        const container = document.getElementById('searchResults');
+        container.innerHTML = '';
+        if (results.length === 0) {
+            container.innerHTML = '<p style="color:#6a6a7a;text-align:center;padding:20px;">Ничего не найдено</p>';
+        } else {
+            results.forEach((r, idx) => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                const imgUrl = r.artworkUrl100 || r.artworkUrl60 || '';
+                const title = r.trackName || 'Неизвестный трек';
+                const artist = r.artistName || 'Неизвестный исполнитель';
+                const preview = r.previewUrl || '';
+                const dur = r.trackTimeMillis ? Math.round(r.trackTimeMillis / 1000) + 's' : '30s';
+                item.innerHTML = `
+                    ${imgUrl ? `<img src="${imgUrl}" alt="art" onerror="this.style.display='none'">` : '<div style="width:50px;height:50px;background:#2a2a3a;border-radius:6px;flex-shrink:0;"></div>'}
+                    <div class="info">
+                        <div class="track-name">${title}</div>
+                        <div class="artist-name">${artist}</div>
+                    </div>
+                    <div class="duration">${dur}</div>
+                `;
+                item.addEventListener('click', () => {
+                    if (preview) {
+                        loadTrack(preview, title, artist);
+                        closeModal();
+                    } else {
+                        alert('Нет превью для этого трека');
+                    }
+                });
+                container.appendChild(item);
+            });
+        }
+        modal.classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('open');
+    }
+
+    // ==================== ПОСТРОЕНИЕ КНОПОК ====================
+    function buildKnobs() {
+        const container = document.getElementById('knobsContainer');
+        container.innerHTML = '';
+        knobDefs.forEach(def => {
+            const group = document.createElement('div');
+            group.className = 'knob-group';
+            const label = document.createElement('label');
+            label.textContent = def.label;
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'knob-value';
+            valueSpan.id = 'knob-val-' + def.key;
+            valueSpan.textContent = formatValue(def.default, def);
+            const input = document.createElement('input');
+            input.type = 'range';
+            input.min = def.min;
+            input.max = def.max;
+            input.step = def.step;
+            input.value = def.default;
+            input.dataset.key = def.key;
+            input.addEventListener('input', (e) => {
+                const key = e.target.dataset.key;
+                const val = parseFloat(e.target.value);
+                params[key] = val;
+                valueSpan.textContent = formatValue(val, def);
+                applyParam(key, val);
+            });
+            group.appendChild(label);
+            group.appendChild(valueSpan);
+            group.appendChild(input);
+            container.appendChild(group);
+            params[def.key] = def.default;
+        });
+        // Установить обработчик для toneWaveform как дискретный
+        const waveInput = document.querySelector('[data-key="toneWaveform"]');
+        if (waveInput) {
+            waveInput.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                const waveNames = ['sine', 'triangle', 'sawtooth', 'square'];
+                if (toneOscillator) toneOscillator.type = waveNames[val] || 'sine';
+                document.getElementById('knob-val-toneWaveform').textContent = val;
+            });
+        }
+    }
+
+    function formatValue(val, def) {
+        if (def.key === 'toneWaveform') {
+            const names = ['Sine', 'Triangle', 'Saw', 'Square'];
+            return names[Math.round(val)] || 'Sine';
+        }
+        if (def.unit === 's') return val.toFixed(3) + 's';
+        if (def.unit === 'Hz') return Math.round(val) + 'Hz';
+        if (def.key === 'pitchQ') return val.toFixed(1) + 'Q';
+        if (def.key === 'bpmManual') return Math.round(val) + ' BPM';
+        if (def.key === 'triggerPattern') return Math.round(val) + 'x';
+        if (def.key === 'attack' || def.key === 'decay') return (val * 1000).toFixed(0) + 'ms';
+        return val.toFixed(2);
+    }
+
+    function applyParam(key, val) {
+        if (!audioCtx) return;
+        switch (key) {
+            case 'musicVolume':
+                if (musicGain && !isMusicMuted) musicGain.gain.value = val;
+                break;
+            case 'noiseVolume':
+                if (noiseGain) noiseGain.gain.value = val;
+                if (toneGain) toneGain.gain.value = params.toneMix * val * 0.5;
+                if (crackleGain) crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
+                if (radioStaticGain) radioStaticGain.gain.value = params.radioStatic * 0.15;
+                break;
+            case 'drive':
+                if (waveshaper1) waveshaper1.curve = makeDistortionCurve(val, params.asymmetry);
+                break;
+            case 'drive2':
+                if (waveshaper2) waveshaper2.curve = makeDistortionCurve(val, params.asymmetry * 0.7);
+                break;
+            case 'reverbMix':
+                if (noiseDryGain && noiseWetGain) {
+                    noiseDryGain.gain.value = 1 - val;
+                    noiseWetGain.gain.value = val;
+                }
+                break;
+            case 'reverbDecay':
+                updateImpulseResponse();
+                break;
+            case 'filterCutoff':
+                if (noiseFilter) noiseFilter.frequency.value = val;
+                break;
+            case 'filterResonance':
+                if (noiseFilter) noiseFilter.Q.value = val;
+                break;
+            case 'filter2Cutoff':
+                if (noiseFilter2) noiseFilter2.frequency.value = val;
+                break;
+            case 'pitchTracking':
+                // просто параметр, используется в цикле
+                break;
+            case 'pitchSmoothing':
+                pitchSmoothValue = val;
+                break;
+            case 'pitchQ':
+                if (pitchFilter) pitchFilter.Q.value = val;
+                break;
+            case 'toneMix':
+                if (toneGain) toneGain.gain.value = val * params.noiseVolume * 0.5;
+                break;
+            case 'toneWaveform':
+                // обрабатывается отдельным слушателем
+                break;
+            case 'radioStatic':
+                if (radioStaticGain) radioStaticGain.gain.value = val * 0.15;
+                break;
+            case 'crackleDensity':
+            case 'crackleVolume':
+                if (crackleGain) crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
+                break;
+            case 'attack':
+            case 'decay':
+            case 'chaos':
+            case 'asymmetry':
+                if (waveshaper1) waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
+                if (waveshaper2) waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
+                break;
+            case 'bpmManual':
+                savedBPM = Math.round(val);
+                lastBeatInterval = 60000 / savedBPM;
+                updateBPMDisplay();
+                break;
+            case 'triggerPattern':
+                params.patternCounter = 0;
+                break;
+            case 'noiseColor':
+                if (noiseFilter2) {
+                    const hpFreq = 200 + val * 1500;
+                    noiseFilter2.frequency.value = hpFreq;
+                }
+                break;
+            case 'gateThreshold':
+                break;
+            case 'tone':
+                if (noiseFilter) {
+                    const shift = val * 2000;
+                    noiseFilter.frequency.value = params.filterCutoff + shift;
+                }
+                break;
+            case 'lowBoost':
+                if (noiseFilter) noiseFilter.Q.value = params.filterResonance * (1 + val * 0.3);
+                break;
+            case 'highBoost':
+                if (noiseFilter2) noiseFilter2.Q.value = 0.5 + val * 0.6;
+                break;
+        }
+    }
+
+    // ==================== СОБЫТИЯ ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        buildKnobs();
+
+        document.getElementById('btnSearch').addEventListener('click', async () => {
+            const term = document.getElementById('searchInput').value.trim();
+            if (!term) return;
+            document.getElementById('btnSearch').textContent = '⏳ Поиск...';
+            document.getElementById('btnSearch').disabled = true;
+            try {
+                const results = await searchiTunes(term);
+                showResults(results);
+            } catch (e) {
+                alert('Ошибка поиска: ' + e.message);
+            }
+            document.getElementById('btnSearch').textContent = '🔍 Найти';
+            document.getElementById('btnSearch').disabled = false;
+        });
+
+        document.getElementById('searchInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('btnSearch').click();
+        });
+
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modalOverlay')) closeModal();
+        });
+
+        document.getElementById('btnMuteMusic').addEventListener('click', () => {
+            if (!audioCtx) initAudio();
+            toggleMuteMusic();
+        });
+
+        document.getElementById('btnLoop').addEventListener('click', toggleLoop);
+        document.getElementById('btnStop').addEventListener('click', stopAll);
+
+        // Обработчик клавиш
+        document.addEventListener('keydown', (e) => {
+            // Не перехватываем, если фокус в поле ввода
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key === ' ' || e.key === 'Space') {
+                e.preventDefault();
+                playPauseToggle();
+            } else if (e.key === 'm' || e.key === 'M') {
+                if (audioCtx) toggleMuteMusic();
+            } else if (e.key === 'l' || e.key === 'L') {
+                toggleLoop();
+            } else if (e.key === 's' || e.key === 'S') {
+                stopAll();
+            }
+        });
+
+        updateBPMDisplay();
+    });
+
+    // ==================== АВТО-ИНИЦИАЛИЗАЦИЯ ====================
+    document.addEventListener('click', () => {
+        if (!audioCtx) initAudio();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }, { once: true });
+
+    document.addEventListener('touchstart', () => {
+        if (!audioCtx) initAudio();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }, { once: true });
+
+    // ==================== ПРЕДВАРИТЕЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ====================
+    window.addEventListener('load', () => {
+        try {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                // Создаём всю цепочку, но приостанавливаем контекст
                 masterGain = audioCtx.createGain();
                 masterGain.gain.value = 0.9;
                 masterGain.connect(audioCtx.destination);
-
-                // Music chain
                 musicGain = audioCtx.createGain();
                 musicGain.gain.value = params.musicVolume;
                 musicGain.connect(masterGain);
-
-                // Analyser
                 analyserNode = audioCtx.createAnalyser();
-                analyserNode.fftSize = 512;
-                analyserNode.smoothingTimeConstant = 0.55;
+                analyserNode.fftSize = 1024;
+                analyserNode.smoothingTimeConstant = 0.5;
                 analyserNode.connect(musicGain);
                 analyserDataArray = new Uint8Array(analyserNode.fftSize);
+                freqDataArray = new Float32Array(analyserNode.frequencyBinCount);
 
-                // Noise chain
                 noiseGain = audioCtx.createGain();
-                noiseGain.gain.value = 0;
+                noiseGain.gain.value = params.noiseVolume;
                 noiseGain.connect(masterGain);
-
-                // Dry/wet for reverb
                 noiseDryGain = audioCtx.createGain();
                 noiseDryGain.gain.value = 0.5;
                 noiseDryGain.connect(noiseGain);
                 noiseWetGain = audioCtx.createGain();
                 noiseWetGain.gain.value = 0.5;
                 noiseWetGain.connect(noiseGain);
-
-                // Convolver (reverb)
                 convolver = audioCtx.createConvolver();
                 convolver.connect(noiseWetGain);
                 updateImpulseResponse();
-
-                // Filters
                 noiseFilter = audioCtx.createBiquadFilter();
                 noiseFilter.type = 'lowpass';
                 noiseFilter.frequency.value = params.filterCutoff;
                 noiseFilter.Q.value = params.filterResonance;
-
                 noiseFilter2 = audioCtx.createBiquadFilter();
                 noiseFilter2.type = 'highpass';
                 noiseFilter2.frequency.value = params.filter2Cutoff;
                 noiseFilter2.Q.value = 0.7;
-
-                // Waveshapers (distortion stages)
+                pitchFilter = audioCtx.createBiquadFilter();
+                pitchFilter.type = 'bandpass';
+                pitchFilter.frequency.value = 440;
+                pitchFilter.Q.value = params.pitchQ;
                 waveshaper1 = audioCtx.createWaveShaper();
                 waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
                 waveshaper1.oversample = '4x';
-
                 waveshaper2 = audioCtx.createWaveShaper();
                 waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
                 waveshaper2.oversample = '4x';
-
-                // Gate gain for envelope
                 gateGain = audioCtx.createGain();
                 gateGain.gain.value = 0;
 
-                // Noise buffer source (white noise loop)
                 const bufferSize = audioCtx.sampleRate * 2;
                 noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
                 noiseBufferSource = audioCtx.createBufferSource();
                 noiseBufferSource.buffer = noiseBuffer;
                 noiseBufferSource.loop = true;
-                noiseBufferSource.start(0);
-
-                // Chain: noise -> filter2 (HP) -> waveshaper1 -> filter (LP) -> waveshaper2 -> gate -> dry + wet
                 noiseBufferSource.connect(noiseFilter2);
                 noiseFilter2.connect(waveshaper1);
                 waveshaper1.connect(noiseFilter);
                 noiseFilter.connect(waveshaper2);
-                waveshaper2.connect(gateGain);
+                waveshaper2.connect(pitchFilter);
+                pitchFilter.connect(gateGain);
                 gateGain.connect(noiseDryGain);
                 gateGain.connect(convolver);
+                noiseBufferSource.start(0);
 
-                // Initial gain
-                gateGain.gain.value = 0;
-                noiseGain.gain.value = params.noiseVolume;
+                toneOscillator = audioCtx.createOscillator();
+                toneOscillator.type = 'sine';
+                toneOscillator.frequency.value = 440;
+                toneGain = audioCtx.createGain();
+                toneGain.gain.value = params.toneMix * params.noiseVolume * 0.5;
+                toneOscillator.connect(toneGain);
+                toneGain.connect(noiseGain);
+                toneOscillator.start(0);
 
-                // Start analyser update loop
+                crackleBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
+                const cdata = crackleBuffer.getChannelData(0);
+                for (let i = 0; i < cdata.length; i++) cdata[i] = (Math.random() * 2 - 1) * (Math.random() > 0.9 ? 1 : 0.1);
+                crackleSource = audioCtx.createBufferSource();
+                crackleSource.buffer = crackleBuffer;
+                crackleSource.loop = true;
+                crackleGain = audioCtx.createGain();
+                crackleGain.gain.value = params.crackleVolume * params.crackleDensity * 0.3;
+                crackleSource.connect(crackleGain);
+                crackleGain.connect(noiseGain);
+                crackleSource.start(0);
+
+                radioStaticSource = audioCtx.createBufferSource();
+                radioStaticSource.buffer = noiseBuffer;
+                radioStaticSource.loop = true;
+                radioStaticFilter = audioCtx.createBiquadFilter();
+                radioStaticFilter.type = 'bandpass';
+                radioStaticFilter.frequency.value = 800;
+                radioStaticFilter.Q.value = 0.5;
+                radioStaticGain = audioCtx.createGain();
+                radioStaticGain.gain.value = params.radioStatic * 0.15;
+                radioStaticSource.connect(radioStaticFilter);
+                radioStaticFilter.connect(radioStaticGain);
+                radioStaticGain.connect(noiseGain);
+                radioStaticSource.start(0);
+
+                audioCtx.suspend();
                 startAnalyserLoop();
                 startVisualizerLoop();
             }
+        } catch (e) {
+            console.warn('Pre-init error:', e);
+        }
+    });
 
-            function makeDistortionCurve(drive, asym) {
-                const n = 2048;
-                const curve = new Float32Array(n);
-                const d = Math.max(0.1, drive);
-                const a = Math.max(0, Math.min(1, asym));
-                for (let i = 0; i < n; i++) {
-                    const x = (i / (n - 1)) * 2 - 1;
-                    let y;
-                    if (x >= 0) {
-                        y = Math.tanh(x * d * 2.5) / Math.tanh(d * 2.5);
-                        // slight compression for positive
-                        y = y * (1 - a * 0.25);
-                    } else {
-                        y = Math.tanh(x * d * 2.0 * (1 + a * 0.8)) / Math.tanh(d * 2.0 * (1 + a * 0.8));
-                        // asymmetric clipping
-                        y = y * (1 + a * 0.2);
-                    }
-                    // Soft clip
-                    if (y > 1) y = 1;
-                    if (y < -1) y = -1;
-                    curve[i] = y;
-                }
-                return curve;
-            }
-
-            function updateImpulseResponse() {
-                if (!audioCtx || !convolver) return;
-                const duration = Math.max(0.5, params.reverbDecay);
-                const rate = audioCtx.sampleRate;
-                const length = Math.floor(rate * duration);
-                const impulse = audioCtx.createBuffer(2, length, rate);
-                for (let ch = 0; ch < 2; ch++) {
-                    const d = impulse.getChannelData(ch);
-                    for (let i = 0; i < length; i++) {
-                        const t = i / length;
-                        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, params.reverbDecay * 0.8);
-                    }
-                }
-                convolver.buffer = impulse;
-            }
-
-            // ==================== RHYTHM DETECTION ====================
-            let lastRMS = 0;
-            let adaptiveThreshold = 0.1;
-            let thresholdHistory = [];
-            let lastTriggerFromMusic = 0;
-            let beatIntervals = [];
-            let lastBeatTime = 0;
-
-            function detectBeat() {
-                if (!analyserNode || !analyserDataArray) return false;
-                analyserNode.getByteTimeDomainData(analyserDataArray);
-                let sumSquares = 0;
-                for (let i = 0; i < analyserDataArray.length; i++) {
-                    const val = (analyserDataArray[i] - 128) / 128;
-                    sumSquares += val * val;
-                }
-                const rms = Math.sqrt(sumSquares / analyserDataArray.length);
-                const now = performance.now();
-
-                // Update threshold history
-                thresholdHistory.push(rms);
-                if (thresholdHistory.length > 40) thresholdHistory.shift();
-                const avg = thresholdHistory.reduce((a, b) => a + b, 0) / thresholdHistory.length;
-                const std = Math.sqrt(thresholdHistory.reduce((a, b) => a + (b - avg) * (b - avg), 0) / thresholdHistory
-                    .length);
-                adaptiveThreshold = avg + std * 0.7 + 0.015;
-
-                const sensitivity = params.triggerSensitivity;
-                const threshold = adaptiveThreshold * (1.8 - sensitivity * 0.9);
-
-                if (rms > threshold && now - lastTriggerFromMusic > refractoryPeriod) {
-                    lastTriggerFromMusic = now;
-                    const interval = now - lastBeatTime;
-                    if (lastBeatTime > 0 && interval > 200 && interval < 2000) {
-                        beatIntervals.push(interval);
-                        if (beatIntervals.length > beatHistoryMax) beatIntervals.shift();
-                        const avgInterval = beatIntervals.reduce((a, b) => a + b, 0) / beatIntervals.length;
-                        savedBPM = Math.round(60000 / avgInterval);
-                        savedBPM = Math.max(60, Math.min(200, savedBPM));
-                        lastBeatInterval = avgInterval;
-                        updateBPMDisplay();
-                    }
-                    lastBeatTime = now;
-                    lastRMS = rms;
-                    return true;
-                }
-                lastRMS = rms;
-                return false;
-            }
-
-            function updateBPMDisplay() {
-                const bpmEl = document.getElementById('bpmDisplay');
-                if (bpmEl) bpmEl.textContent = 'BPM: ' + savedBPM;
-            }
-
-            // ==================== TRIGGER & ENVELOPE ====================
-            function triggerNoise(now) {
-                if (!audioCtx || !gateGain) return;
-                const t = now || audioCtx.currentTime;
-                const attack = params.attack;
-                const decay = params.decay;
-                const chaosAmt = params.chaos;
-                const randomAttack = attack * (1 + (Math.random() - 0.5) * chaosAmt * 3);
-                const randomDecay = decay * (1 + (Math.random() - 0.5) * chaosAmt * 4);
-
-                gateGain.gain.cancelScheduledValues(t);
-                gateGain.gain.setValueAtTime(0, t);
-                gateGain.gain.linearRampToValueAtTime(0.95, t + Math.max(0.001, randomAttack));
-                gateGain.gain.exponentialRampToValueAtTime(0.001, t + Math.max(0.02, randomAttack + randomDecay));
-                gateGain.gain.setValueAtTime(0, t + randomAttack + randomDecay + 0.01);
-
-                triggerCount++;
-                const tcEl = document.getElementById('triggerCounter');
-                if (tcEl) tcEl.textContent = 'Триггеров: ' + triggerCount;
-
-                // Visual feedback
-                const dot = document.getElementById('statusDot');
-                if (dot) {
-                    dot.classList.add('triggered');
-                    setTimeout(() => dot.classList.remove('triggered'), 80);
-                }
-
-                // Update waveshaper curves with chaos
-                if (waveshaper1 && waveshaper2) {
-                    const d1 = params.drive * (1 + (Math.random() - 0.5) * chaosAmt * 0.6);
-                    const d2 = params.drive2 * (1 + (Math.random() - 0.5) * chaosAmt * 0.4);
-                    waveshaper1.curve = makeDistortionCurve(d1, params.asymmetry);
-                    waveshaper2.curve = makeDistortionCurve(d2, params.asymmetry * 0.7);
-                }
-
-                // Random filter wobble for analog feel
-                if (noiseFilter) {
-                    const fc = params.filterCutoff * (1 + (Math.random() - 0.5) * chaosAmt * 0.3);
-                    noiseFilter.frequency.setTargetAtTime(fc, t, 0.01);
-                }
-            }
-
-            function internalMetronomeTick() {
-                if (!isPlaying || !internalMetronomeActive) return;
-                const now = performance.now();
-                if (now - lastTriggerFromMusic < lastBeatInterval * 0.7) return;
-                triggerNoise(audioCtx ? audioCtx.currentTime : 0);
-            }
-
-            // ==================== MUSIC PLAYBACK ====================
-            function loadTrack(previewUrl, title, artist) {
-                if (!audioCtx) initAudio();
-                if (!mediaElement) {
-                    mediaElement = new Audio();
-                    mediaElement.crossOrigin = 'anonymous';
-                    mediaElement.preload = 'auto';
-                    mediaElement.loop = isLooping;
-                    mediaElement.addEventListener('ended', () => {
-                        if (isLooping && mediaElement) {
-                            mediaElement.currentTime = 0;
-                            mediaElement.play().catch(() => {});
-                        }
-                    });
-                    mediaElement.addEventListener('playing', () => {
-                        isPlaying = true;
-                        updateStatusDot();
-                        document.getElementById('npStatus').textContent = '▶ PLAYING';
-                    });
-                    mediaElement.addEventListener('pause', () => {
-                        isPlaying = false;
-                        updateStatusDot();
-                        document.getElementById('npStatus').textContent = '⏸ PAUSED';
-                    });
-                    try {
-                        mediaSource = audioCtx.createMediaElementSource(mediaElement);
-                        mediaSource.connect(analyserNode);
-                    } catch (e) {
-                        console.warn('MediaElementSource already created or error:', e);
-                    }
-                }
-
-                mediaElement.src = previewUrl;
-                mediaElement.loop = isLooping;
-                currentTrackTitle = title || 'Неизвестный трек';
-                currentTrackArtist = artist || 'Неизвестный исполнитель';
-                document.getElementById('npTrack').textContent = currentTrackTitle;
-                document.getElementById('npArtist').textContent = currentTrackArtist;
-                document.getElementById('npStatus').textContent = '⏳ LOADING...';
-
-                mediaElement.play().then(() => {
-                    isPlaying = true;
-                    updateStatusDot();
-                    document.getElementById('npStatus').textContent = '▶ PLAYING';
-                    // Reset beat detection
-                    thresholdHistory = [];
-                    beatIntervals = [];
-                    lastBeatTime = 0;
-                }).catch(err => {
-                    console.warn('Playback error:', err);
-                    document.getElementById('npStatus').textContent = '⚠ ERROR';
-                });
-            }
-
-            function stopAll() {
-                if (mediaElement) {
-                    mediaElement.pause();
-                    mediaElement.currentTime = 0;
-                }
-                if (gateGain) gateGain.gain.value = 0;
-                isPlaying = false;
-                updateStatusDot();
-                document.getElementById('npStatus').textContent = '⏹ STOPPED';
-            }
-
-            function toggleMuteMusic() {
-                isMusicMuted = !isMusicMuted;
-                if (musicGain) {
-                    musicGain.gain.value = isMusicMuted ? 0 : params.musicVolume;
-                }
-                const btn = document.getElementById('btnMuteMusic');
-                if (btn) {
-                    btn.textContent = isMusicMuted ? '🔇 Выкл' : '🔊 Вкл';
-                    btn.classList.toggle('active', isMusicMuted);
-                }
-                // If music muted, use internal metronome with saved BPM
-                internalMetronomeActive = isMusicMuted;
-                if (isMusicMuted) {
-                    lastBeatInterval = 60000 / savedBPM;
-                }
-            }
-
-            function toggleLoop() {
-                isLooping = !isLooping;
-                if (mediaElement) mediaElement.loop = isLooping;
-                const btn = document.getElementById('btnLoop');
-                if (btn) btn.classList.toggle('active', isLooping);
-            }
-
-            function updateStatusDot() {
-                const dot = document.getElementById('statusDot');
-                if (dot) {
-                    if (isPlaying) dot.classList.add('playing');
-                    else dot.classList.remove('playing');
-                }
-                const txt = document.getElementById('statusText');
-                if (txt) txt.textContent = isPlaying ? 'Играет' : 'Остановлено';
-            }
-
-            // ==================== ANALYSER LOOP ====================
-            function startAnalyserLoop() {
-                if (analyserUpdateInterval) clearInterval(analyserUpdateInterval);
-                analyserUpdateInterval = setInterval(() => {
-                    if (!audioCtx || !analyserNode) return;
-                    const beatDetected = detectBeat();
-                    if (beatDetected && isPlaying) {
-                        // Pattern check
-                        params.patternCounter++;
-                        if (params.patternCounter >= params.triggerPattern) {
-                            params.patternCounter = 0;
-                            const rateFactor = params.triggerRate;
-                            const now = audioCtx.currentTime;
-                            if (Math.random() < rateFactor) {
-                                triggerNoise(now);
-                            }
-                            // Occasionally fire extra triggers for chaos
-                            if (params.chaos > 0.3 && Math.random() < params.chaos * 0.4) {
-                                triggerNoise(now + 0.02);
-                            }
-                        }
-                    }
-                }, 8); // ~120fps for precise onset detection
-
-                // Internal metronome when music muted
-                setInterval(() => {
-                    if (isMusicMuted && isPlaying) {
-                        internalMetronomeTick();
-                    }
-                }, 50);
-            }
-
-            // ==================== VISUALIZER ====================
-            function startVisualizerLoop() {
-                const canvas = document.getElementById('visualizerCanvas');
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-
-                function resize() {
-                    const rect = canvas.parentElement.getBoundingClientRect();
-                    canvas.width = rect.width * window.devicePixelRatio;
-                    canvas.height = rect.height * window.devicePixelRatio;
-                    canvas.style.width = rect.width + 'px';
-                    canvas.style.height = rect.height + 'px';
-                }
-                resize();
-                window.addEventListener('resize', resize);
-
-                function draw() {
-                    animationFrameId = requestAnimationFrame(draw);
-                    const w = canvas.width;
-                    const h = canvas.height;
-                    ctx.fillStyle = '#000';
-                    ctx.fillRect(0, 0, w, h);
-
-                    if (analyserNode && analyserDataArray) {
-                        analyserNode.getByteTimeDomainData(analyserDataArray);
-                        const step = Math.floor(analyserDataArray.length / 300);
-                        ctx.beginPath();
-                        ctx.strokeStyle = '#ff6a0080';
-                        ctx.lineWidth = 1.5;
-                        for (let i = 0, x = 0; i < analyserDataArray.length; i += step, x += 2) {
-                            const val = (analyserDataArray[i] - 128) / 128;
-                            const y = (h / 2) + val * (h / 2.2);
-                            if (x === 0) ctx.moveTo(x * (w / 300), y);
-                            else ctx.lineTo(x * (w / 300), y);
-                        }
-                        ctx.stroke();
-                    }
-
-                    // Draw gate envelope visual
-                    if (gateGain) {
-                        const g = gateGain.gain.value;
-                        ctx.fillStyle = `rgba(255,106,0,${Math.min(0.6, g * 0.8)})`;
-                        ctx.fillRect(w * 0.7, h * 0.15, Math.min(w * 0.25, g * w * 0.3), h * 0.7);
-                        ctx.strokeStyle = '#ff6a0030';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(w * 0.7, h * 0.15, w * 0.25, h * 0.7);
-                    }
-                }
-                draw();
-            }
-
-            // ==================== SEARCH ====================
-            async function searchiTunes(term) {
-                const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&limit=25&entity=song`;
-                const resp = await fetch(url);
-                if (!resp.ok) throw new Error('Network error');
-                const data = await resp.json();
-                return data.results || [];
-            }
-
-            function showResults(results) {
-                const modal = document.getElementById('modalOverlay');
-                const container = document.getElementById('searchResults');
-                container.innerHTML = '';
-                if (results.length === 0) {
-                    container.innerHTML = '<p style="color:#6a6a7a;text-align:center;padding:20px;">Ничего не найдено</p>';
-                } else {
-                    results.forEach((r, idx) => {
-                        const item = document.createElement('div');
-                        item.className = 'result-item';
-                        const imgUrl = r.artworkUrl100 || r.artworkUrl60 || '';
-                        const title = r.trackName || 'Неизвестный трек';
-                        const artist = r.artistName || 'Неизвестный исполнитель';
-                        const preview = r.previewUrl || '';
-                        const dur = r.trackTimeMillis ? Math.round(r.trackTimeMillis / 1000) + 's' : '30s';
-                        item.innerHTML = `
-                            ${imgUrl ? `<img src="${imgUrl}" alt="art" onerror="this.style.display='none'">` : '<div style="width:50px;height:50px;background:#2a2a3a;border-radius:6px;flex-shrink:0;"></div>'}
-                            <div class="info">
-                                <div class="track-name">${title}</div>
-                                <div class="artist-name">${artist}</div>
-                            </div>
-                            <div class="duration">${dur}</div>
-                        `;
-                        item.addEventListener('click', () => {
-                            if (preview) {
-                                loadTrack(preview, title, artist);
-                                closeModal();
-                            } else {
-                                alert('Нет превью для этого трека');
-                            }
-                        });
-                        container.appendChild(item);
-                    });
-                }
-                modal.classList.add('open');
-            }
-
-            function closeModal() {
-                document.getElementById('modalOverlay').classList.remove('open');
-            }
-
-            // ==================== UI SETUP ====================
-            function buildKnobs() {
-                const container = document.getElementById('knobsContainer');
-                container.innerHTML = '';
-                knobDefs.forEach(def => {
-                    const group = document.createElement('div');
-                    group.className = 'knob-group';
-                    const label = document.createElement('label');
-                    label.textContent = def.label;
-                    const valueSpan = document.createElement('span');
-                    valueSpan.className = 'knob-value';
-                    valueSpan.id = 'knob-val-' + def.key;
-                    valueSpan.textContent = formatValue(def.default, def);
-                    const input = document.createElement('input');
-                    input.type = 'range';
-                    input.min = def.min;
-                    input.max = def.max;
-                    input.step = def.step;
-                    input.value = def.default;
-                    input.dataset.key = def.key;
-                    input.addEventListener('input', (e) => {
-                        const key = e.target.dataset.key;
-                        const val = parseFloat(e.target.value);
-                        params[key] = val;
-                        valueSpan.textContent = formatValue(val, def);
-                        applyParam(key, val);
-                    });
-                    group.appendChild(label);
-                    group.appendChild(valueSpan);
-                    group.appendChild(input);
-                    container.appendChild(group);
-                    // Set initial param
-                    params[def.key] = def.default;
-                });
-
-                // Set initial music volume display
-                const mv = document.querySelector('[data-key="musicVolume"]');
-                if (mv) mv.value = params.musicVolume;
-                const mvVal = document.getElementById('knob-val-musicVolume');
-                if (mvVal) mvVal.textContent = formatValue(params.musicVolume, knobDefs.find(k => k.key ===
-                    'musicVolume'));
-            }
-
-            function formatValue(val, def) {
-                if (def.unit === 's') return val.toFixed(3) + 's';
-                if (def.unit === 'Hz') return Math.round(val) + 'Hz';
-                if (def.unit === 'Q') return val.toFixed(1);
-                if (def.key === 'bpmManual') return Math.round(val) + ' BPM';
-                if (def.key === 'triggerPattern') return Math.round(val) + 'x';
-                if (def.key === 'attack' || def.key === 'decay') return (val * 1000).toFixed(0) + 'ms';
-                return val.toFixed(2);
-            }
-
-            function applyParam(key, val) {
-                if (!audioCtx) return;
-                switch (key) {
-                    case 'musicVolume':
-                        if (musicGain && !isMusicMuted) musicGain.gain.value = val;
-                        break;
-                    case 'noiseVolume':
-                        if (noiseGain) noiseGain.gain.value = val;
-                        break;
-                    case 'drive':
-                        if (waveshaper1) waveshaper1.curve = makeDistortionCurve(val, params.asymmetry);
-                        break;
-                    case 'drive2':
-                        if (waveshaper2) waveshaper2.curve = makeDistortionCurve(val, params.asymmetry * 0.7);
-                        break;
-                    case 'reverbMix':
-                        if (noiseDryGain && noiseWetGain) {
-                            noiseDryGain.gain.value = 1 - val;
-                            noiseWetGain.gain.value = val;
-                        }
-                        break;
-                    case 'reverbDecay':
-                        updateImpulseResponse();
-                        break;
-                    case 'filterCutoff':
-                        if (noiseFilter) noiseFilter.frequency.value = val;
-                        break;
-                    case 'filterResonance':
-                        if (noiseFilter) noiseFilter.Q.value = val;
-                        break;
-                    case 'filter2Cutoff':
-                        if (noiseFilter2) noiseFilter2.frequency.value = val;
-                        break;
-                    case 'attack':
-                    case 'decay':
-                    case 'chaos':
-                    case 'asymmetry':
-                        if (waveshaper1) waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
-                        if (waveshaper2) waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
-                        break;
-                    case 'bpmManual':
-                        savedBPM = Math.round(val);
-                        lastBeatInterval = 60000 / savedBPM;
-                        updateBPMDisplay();
-                        break;
-                    case 'triggerPattern':
-                        params.patternCounter = 0;
-                        break;
-                    case 'noiseColor':
-                        // Adjust noise buffer color via filter
-                        if (noiseFilter2) {
-                            // Use as a simple tilt filter
-                            const hpFreq = 200 + val * 1500;
-                            noiseFilter2.frequency.value = hpFreq;
-                        }
-                        break;
-                    case 'gateThreshold':
-                        // Used in detection threshold calculation
-                        break;
-                    case 'tone':
-                        if (noiseFilter) {
-                            const shift = val * 2000;
-                            noiseFilter.frequency.value = params.filterCutoff + shift;
-                        }
-                        break;
-                    case 'lowBoost':
-                        // Could add a low shelf, for simplicity adjust filter Q slightly
-                        if (noiseFilter) {
-                            noiseFilter.Q.value = params.filterResonance * (1 + val * 0.3);
-                        }
-                        break;
-                    case 'highBoost':
-                        if (noiseFilter2) {
-                            noiseFilter2.Q.value = 0.5 + val * 0.6;
-                        }
-                        break;
-                }
-            }
-
-            // ==================== EVENT BINDINGS ====================
-            document.addEventListener('DOMContentLoaded', () => {
-                buildKnobs();
-
-                document.getElementById('btnSearch').addEventListener('click', async () => {
-                    const term = document.getElementById('searchInput').value.trim();
-                    if (!term) return;
-                    document.getElementById('btnSearch').textContent = '⏳ Поиск...';
-                    document.getElementById('btnSearch').disabled = true;
-                    try {
-                        const results = await searchiTunes(term);
-                        showResults(results);
-                    } catch (e) {
-                        alert('Ошибка поиска: ' + e.message);
-                    }
-                    document.getElementById('btnSearch').textContent = '🔍 Найти';
-                    document.getElementById('btnSearch').disabled = false;
-                });
-
-                document.getElementById('searchInput').addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') document.getElementById('btnSearch').click();
-                });
-
-                document.getElementById('modalClose').addEventListener('click', closeModal);
-                document.getElementById('modalOverlay').addEventListener('click', (e) => {
-                    if (e.target === document.getElementById('modalOverlay')) closeModal();
-                });
-
-                document.getElementById('btnMuteMusic').addEventListener('click', () => {
-                    if (!audioCtx) initAudio();
-                    toggleMuteMusic();
-                });
-
-                document.getElementById('btnLoop').addEventListener('click', toggleLoop);
-                document.getElementById('btnStop').addEventListener('click', stopAll);
-
-                // Initialize BPM display
-                updateBPMDisplay();
-            });
-
-            // ==================== INIT ON FIRST INTERACTION ====================
-            document.addEventListener('click', () => {
-                if (!audioCtx) initAudio();
-            }, { once: true });
-
-            // Also init on first touch
-            document.addEventListener('touchstart', () => {
-                if (!audioCtx) initAudio();
-            }, { once: true });
-
-            // Handle keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.key === ' ' || e.key === 'Space') {
-                    e.preventDefault();
-                    if (mediaElement) {
-                        if (mediaElement.paused) {
-                            mediaElement.play().catch(() => {});
-                            isPlaying = true;
-                            updateStatusDot();
-                            document.getElementById('npStatus').textContent = '▶ PLAYING';
-                        } else {
-                            mediaElement.pause();
-                            isPlaying = false;
-                            updateStatusDot();
-                            document.getElementById('npStatus').textContent = '⏸ PAUSED';
-                        }
-                    }
-                }
-                if (e.key === 'm' || e.key === 'M') {
-                    if (audioCtx) toggleMuteMusic();
-                }
-                if (e.key === 'l' || e.key === 'L') {
-                    toggleLoop();
-                }
-                if (e.key === 's' || e.key === 'S') {
-                    stopAll();
-                }
-            });
-
-            // Initialize audio context on page load (will be resumed on interaction)
-            window.addEventListener('load', () => {
-                // Pre-init but resume on click
-                try {
-                    if (!audioCtx) {
-                        const ctx = new(window.AudioContext || window.webkitAudioContext)();
-                        audioCtx = ctx;
-                        // Build full chain
-                        masterGain = audioCtx.createGain();
-                        masterGain.gain.value = 0.9;
-                        masterGain.connect(audioCtx.destination);
-                        musicGain = audioCtx.createGain();
-                        musicGain.gain.value = params.musicVolume;
-                        musicGain.connect(masterGain);
-                        analyserNode = audioCtx.createAnalyser();
-                        analyserNode.fftSize = 512;
-                        analyserNode.smoothingTimeConstant = 0.55;
-                        analyserNode.connect(musicGain);
-                        analyserDataArray = new Uint8Array(analyserNode.fftSize);
-
-                        noiseGain = audioCtx.createGain();
-                        noiseGain.gain.value = params.noiseVolume;
-                        noiseGain.connect(masterGain);
-                        noiseDryGain = audioCtx.createGain();
-                        noiseDryGain.gain.value = 0.5;
-                        noiseDryGain.connect(noiseGain);
-                        noiseWetGain = audioCtx.createGain();
-                        noiseWetGain.gain.value = 0.5;
-                        noiseWetGain.connect(noiseGain);
-                        convolver = audioCtx.createConvolver();
-                        convolver.connect(noiseWetGain);
-                        updateImpulseResponse();
-                        noiseFilter = audioCtx.createBiquadFilter();
-                        noiseFilter.type = 'lowpass';
-                        noiseFilter.frequency.value = params.filterCutoff;
-                        noiseFilter.Q.value = params.filterResonance;
-                        noiseFilter2 = audioCtx.createBiquadFilter();
-                        noiseFilter2.type = 'highpass';
-                        noiseFilter2.frequency.value = params.filter2Cutoff;
-                        noiseFilter2.Q.value = 0.7;
-                        waveshaper1 = audioCtx.createWaveShaper();
-                        waveshaper1.curve = makeDistortionCurve(params.drive, params.asymmetry);
-                        waveshaper1.oversample = '4x';
-                        waveshaper2 = audioCtx.createWaveShaper();
-                        waveshaper2.curve = makeDistortionCurve(params.drive2, params.asymmetry * 0.7);
-                        waveshaper2.oversample = '4x';
-                        gateGain = audioCtx.createGain();
-                        gateGain.gain.value = 0;
-                        const bufferSize = audioCtx.sampleRate * 2;
-                        noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                        const data = noiseBuffer.getChannelData(0);
-                        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-                        noiseBufferSource = audioCtx.createBufferSource();
-                        noiseBufferSource.buffer = noiseBuffer;
-                        noiseBufferSource.loop = true;
-                        noiseBufferSource.connect(noiseFilter2);
-                        noiseFilter2.connect(waveshaper1);
-                        waveshaper1.connect(noiseFilter);
-                        noiseFilter.connect(waveshaper2);
-                        waveshaper2.connect(gateGain);
-                        gateGain.connect(noiseDryGain);
-                        gateGain.connect(convolver);
-                        noiseBufferSource.start(0);
-                        gateGain.gain.value = 0;
-                        noiseGain.gain.value = params.noiseVolume;
-                        // Suspend immediately - will resume on user gesture
-                        audioCtx.suspend();
-                        startAnalyserLoop();
-                        startVisualizerLoop();
-                    }
-                } catch (e) {
-                    console.warn('Audio pre-init error:', e);
-                }
-            });
-
-            // ==================== RESUME ON INTERACTION ====================
-            function resumeAudio() {
-                if (audioCtx && audioCtx.state === 'suspended') {
-                    audioCtx.resume().then(() => {
-                        console.log('AudioContext resumed');
-                    }).catch(() => {});
-                }
-            }
-            document.addEventListener('click', resumeAudio);
-            document.addEventListener('touchstart', resumeAudio);
-            document.addEventListener('keydown', resumeAudio);
-
-            console.log('🎛️ Analog Distortion Synth — готов к работе');
-            console.log('Поиск треков через iTunes API, ритм-синхронизация, дисторшн-шум');
-            console.log('Горячие клавиши: Space = Play/Pause, M = Mute, L = Loop, S = Stop');
-
-        })();
-    </script>
+    console.log('🎛️ Analog Distortion Synth — v2 с Pitch Tracking, Radio Static, Crackle');
+})();
+</script>
 </body>
 </html>
