@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Гитарный дисторшн-синтезатор | iTunes Preview + Loop</title>
     <style>
+        /* ... (стили без изменений, для краткости) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0f;
@@ -250,7 +251,6 @@
 
     <script>
         (function() {
-            // ==================== СОСТОЯНИЕ ====================
             const state = {
                 audioContext: null,
                 musicAnalyser: null,
@@ -274,9 +274,9 @@
                 loopEnabled: true,
                 previousRms: 0,
                 rmsHistory: [],
+                searchResults: [], // <-- массив результатов поиска
             };
 
-            // DOM элементы
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
             const resultsDropdown = document.getElementById('resultsDropdown');
@@ -295,7 +295,6 @@
             const visualizer = document.getElementById('visualizer');
             const ctx = visualizer.getContext('2d');
 
-            // Регуляторы
             const driveSlider = document.getElementById('drive');
             const toneFreqSlider = document.getElementById('toneFreq');
             const presenceSlider = document.getElementById('presence');
@@ -310,7 +309,6 @@
             const muteNoiseBtn = document.getElementById('muteNoiseBtn');
             const loopBtn = document.getElementById('loopBtn');
 
-            // Отображение значений
             function updateDisplay() {
                 document.getElementById('driveVal').textContent = driveSlider.value;
                 document.getElementById('toneVal').textContent = toneFreqSlider.value;
@@ -325,7 +323,7 @@
                 slider.addEventListener('input', updateDisplay);
             });
 
-            // ==================== ВИЗУАЛИЗАЦИЯ ====================
+            // ===== Визуализация =====
             let animationId = null;
             function resizeVisualizer() {
                 const rect = visualizer.parentElement.getBoundingClientRect();
@@ -334,7 +332,6 @@
             }
             resizeVisualizer();
             window.addEventListener('resize', resizeVisualizer);
-
             function drawVisualizer() {
                 const w = visualizer.width;
                 const h = visualizer.height;
@@ -357,10 +354,6 @@
                         const lightness = 20 + (value / 255) * 50;
                         ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
                         ctx.fillRect(x, h - barHeight, w / usableBars - 1, barHeight);
-                        if (value > 180) {
-                            ctx.fillStyle = 'rgba(255,0,100,0.3)';
-                            ctx.fillRect(x, h - barHeight, w / usableBars - 1, barHeight);
-                        }
                     }
                     if (state.dominantFreq > 0) {
                         const freqX = (state.dominantFreq / 6000) * w;
@@ -372,24 +365,18 @@
                         ctx.lineTo(freqX, h);
                         ctx.stroke();
                         ctx.setLineDash([]);
-                        const noteName = freqToNoteName(state.dominantFreq);
                         ctx.fillStyle = '#ff4488';
                         ctx.font = '10px Courier New';
-                        ctx.fillText(`${noteName} (${Math.round(state.dominantFreq)}Hz)`, freqX + 5, 15);
-                        ctx.fillText(`ГЛИТЧ: ${Math.round(state.glitchIntensity * 100)}%`, 10, h - 10);
+                        ctx.fillText(`${freqToNoteName(state.dominantFreq)} (${Math.round(state.dominantFreq)}Hz)`, freqX + 5, 15);
                     }
                     for (let i = 0; i < 30; i++) {
-                        const x = Math.random() * w;
-                        const y = Math.random() * h;
                         ctx.fillStyle = `rgba(255,0,100,${Math.random() * 0.2 + 0.05})`;
-                        ctx.fillRect(x, y, Math.random() * 3 + 1, Math.random() * 3 + 1);
+                        ctx.fillRect(Math.random() * w, Math.random() * h, Math.random() * 3 + 1, Math.random() * 3 + 1);
                     }
                 } else {
                     for (let i = 0; i < 80; i++) {
-                        const x = Math.random() * w;
-                        const y = Math.random() * h;
                         ctx.fillStyle = `rgba(255,80,120,${Math.random() * 0.06 + 0.01})`;
-                        ctx.fillRect(x, y, 2, 2);
+                        ctx.fillRect(Math.random() * w, Math.random() * h, 2, 2);
                     }
                     ctx.fillStyle = '#1a2a1a';
                     ctx.font = '16px Courier New';
@@ -408,7 +395,7 @@
             }
             startVisualizerLoop();
 
-            // ==================== УТИЛИТЫ ====================
+            // ===== Утилиты =====
             function freqToNoteName(freq) {
                 if (freq <= 0) return '--';
                 const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -431,7 +418,7 @@
                 return `${min}:${sec.toString().padStart(2, '0')}`;
             }
 
-            // ==================== ITUNES ПОИСК ====================
+            // ===== Поиск iTunes =====
             let searchTimeout = null;
             searchBtn.addEventListener('click', performSearch);
             searchInput.addEventListener('keydown', (e) => {
@@ -445,6 +432,7 @@
                     else closeResults();
                 }, 500);
             });
+
             async function performSearch() {
                 const query = searchInput.value.trim();
                 if (query.length < 2) return;
@@ -458,7 +446,8 @@
                     const data = await response.json();
                     loadingIndicator.classList.remove('active');
                     if (data.results && data.results.length > 0) {
-                        renderResults(data.results);
+                        state.searchResults = data.results; // сохраняем результаты
+                        renderResults(state.searchResults);
                     } else {
                         noResults.classList.add('active');
                     }
@@ -468,11 +457,13 @@
                     noResults.textContent = '⚠ ОШИБКА СЕТИ · ПОВТОРИТЕ';
                 }
             }
+
             function renderResults(tracks) {
                 resultsList.innerHTML = '';
-                tracks.forEach((track) => {
+                tracks.forEach((track, index) => {
                     const item = document.createElement('div');
                     item.className = 'result-item';
+                    item.dataset.index = index; // используем индекс для поиска в state.searchResults
                     const coverUrl = track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '200x200') : '';
                     const duration = track.trackTimeMillis ? formatDuration(track.trackTimeMillis) : '--:--';
                     item.innerHTML = `
@@ -483,10 +474,19 @@
                         </div>
                         <div class="duration">${duration}</div>
                     `;
-                    item.addEventListener('click', () => selectTrack(track));
                     resultsList.appendChild(item);
                 });
             }
+
+            // Делегирование кликов по результатам
+            resultsList.addEventListener('click', (e) => {
+                const item = e.target.closest('.result-item');
+                if (!item) return;
+                const index = parseInt(item.dataset.index, 10);
+                const track = state.searchResults[index];
+                if (track) selectTrack(track);
+            });
+
             function escapeHtml(text) {
                 const div = document.createElement('div');
                 div.textContent = text;
@@ -501,7 +501,7 @@
                 if (!e.target.closest('.search-section')) closeResults();
             });
 
-            // ==================== ВЫБОР ТРЕКА ====================
+            // ===== Выбор трека =====
             function selectTrack(track) {
                 state.currentTrack = track;
                 closeResults();
@@ -521,15 +521,13 @@
                 stopBtn.disabled = true;
                 glitchBtn.disabled = true;
                 noiseTypeBtn.disabled = true;
-                if (track.previewUrl) {
-                    setStatus('ПРЕВЬЮ ДОСТУПНО · 30 СЕК');
-                } else {
+                if (!track.previewUrl) {
                     setStatus('⚠ НЕТ ПРЕВЬЮ ДЛЯ ЭТОГО ТРЕКА');
                     playBtn.disabled = true;
                 }
             }
 
-            // ==================== АУДИО ДВИЖОК ====================
+            // ===== Аудио движок =====
             function initAudioContext() {
                 if (state.audioContext) return state.audioContext;
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -565,90 +563,67 @@
             }
 
             function createNoiseEngine(audioCtx, noiseGain) {
-                // Постоянный источник шума с дисторшном (гитарный преамп)
                 const bufferSize = audioCtx.sampleRate * 2;
                 const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
                 const noiseSource = audioCtx.createBufferSource();
                 noiseSource.buffer = noiseBuffer;
                 noiseSource.loop = true;
 
-                // Дополнительный низкочастотный осциллятор для "тела" звука
                 const subOsc = audioCtx.createOscillator();
                 subOsc.type = 'sawtooth';
-                subOsc.frequency.value = 60; // низкий гул
+                subOsc.frequency.value = 60;
                 const subGain = audioCtx.createGain();
                 subGain.gain.value = 0.5;
 
-                // Смешиваем шум и осциллятор
                 const inputMix = audioCtx.createGain();
                 noiseSource.connect(inputMix);
                 subOsc.connect(subGain);
                 subGain.connect(inputMix);
 
-                // Фильтр тембра (tone)
                 const toneFilter = audioCtx.createBiquadFilter();
                 toneFilter.type = 'lowpass';
                 toneFilter.frequency.value = parseFloat(toneFreqSlider.value);
                 toneFilter.Q.value = 0.8;
 
-                // Дисторшн (drive)
                 const driveWaveshaper = audioCtx.createWaveShaper();
                 driveWaveshaper.curve = createDistortionCurve(parseFloat(driveSlider.value));
                 driveWaveshaper.oversample = '4x';
 
-                // Присутствие (presence) – фильтр высоких частот
                 const presenceFilter = audioCtx.createBiquadFilter();
                 presenceFilter.type = 'highshelf';
                 presenceFilter.frequency.value = 3000;
                 presenceFilter.gain.value = parseFloat(presenceSlider.value) * 10;
 
-                // Гейт (управление громкостью по ритму)
                 const gate = audioCtx.createGain();
-                gate.gain.value = 0.2; // базовый уровень (постоянный фон)
+                gate.gain.value = 0.2;
 
-                // Соединения
                 inputMix.connect(toneFilter);
                 toneFilter.connect(driveWaveshaper);
                 driveWaveshaper.connect(presenceFilter);
                 presenceFilter.connect(gate);
                 gate.connect(noiseGain);
 
-                // Запуск источников
                 noiseSource.start();
                 subOsc.start();
 
-                // Управление параметрами
-                const setParameters = (params) => {
+                function setParameters(params) {
                     if (params.drive !== undefined) driveWaveshaper.curve = createDistortionCurve(params.drive);
                     if (params.tone !== undefined) toneFilter.frequency.value = params.tone;
                     if (params.presence !== undefined) presenceFilter.gain.value = params.presence * 10;
                     if (params.gateBaseLevel !== undefined) gate.gain.value = params.gateBaseLevel;
-                };
+                }
 
-                // Функция для ритмического открытия гейта
-                const triggerGate = (level = 1.0, attack, release) => {
+                function triggerGate(level, attack, release) {
                     const now = audioCtx.currentTime;
                     gate.gain.cancelScheduledValues(now);
                     gate.gain.setValueAtTime(gate.gain.value, now);
-                    gate.gain.linearRampToValueAtTime(level, now + (attack || 0.005));
-                    gate.gain.setValueAtTime(level, now + (attack || 0.005));
-                    gate.gain.linearRampToValueAtTime(0.2, now + (attack || 0.005) + (release || 0.15));
-                };
+                    gate.gain.linearRampToValueAtTime(level, now + attack);
+                    gate.gain.linearRampToValueAtTime(0.2, now + attack + release);
+                }
 
-                return {
-                    setParameters,
-                    triggerGate,
-                    stop: () => {
-                        try {
-                            noiseSource.stop();
-                            subOsc.stop();
-                        } catch (e) {}
-                    }
-                };
+                return { setParameters, triggerGate, stop: () => { try { noiseSource.stop(); subOsc.stop(); } catch(e) {} } };
             }
 
             function startPlayback() {
@@ -683,8 +658,7 @@
                         state.previousRms = 0;
                         state.rmsHistory = [];
 
-                        // Тестовый гейт
-                        noiseEngine.triggerGate(1.0, 0.01, 0.2);
+                        noiseEngine.triggerGate(1.0, 0.01, 0.2); // тестовый звук
 
                         source.onended = () => {
                             if (state.isPlaying && !state.loopEnabled) {
@@ -731,9 +705,6 @@
                     noiseTypeBtn.disabled = true;
                     setStatus('■ ОСТАНОВЛЕНО');
                     npStatus.textContent = 'ОСТАНОВЛЕНО';
-                    if (state.currentTrack) {
-                        npStatus.textContent = 'ТРЕК ВЫБРАН · ГОТОВ';
-                    }
                 }
             }
 
@@ -751,34 +722,29 @@
                 state.sourceNode = null;
             }
 
-            // ==================== ДЕТЕКТОР РИТМА (RMS) ====================
+            // ===== Детектор ритма =====
             function analyzeAndTrigger() {
                 if (!state.isPlaying || !state.musicAnalyser || !state.noiseEngine) return;
-
                 const analyser = state.musicAnalyser;
                 const bufferLength = analyser.frequencyBinCount;
                 const dataArray = new Uint8Array(bufferLength);
                 analyser.getByteFrequencyData(dataArray);
 
-                // Вычисляем RMS низких частот (20-200 Гц) – бочка и бас
                 const sampleRate = state.audioContext.sampleRate;
                 const lowStart = Math.floor(20 / (sampleRate / 2) * (bufferLength - 1));
                 const lowEnd = Math.floor(200 / (sampleRate / 2) * (bufferLength - 1));
                 let sumSquares = 0;
-                for (let i = lowStart; i <= lowEnd; i++) {
-                    sumSquares += dataArray[i] * dataArray[i];
-                }
+                for (let i = lowStart; i <= lowEnd; i++) sumSquares += dataArray[i] * dataArray[i];
                 const rms = Math.sqrt(sumSquares / (lowEnd - lowStart + 1)) / 255;
 
-                // Адаптивный порог: среднее + стандартное отклонение
                 state.rmsHistory.push(rms);
                 if (state.rmsHistory.length > 40) state.rmsHistory.shift();
-                const mean = state.rmsHistory.reduce((a, b) => a + b, 0) / state.rmsHistory.length;
+                const mean = state.rmsHistory.reduce((a,b) => a + b, 0) / state.rmsHistory.length;
                 let variance = 0;
                 for (let val of state.rmsHistory) variance += (val - mean) ** 2;
                 variance /= state.rmsHistory.length;
                 const std = Math.sqrt(variance);
-                const threshold = mean + 1.0 * std + 0.01; // небольшое смещение
+                const threshold = mean + 1.0 * std + 0.01;
 
                 const now = state.audioContext.currentTime;
                 const minInterval = parseFloat(intervalSlider.value) / 1000;
@@ -801,28 +767,21 @@
                     }
                 }
 
-                // Обновляем доминирующую частоту для визуализации
-                let maxValue = 0;
-                let maxIndex = 0;
+                // Обновление доминирующей частоты для визуализации
+                let maxValue = 0, maxIndex = 0;
                 const startBin = Math.floor(bufferLength * 0.02);
                 const endBin = Math.floor(bufferLength * 0.6);
                 for (let i = startBin; i < endBin; i++) {
-                    if (dataArray[i] > maxValue) {
-                        maxValue = dataArray[i];
-                        maxIndex = i;
-                    }
+                    if (dataArray[i] > maxValue) { maxValue = dataArray[i]; maxIndex = i; }
                 }
                 const freq = (maxIndex * sampleRate) / (analyser.fftSize);
-                if (maxValue > 25 && freq > 30) {
-                    state.dominantFreq = freq;
-                } else {
-                    state.glitchIntensity = Math.max(state.glitchIntensity - 0.02, 0.05);
-                }
+                if (maxValue > 25 && freq > 30) state.dominantFreq = freq;
+                else state.glitchIntensity = Math.max(state.glitchIntensity - 0.02, 0.05);
             }
 
             setInterval(analyzeAndTrigger, 30);
 
-            // ==================== УПРАВЛЕНИЕ ====================
+            // ===== Управление =====
             playBtn.addEventListener('click', startPlayback);
             stopBtn.addEventListener('click', () => stopPlayback(false));
 
@@ -843,7 +802,6 @@
             noiseTypeBtn.addEventListener('click', () => {
                 state.noiseType = (state.noiseType + 1) % state.noiseTypeNames.length;
                 noiseTypeBtn.textContent = `ТИП: ${state.noiseTypeNames[state.noiseType]}`;
-                // Пресеты для разных типов приампа
                 let newDrive, newTone, newPresence;
                 switch (state.noiseType) {
                     case 0: newDrive = 60; newTone = 1200; newPresence = 0.5; break;
@@ -856,16 +814,11 @@
                 presenceSlider.value = newPresence;
                 updateDisplay();
                 if (state.noiseEngine) {
-                    state.noiseEngine.setParameters({
-                        drive: newDrive,
-                        tone: newTone,
-                        presence: newPresence,
-                    });
+                    state.noiseEngine.setParameters({ drive: newDrive, tone: newTone, presence: newPresence });
                 }
                 setStatus(`ТИП: ${state.noiseTypeNames[state.noiseType]}`);
             });
 
-            // Регуляторы в реальном времени
             [driveSlider, toneFreqSlider, presenceSlider, gateAmountSlider].forEach(slider => {
                 slider.addEventListener('input', () => {
                     if (state.noiseEngine) {
@@ -878,55 +831,38 @@
                 });
             });
 
-            // Громкость
             musicVolumeSlider.addEventListener('input', () => {
-                if (state.musicGain) {
-                    state.musicGain.gain.value = state.musicMuted ? 0 : musicVolumeSlider.value / 100;
-                }
+                if (state.musicGain) state.musicGain.gain.value = state.musicMuted ? 0 : musicVolumeSlider.value / 100;
             });
             noiseVolumeSlider.addEventListener('input', () => {
-                if (state.noiseGain) {
-                    state.noiseGain.gain.value = state.noiseMuted ? 0 : noiseVolumeSlider.value / 100;
-                }
+                if (state.noiseGain) state.noiseGain.gain.value = state.noiseMuted ? 0 : noiseVolumeSlider.value / 100;
             });
 
             muteMusicBtn.addEventListener('click', () => {
                 state.musicMuted = !state.musicMuted;
                 muteMusicBtn.classList.toggle('active-mute', state.musicMuted);
-                if (state.musicGain) {
-                    state.musicGain.gain.value = state.musicMuted ? 0 : musicVolumeSlider.value / 100;
-                }
+                if (state.musicGain) state.musicGain.gain.value = state.musicMuted ? 0 : musicVolumeSlider.value / 100;
                 setStatus(state.musicMuted ? '🔇 МУЗЫКА ОТКЛЮЧЕНА' : '🔊 МУЗЫКА ВКЛЮЧЕНА');
             });
             muteNoiseBtn.addEventListener('click', () => {
                 state.noiseMuted = !state.noiseMuted;
                 muteNoiseBtn.classList.toggle('active-mute', state.noiseMuted);
-                if (state.noiseGain) {
-                    state.noiseGain.gain.value = state.noiseMuted ? 0 : noiseVolumeSlider.value / 100;
-                }
+                if (state.noiseGain) state.noiseGain.gain.value = state.noiseMuted ? 0 : noiseVolumeSlider.value / 100;
                 setStatus(state.noiseMuted ? '🔇 ШУМ ОТКЛЮЧЕН' : '🔊 ШУМ ВКЛЮЧЕН');
             });
 
-            // Loop
             loopBtn.addEventListener('click', () => {
                 state.loopEnabled = !state.loopEnabled;
                 loopBtn.classList.toggle('active-btn', state.loopEnabled);
-                if (state.sourceNode) {
-                    state.sourceNode.loop = state.loopEnabled;
-                }
+                if (state.sourceNode) state.sourceNode.loop = state.loopEnabled;
                 setStatus(state.loopEnabled ? '🔁 LOOP ВКЛЮЧЕН' : '🔁 LOOP ВЫКЛЮЧЕН');
             });
 
             // Инициализация
             noiseTypeBtn.textContent = `ТИП: ${state.noiseTypeNames[state.noiseType]}`;
             setStatus('СИСТЕМА ГОТОВА · ВВЕДИТЕ ЗАПРОС');
-            window.addEventListener('load', () => {
-                setTimeout(() => searchInput.focus(), 500);
-            });
-            window.addEventListener('beforeunload', () => {
-                if (state.audioContext) state.audioContext.close();
-            });
-            console.log('⬡ ГИТАРНЫЙ ДИСТОРШН СИНТЕЗАТОР ЗАГРУЖЕН');
+            window.addEventListener('load', () => setTimeout(() => searchInput.focus(), 500));
+            window.addEventListener('beforeunload', () => { if (state.audioContext) state.audioContext.close(); });
         })();
     </script>
 </body>
