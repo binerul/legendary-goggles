@@ -5,106 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Гитарный дисторшн-синтезатор | iTunes Preview + Loop</title>
     <style>
-        /* ... (стили без изменений, для краткости опущены) ... */
+        /* ... (все стили без изменений) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0a0a0f;
-            font-family: 'Courier New', monospace;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #b0ffb0;
-            padding: 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            background: #111118;
-            border: 2px solid #2a2a3a;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 0 60px rgba(0, 255, 100, 0.08), 0 0 120px rgba(0, 150, 255, 0.05);
-            position: relative;
-        }
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -2px; left: -2px; right: -2px; bottom: -2px;
-            border-radius: 18px;
-            background: linear-gradient(45deg, #00ff6622, #0066ff22, #ff006622, #00ff6622);
-            background-size: 400% 400%;
-            z-index: -1;
-            animation: borderGlow 8s ease infinite;
-            pointer-events: none;
-        }
-        @keyframes borderGlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        h1 {
-            font-size: 1.8rem;
-            text-align: center;
-            margin-bottom: 8px;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: #00ff88;
-            text-shadow: 0 0 20px #00ff6644, 0 0 40px #00ff6644;
-        }
-        .subtitle {
-            text-align: center;
-            font-size: 0.75rem;
-            letter-spacing: 3px;
-            color: #668888;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-        }
+        body { background: #0a0a0f; font-family: 'Courier New', monospace; min-height: 100vh; display: flex; justify-content: center; align-items: center; color: #b0ffb0; padding: 20px; }
+        .container { width: 100%; max-width: 1000px; background: #111118; border: 2px solid #2a2a3a; border-radius: 16px; padding: 30px; box-shadow: 0 0 60px rgba(0,255,100,0.08), 0 0 120px rgba(0,150,255,0.05); position: relative; }
+        .container::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 18px; background: linear-gradient(45deg, #00ff6622, #0066ff22, #ff006622, #00ff6622); background-size: 400% 400%; z-index: -1; animation: borderGlow 8s ease infinite; pointer-events: none; }
+        @keyframes borderGlow { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        h1 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; letter-spacing: 6px; text-transform: uppercase; color: #00ff88; text-shadow: 0 0 20px #00ff6644, 0 0 40px #00ff6644; }
+        .subtitle { text-align: center; font-size: 0.75rem; letter-spacing: 3px; color: #668888; margin-bottom: 25px; text-transform: uppercase; }
         .search-section { position: relative; margin-bottom: 20px; }
         .search-row { display: flex; gap: 10px; margin-bottom: 8px; }
-        .search-row input {
-            flex: 1;
-            background: #0d0d15;
-            border: 1px solid #2a2a3a;
-            border-radius: 8px;
-            padding: 14px 18px;
-            color: #b0ffb0;
-            font-size: 1rem;
-            font-family: 'Courier New', monospace;
-            outline: none;
-            transition: all 0.3s;
-            letter-spacing: 1px;
-        }
+        .search-row input { flex: 1; background: #0d0d15; border: 1px solid #2a2a3a; border-radius: 8px; padding: 14px 18px; color: #b0ffb0; font-size: 1rem; font-family: 'Courier New', monospace; outline: none; transition: all 0.3s; letter-spacing: 1px; }
         .search-row input:focus { border-color: #00ff66; box-shadow: 0 0 20px #00ff6633; }
         .search-row input::placeholder { color: #445566; }
-        .search-row button {
-            background: #0d0d15;
-            border: 1px solid #2a2a3a;
-            border-radius: 8px;
-            padding: 14px 25px;
-            color: #00ff88;
-            font-size: 0.9rem;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
+        .search-row button { background: #0d0d15; border: 1px solid #2a2a3a; border-radius: 8px; padding: 14px 25px; color: #00ff88; font-size: 0.9rem; font-family: 'Courier New', monospace; cursor: pointer; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
         .search-row button:hover { border-color: #00ff66; box-shadow: 0 0 25px #00ff6644; background: #0f1a12; }
-        .results-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0; right: 0;
-            background: #151520;
-            border: 1px solid #2a2a3a;
-            border-radius: 12px;
-            max-height: 420px;
-            overflow-y: auto;
-            z-index: 100;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px #00ff6611;
-            margin-top: 4px;
-        }
+        .results-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #151520; border: 1px solid #2a2a3a; border-radius: 12px; max-height: 420px; overflow-y: auto; z-index: 100; box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px #00ff6611; margin-top: 4px; }
         .results-dropdown.active { display: block; animation: fadeIn 0.25s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .result-item { display: flex; align-items: center; gap: 15px; padding: 12px 18px; cursor: pointer; border-bottom: 1px solid #1a1a2a; transition: all 0.2s; }
@@ -251,7 +167,7 @@
 
     <script>
         (function() {
-            // ==================== СОСТОЯНИЕ ====================
+            // Состояние
             const state = {
                 audioContext: null,
                 musicAnalyser: null,
@@ -598,7 +514,7 @@
                 presenceFilter.gain.value = parseFloat(presenceSlider.value) * 10;
 
                 const gate = audioCtx.createGain();
-                gate.gain.value = 0.4; // Увеличено базовое значение
+                gate.gain.value = 0.4;
 
                 inputMix.connect(toneFilter);
                 toneFilter.connect(driveWaveshaper);
@@ -627,15 +543,13 @@
                 return { setParameters, triggerGate, stop: () => { try { noiseSource.stop(); subOsc.stop(); } catch(e) {} } };
             }
 
-            function startPlayback() {
+            async function startPlayback() {
                 if (!state.currentTrack || !state.currentTrack.previewUrl) {
                     setStatus('⚠ ОШИБКА: НЕТ ПРЕВЬЮ');
                     return;
                 }
                 const audioCtx = initAudioContext();
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+                await audioCtx.resume(); // ждём активацию
                 stopPlayback(true);
 
                 const source = audioCtx.createBufferSource();
@@ -647,44 +561,43 @@
 
                 const noiseEngine = createNoiseEngine(audioCtx, state.noiseGain);
 
-                fetch(state.currentTrack.previewUrl)
-                    .then(response => response.arrayBuffer())
-                    .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
-                    .then(audioBuffer => {
-                        source.buffer = audioBuffer;
-                        source.loop = state.loopEnabled;
-                        source.start(0);
+                try {
+                    const response = await fetch(state.currentTrack.previewUrl);
+                    const arrayBuffer = await response.arrayBuffer();
+                    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                    source.buffer = audioBuffer;
+                    source.loop = state.loopEnabled;
+                    source.start(0);
 
-                        state.sourceNode = source;
-                        state.musicAnalyser = musicAnalyser;
-                        state.noiseEngine = noiseEngine;
-                        state.isPlaying = true;
-                        state.lastBeatTime = 0;
-                        state.rhythmCounter = 0;
-                        state.previousRms = 0;
-                        state.rmsHistory = [];
+                    state.sourceNode = source;
+                    state.musicAnalyser = musicAnalyser;
+                    state.noiseEngine = noiseEngine;
+                    state.isPlaying = true;
+                    state.lastBeatTime = 0;
+                    state.rhythmCounter = 0;
+                    state.previousRms = 0;
+                    state.rmsHistory = [];
 
-                        noiseEngine.triggerGate(1.0, 0.01, 0.2); // тестовый звук
+                    noiseEngine.triggerGate(1.0, 0.01, 0.2);
 
-                        source.onended = () => {
-                            if (state.isPlaying && !state.loopEnabled) {
-                                stopPlayback(false);
-                                setStatus('⏹ ПРЕВЬЮ ЗАВЕРШЕНО');
-                            }
-                        };
+                    source.onended = () => {
+                        if (state.isPlaying && !state.loopEnabled) {
+                            stopPlayback(false);
+                            setStatus('⏹ ПРЕВЬЮ ЗАВЕРШЕНО');
+                        }
+                    };
 
-                        playBtn.disabled = true;
-                        stopBtn.disabled = false;
-                        glitchBtn.disabled = false;
-                        noiseTypeBtn.disabled = false;
-                        setStatus('▶ ИГРАЕТ · ГИТАРНЫЙ ДИСТОРШН');
-                        npStatus.textContent = '▶ ИГРАЕТ';
-                    })
-                    .catch(err => {
-                        console.error('Ошибка загрузки аудио:', err);
-                        setStatus('⚠ ОШИБКА ЗАГРУЗКИ ПРЕВЬЮ');
-                        cleanupAudio();
-                    });
+                    playBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    glitchBtn.disabled = false;
+                    noiseTypeBtn.disabled = false;
+                    setStatus('▶ ИГРАЕТ · ГИТАРНЫЙ ДИСТОРШН');
+                    npStatus.textContent = '▶ ИГРАЕТ';
+                } catch (err) {
+                    console.error('Ошибка загрузки аудио:', err);
+                    setStatus('⚠ ОШИБКА ЗАГРУЗКИ ПРЕВЬЮ');
+                    cleanupAudio();
+                }
             }
 
             function stopPlayback(silent = false) {
