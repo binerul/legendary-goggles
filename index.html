@@ -457,8 +457,8 @@
                     <input type="range" id="asymmetryKnob" min="0" max="100" value="30" step="1">
                 </div>
                 <div class="knob-group">
-                    <div class="knob-label"><span>Уровень шума (радиопомехи)</span><span class="value" id="valNoise">25%</span></div>
-                    <input type="range" id="noiseKnob" min="0" max="100" value="25" step="1">
+                    <div class="knob-label"><span>Уровень шума (радиопомехи)</span><span class="value" id="valNoise">5%</span></div>
+                    <input type="range" id="noiseKnob" min="0" max="100" value="5" step="1">
                 </div>
                 <div class="knob-group">
                     <div class="knob-label"><span>Смесь (тон/шум)</span><span class="value" id="valMix">60%</span></div>
@@ -573,12 +573,12 @@
             let currentPreviewUrl = null;
             let currentTrackName = '';
 
-            // Параметры
+            // Параметры (noiseAmount по умолчанию = 5, было 25)
             const params = {
                 distortion: 70,
                 tone: 40,
                 asymmetry: 30,
-                noiseAmount: 25,
+                noiseAmount: 5,      // <-- изменено с 25 на 5
                 mix: 60,
                 attack: 5,
                 decay: 200,
@@ -911,7 +911,7 @@
 
                 // Синтезаторный канал
                 synthGain = audioContext.createGain();
-                synthGain.gain.value = 0;
+                synthGain.gain.value = 1.0;   // <-- ИСПРАВЛЕНО: было 0
 
                 // Фильтр
                 filterNode = audioContext.createBiquadFilter();
@@ -943,7 +943,7 @@
                 reverbConvolver.connect(reverbGain);
                 reverbGain.connect(masterGain);
 
-                // Шумовой генератор (радиопомехи)
+                // Шумовой генератор (радиопомехи) - теперь тише
                 const bufferSize = 2 * audioContext.sampleRate;
                 const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
                 const data = noiseBuffer.getChannelData(0);
@@ -954,7 +954,7 @@
                 noiseSource.buffer = noiseBuffer;
                 noiseSource.loop = true;
                 noiseGain = audioContext.createGain();
-                noiseGain.gain.value = 0;
+                noiseGain.gain.value = params.noiseAmount / 100 * 0.1;  // <-- уменьшено с 0.5 до 0.1
                 noiseSource.connect(noiseGain);
                 noiseGain.connect(filterNode);
                 noiseSource.start();
@@ -986,7 +986,6 @@
                     } else {
                         y = (1 + k * 0.7) * x / (1 + k * 0.7 * Math.abs(x));
                     }
-                    // Асимметрия
                     y = y * (1 + asym * (x > 0 ? 0.3 : -0.2));
                     curve[i] = Math.tanh(y * 1.5);
                 }
@@ -1010,47 +1009,37 @@
                 if (!audioContext) return;
                 const now = audioContext.currentTime;
 
-                // Дисторшн кривая
                 if (waveshaperNode) {
                     waveshaperNode.curve = makeDistortionCurve(params.distortion);
                 }
 
-                // Фильтр
                 if (filterNode) {
                     filterNode.frequency.setTargetAtTime(params.filterFreq, now, 0.05);
                     filterNode.Q.setTargetAtTime(params.filterQ, now, 0.05);
                 }
 
-                // Тон (яркость) - дополнительный high shelf
-                // Используем существующий фильтр, но можем менять тип? Лучше отдельный, но для простоты оставим как lowpass + tone влияет на cutoff
-                // Для простоты tone влияет на filterFreq: яркость = выше cutoff
                 if (filterNode) {
                     const toneAdjusted = params.filterFreq * (1 + params.tone / 100);
                     filterNode.frequency.setTargetAtTime(toneAdjusted, now, 0.05);
                 }
 
-                // Реверб
                 if (reverbGain && dryGain) {
                     reverbGain.gain.setTargetAtTime(params.reverbMix / 100, now, 0.05);
                     dryGain.gain.setTargetAtTime(1 - params.reverbMix / 100, now, 0.05);
                 }
 
-                // Реверб длина (перегенерировать если сильно меняется)
                 if (reverbConvolver && Math.abs(params.reverbLength - reverbConvolver.buffer.duration) > 0.3) {
                     reverbConvolver.buffer = generateImpulseResponse(params.reverbLength);
                 }
 
-                // Шум
                 if (noiseGain) {
-                    noiseGain.gain.setTargetAtTime(params.noiseAmount / 100 * 0.5, now, 0.05);
+                    noiseGain.gain.setTargetAtTime(params.noiseAmount / 100 * 0.1, now, 0.05);
                 }
 
-                // Музыка громкость
                 if (musicGain && musicEnabled) {
                     musicGain.gain.setTargetAtTime(params.musicVolume / 100, now, 0.05);
                 }
 
-                // Модуляция
                 if (modulationOsc && modulationGain) {
                     modulationOsc.frequency.setTargetAtTime(params.modRate, now, 0.05);
                     modulationGain.gain.setTargetAtTime(params.modDepth / 100 * 200, now, 0.05);
@@ -1067,7 +1056,6 @@
                 const freqData = new Uint8Array(analyserNode.frequencyBinCount);
                 analyserNode.getByteFrequencyData(freqData);
 
-                // Onset detection (энергия)
                 let sum = 0;
                 for (let i = 0; i < bufferLength; i++) {
                     const val = (dataArray[i] - 128) / 128;
@@ -1083,28 +1071,22 @@
                     lastOnsetTime = now;
                     onsetTimes.push(now);
 
-                    // Ограничим историю
                     if (onsetTimes.length > 100) onsetTimes.shift();
 
-                    // Обновляем индикатор
                     els.onsetIndicator.classList.add('onset');
                     setTimeout(() => els.onsetIndicator.classList.remove('onset'), 300);
 
-                    // Запускаем синтезаторный звук
                     triggerSynth();
 
-                    // Обновляем BPM если включено
                     if (params.autoBpm && onsetTimes.length > 5) {
                         calculateBpm();
                     }
                 }
 
-                // Определение доминирующей частоты (тон)
                 if (params.autoNote && freqData) {
                     detectNote(freqData);
                 }
 
-                // Визуализация
                 drawWaveform(dataArray, freqData);
             }
 
@@ -1114,7 +1096,6 @@
                 for (let i = 1; i < onsetTimes.length; i++) {
                     intervals.push(onsetTimes[i] - onsetTimes[i - 1]);
                 }
-                // Медиана интервалов
                 intervals.sort((a, b) => a - b);
                 const median = intervals[Math.floor(intervals.length / 2)];
                 if (median > 200 && median < 2000) {
@@ -1152,7 +1133,6 @@
                     els.noteDisplay.textContent = noteName + ' (' + Math.round(maxFreq) + ' Гц)';
                 } else {
                     if (currentNote) {
-                        // Держим последнюю ноту
                         els.noteDisplay.textContent = currentNote + ' (' + Math.round(currentFreq) + ' Гц)';
                     }
                 }
@@ -1176,7 +1156,6 @@
                 const h = canvas.height;
                 ctx.clearRect(0, 0, w, h);
 
-                // Рисуем осциллограмму
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(201,79,31,0.6)';
                 ctx.lineWidth = 1.5;
@@ -1189,7 +1168,6 @@
                 }
                 ctx.stroke();
 
-                // Рисуем спектр
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(100,180,255,0.4)';
                 ctx.lineWidth = 1;
@@ -1210,28 +1188,23 @@
                 const delaySec = params.triggerDelay / 1000;
                 const triggerTime = now + delaySec;
 
-                // Проверка на минимальный интервал для триггера
                 const perfNow = performance.now();
                 if (perfNow - lastTriggerTime < params.minInterval) return;
                 lastTriggerTime = perfNow;
 
-                // Определяем частоту для ноты
                 let baseFreq = 220;
                 if (currentFreq > 0) {
                     baseFreq = currentFreq;
                 } else if (currentNote) {
-                    // попробуем из ноты
                     const midi = noteNameToMidi(currentNote);
                     if (midi) baseFreq = 440 * Math.pow(2, (midi - 69) / 12);
                 }
 
-                // Применяем питч-оффсет и детонацию
                 const offsetSemitones = params.pitchOffset;
                 const detuneCents = params.detune;
                 let freq = baseFreq * Math.pow(2, offsetSemitones / 12);
                 freq = freq * Math.pow(2, detuneCents / 1200);
 
-                // Ритмический сдвиг: пропускаем некоторые триггеры
                 if (params.rhythmShift !== 0) {
                     const shift = params.rhythmShift;
                     const triggerCount = onsetTimes.length;
@@ -1239,37 +1212,32 @@
                     if (shift < 0 && triggerCount % (Math.abs(shift) + 1) === 0) return;
                 }
 
-                // Создаём осциллятор
                 const osc = audioContext.createOscillator();
                 osc.type = 'sawtooth';
                 osc.frequency.value = freq;
 
-                // Второй осциллятор для богатства
                 const osc2 = audioContext.createOscillator();
                 osc2.type = 'square';
                 osc2.frequency.value = freq * 1.005;
                 osc2.detune.value = 5;
 
-                // Гейн-огибающая
                 const envGain = audioContext.createGain();
                 envGain.gain.setValueAtTime(0, triggerTime);
                 envGain.gain.linearRampToValueAtTime(1, triggerTime + params.attack / 1000);
                 envGain.gain.exponentialRampToValueAtTime(0.001, triggerTime + params.attack / 1000 + params.decay /
                     1000);
 
-                // Подключаем
                 osc.connect(envGain);
                 osc2.connect(envGain);
                 envGain.connect(synthGain);
 
-                // Шумовой импульс (радиопомеха)
                 if (params.noiseAmount > 1) {
                     const noiseOsc = audioContext.createBufferSource();
                     const noiseBuf = createNoiseBuffer(0.1);
                     noiseOsc.buffer = noiseBuf;
                     const noiseEnv = audioContext.createGain();
                     noiseEnv.gain.setValueAtTime(0, triggerTime);
-                    noiseEnv.gain.linearRampToValueAtTime(params.noiseAmount / 100 * 0.7, triggerTime + 0.002);
+                    noiseEnv.gain.linearRampToValueAtTime(params.noiseAmount / 100 * 0.5, triggerTime + 0.002);
                     noiseEnv.gain.exponentialRampToValueAtTime(0.001, triggerTime + 0.08);
                     noiseOsc.connect(noiseEnv);
                     noiseEnv.connect(synthGain);
@@ -1282,7 +1250,6 @@
                 osc2.start(triggerTime);
                 osc2.stop(triggerTime + params.attack / 1000 + params.decay / 1000 + 0.1);
 
-                // Обновляем индикатор
                 els.onsetIndicator.classList.add('onset');
                 setTimeout(() => els.onsetIndicator.classList.remove('onset'), 300);
             }
@@ -1317,10 +1284,8 @@
             // ============ СТАРТ ============
             initUI();
 
-            // Запускаем цикл анализа
             requestAnimationFrame(animationLoop);
 
-            // Обработка изменения autoBpm/autoNote
             els.autoBpmCheckbox.addEventListener('change', (e) => {
                 params.autoBpm = e.target.checked;
             });
@@ -1328,7 +1293,6 @@
                 params.autoNote = e.target.checked;
             });
 
-            // Кнопка инициализации аудио при первом взаимодействии
             document.addEventListener('click', async () => {
                 if (!audioContext) {
                     await initAudioContext();
@@ -1338,7 +1302,6 @@
                 }
             }, { once: true });
 
-            // Если пользователь нажимает поиск без аудио контекста, создаём его
             els.searchBtn.addEventListener('click', async () => {
                 if (!audioContext) {
                     await initAudioContext();
