@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Цифровой дисторшн-синтезатор | iTunes Preview + Loop</title>
+    <title>Гитарный дисторшн-синтезатор | iTunes Preview + Loop</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0f;
             font-family: 'Courier New', monospace;
@@ -33,10 +29,7 @@
         .container::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
             border-radius: 18px;
             background: linear-gradient(45deg, #00ff6622, #0066ff22, #ff006622, #00ff6622);
             background-size: 400% 400%;
@@ -65,15 +58,8 @@
             margin-bottom: 25px;
             text-transform: uppercase;
         }
-        .search-section {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .search-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
+        .search-section { position: relative; margin-bottom: 20px; }
+        .search-row { display: flex; gap: 10px; margin-bottom: 8px; }
         .search-row input {
             flex: 1;
             background: #0d0d15;
@@ -87,13 +73,8 @@
             transition: all 0.3s;
             letter-spacing: 1px;
         }
-        .search-row input:focus {
-            border-color: #00ff66;
-            box-shadow: 0 0 20px #00ff6633;
-        }
-        .search-row input::placeholder {
-            color: #445566;
-        }
+        .search-row input:focus { border-color: #00ff66; box-shadow: 0 0 20px #00ff6633; }
+        .search-row input::placeholder { color: #445566; }
         .search-row button {
             background: #0d0d15;
             border: 1px solid #2a2a3a;
@@ -108,301 +89,71 @@
             text-transform: uppercase;
             white-space: nowrap;
         }
-        .search-row button:hover {
-            border-color: #00ff66;
-            box-shadow: 0 0 25px #00ff6644;
-            background: #0f1a12;
-        }
+        .search-row button:hover { border-color: #00ff66; box-shadow: 0 0 25px #00ff6644; background: #0f1a12; }
         .results-dropdown {
             display: none;
             position: absolute;
             top: 100%;
-            left: 0;
-            right: 0;
+            left: 0; right: 0;
             background: #151520;
             border: 1px solid #2a2a3a;
             border-radius: 12px;
             max-height: 420px;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px #00ff6611;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px #00ff6611;
             margin-top: 4px;
         }
-        .results-dropdown.active {
-            display: block;
-            animation: fadeIn 0.25s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .result-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 18px;
-            cursor: pointer;
-            border-bottom: 1px solid #1a1a2a;
-            transition: all 0.2s;
-        }
-        .result-item:hover {
-            background: #1a1a2e;
-            box-shadow: inset 3px 0 0 #00ff66;
-        }
-        .result-item img {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            object-fit: cover;
-            border: 1px solid #2a2a3a;
-            background: #0d0d15;
-        }
-        .result-item .info {
-            flex: 1;
-            min-width: 0;
-        }
-        .result-item .track-name {
-            font-size: 0.9rem;
-            color: #d0ffd0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            letter-spacing: 0.5px;
-        }
-        .result-item .artist-name {
-            font-size: 0.75rem;
-            color: #668888;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .result-item .duration {
-            font-size: 0.7rem;
-            color: #445566;
-            white-space: nowrap;
-        }
+        .results-dropdown.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .result-item { display: flex; align-items: center; gap: 15px; padding: 12px 18px; cursor: pointer; border-bottom: 1px solid #1a1a2a; transition: all 0.2s; }
+        .result-item:hover { background: #1a1a2e; box-shadow: inset 3px 0 0 #00ff66; }
+        .result-item img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #2a2a3a; background: #0d0d15; }
+        .result-item .info { flex: 1; min-width: 0; }
+        .result-item .track-name { font-size: 0.9rem; color: #d0ffd0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.5px; }
+        .result-item .artist-name { font-size: 0.75rem; color: #668888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .result-item .duration { font-size: 0.7rem; color: #445566; white-space: nowrap; }
         .results-dropdown::-webkit-scrollbar { width: 6px; }
         .results-dropdown::-webkit-scrollbar-track { background: #0d0d15; }
         .results-dropdown::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
         .results-dropdown::-webkit-scrollbar-thumb:hover { background: #00ff6655; }
-        .loading-indicator {
-            display: none;
-            padding: 25px;
-            text-align: center;
-            color: #668888;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            animation: pulse 1.5s ease infinite;
-        }
+        .loading-indicator { display: none; padding: 25px; text-align: center; color: #668888; font-size: 0.85rem; letter-spacing: 2px; animation: pulse 1.5s ease infinite; }
         .loading-indicator.active { display: block; }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-        .no-results {
-            display: none;
-            padding: 25px;
-            text-align: center;
-            color: #664444;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-        }
+        @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .no-results { display: none; padding: 25px; text-align: center; color: #664444; font-size: 0.85rem; letter-spacing: 2px; }
         .no-results.active { display: block; }
-        .player-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .now-playing {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: #0d0d15;
-            border-radius: 10px;
-            border: 1px solid #1a1a2a;
-            min-height: 75px;
-        }
-        .now-playing img {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid #2a2a3a;
-            background: #0d0d15;
-        }
+        .player-section { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .now-playing { display: flex; align-items: center; gap: 15px; padding: 15px; background: #0d0d15; border-radius: 10px; border: 1px solid #1a1a2a; min-height: 75px; }
+        .now-playing img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid #2a2a3a; background: #0d0d15; }
         .now-playing .np-info { flex: 1; min-width: 0; }
-        .now-playing .np-track {
-            font-size: 1rem;
-            color: #e0ffe0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            letter-spacing: 0.5px;
-        }
-        .now-playing .np-artist {
-            font-size: 0.8rem;
-            color: #668888;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .now-playing .np-status {
-            font-size: 0.65rem;
-            letter-spacing: 2px;
-            color: #00ff88;
-            text-transform: uppercase;
-            animation: pulse 1.2s ease infinite;
-        }
-        .visualizer-container {
-            position: relative;
-            background: #0d0d15;
-            border-radius: 10px;
-            border: 1px solid #1a1a2a;
-            overflow: hidden;
-            height: 120px;
-        }
-        #visualizer {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: pointer;
-        }
-        .visualizer-overlay {
-            position: absolute;
-            top: 8px;
-            left: 12px;
-            font-size: 0.6rem;
-            letter-spacing: 3px;
-            color: #445566;
-            text-transform: uppercase;
-            pointer-events: none;
-            text-shadow: 0 0 8px #000;
-        }
-        .controls-panel {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            background: #0d0d15;
-            border: 1px solid #1a1a2a;
-            border-radius: 10px;
-            padding: 20px;
-        }
-        .knob-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1 0 150px;
-            min-width: 120px;
-        }
-        .knob-group label {
-            font-size: 0.65rem;
-            letter-spacing: 1.5px;
-            color: #668888;
-            text-transform: uppercase;
-            display: flex;
-            justify-content: space-between;
-        }
-        .knob-group input[type="range"] {
-            width: 100%;
-            accent-color: #00ff66;
-            background: #1a1a2a;
-            height: 4px;
-            border-radius: 2px;
-            cursor: pointer;
-        }
-        .knob-group select {
-            background: #1a1a2a;
-            color: #b0ffb0;
-            border: 1px solid #2a2a3a;
-            border-radius: 6px;
-            padding: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.7rem;
-        }
-        .mixer-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .mixer-buttons button {
-            background: transparent;
-            border: 1px solid #2a2a3a;
-            border-radius: 6px;
-            padding: 8px 12px;
-            color: #b0ffb0;
-            font-size: 0.6rem;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-        }
-        .mixer-buttons button:hover {
-            border-color: #ff0066;
-            color: #ff6688;
-            box-shadow: 0 0 15px #ff006633;
-        }
-        .mixer-buttons button.active-mute {
-            background: #2a0a0a;
-            border-color: #ff0066;
-            color: #ff6688;
-        }
-        .playback-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .playback-controls button {
-            background: #0d0d15;
-            border: 1px solid #2a2a3a;
-            border-radius: 8px;
-            padding: 12px 20px;
-            color: #b0ffb0;
-            font-size: 0.8rem;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            min-width: 100px;
-        }
-        .playback-controls button:hover {
-            border-color: #00ff66;
-            box-shadow: 0 0 20px #00ff6633;
-        }
-        .playback-controls button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            border-color: #2a2a3a;
-            box-shadow: none;
-        }
-        .playback-controls button.active-btn {
-            background: #0f1a12;
-            border-color: #00ff66;
-            box-shadow: 0 0 25px #00ff6644;
-            color: #00ff88;
-        }
-        .status-text {
-            text-align: center;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            color: #445566;
-            margin-top: 8px;
-            min-height: 20px;
-            text-transform: uppercase;
-        }
-        @media (max-width: 700px) {
-            .container { padding: 15px; }
-            .knob-group { flex: 1 0 100px; }
-        }
+        .now-playing .np-track { font-size: 1rem; color: #e0ffe0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.5px; }
+        .now-playing .np-artist { font-size: 0.8rem; color: #668888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .now-playing .np-status { font-size: 0.65rem; letter-spacing: 2px; color: #00ff88; text-transform: uppercase; animation: pulse 1.2s ease infinite; }
+        .visualizer-container { position: relative; background: #0d0d15; border-radius: 10px; border: 1px solid #1a1a2a; overflow: hidden; height: 120px; }
+        #visualizer { width: 100%; height: 100%; display: block; cursor: pointer; }
+        .visualizer-overlay { position: absolute; top: 8px; left: 12px; font-size: 0.6rem; letter-spacing: 3px; color: #445566; text-transform: uppercase; pointer-events: none; text-shadow: 0 0 8px #000; }
+        .controls-panel { display: flex; flex-wrap: wrap; gap: 15px; background: #0d0d15; border: 1px solid #1a1a2a; border-radius: 10px; padding: 20px; }
+        .knob-group { display: flex; flex-direction: column; gap: 6px; flex: 1 0 150px; min-width: 120px; }
+        .knob-group label { font-size: 0.65rem; letter-spacing: 1.5px; color: #668888; text-transform: uppercase; display: flex; justify-content: space-between; }
+        .knob-group input[type="range"] { width: 100%; accent-color: #00ff66; background: #1a1a2a; height: 4px; border-radius: 2px; cursor: pointer; }
+        .knob-group select { background: #1a1a2a; color: #b0ffb0; border: 1px solid #2a2a3a; border-radius: 6px; padding: 6px; font-family: 'Courier New', monospace; font-size: 0.7rem; }
+        .mixer-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .mixer-buttons button { background: transparent; border: 1px solid #2a2a3a; border-radius: 6px; padding: 8px 12px; color: #b0ffb0; font-size: 0.6rem; font-family: 'Courier New', monospace; cursor: pointer; letter-spacing: 1px; transition: all 0.3s; }
+        .mixer-buttons button:hover { border-color: #ff0066; color: #ff6688; box-shadow: 0 0 15px #ff006633; }
+        .mixer-buttons button.active-mute { background: #2a0a0a; border-color: #ff0066; color: #ff6688; }
+        .playback-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .playback-controls button { background: #0d0d15; border: 1px solid #2a2a3a; border-radius: 8px; padding: 12px 20px; color: #b0ffb0; font-size: 0.8rem; font-family: 'Courier New', monospace; cursor: pointer; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; min-width: 100px; }
+        .playback-controls button:hover { border-color: #00ff66; box-shadow: 0 0 20px #00ff6633; }
+        .playback-controls button:disabled { opacity: 0.3; cursor: not-allowed; border-color: #2a2a3a; box-shadow: none; }
+        .playback-controls button.active-btn { background: #0f1a12; border-color: #00ff66; box-shadow: 0 0 25px #00ff6644; color: #00ff88; }
+        .status-text { text-align: center; font-size: 0.7rem; letter-spacing: 2px; color: #445566; margin-top: 8px; min-height: 20px; text-transform: uppercase; }
+        @media (max-width: 700px) { .container { padding: 15px; } .knob-group { flex: 1 0 100px; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⬡ ЦИФРОВОЙ ДИСТОРШН</h1>
-        <div class="subtitle">Прорывной цифровой шум · iTunes Preview + Loop</div>
+        <h1>⬡ ГИТАРНЫЙ ДИСТОРШН</h1>
+        <div class="subtitle">Транзисторный преамп · iTunes Preview + Loop</div>
 
         <!-- Поиск -->
         <div class="search-section">
@@ -419,61 +170,45 @@
 
         <!-- Плеер -->
         <div class="player-section">
-            <div class="now-playing" id="nowPlaying">
+            <div class="now-playing">
                 <img id="npCover" src="" alt="" style="display:none;">
                 <div class="np-info">
-                    <div class="np-track" id="npTrack">Нет трека</div>
-                    <div class="np-artist" id="npArtist">Выберите трек из поиска</div>
-                    <div class="np-status" id="npStatus">ОЖИДАНИЕ</div>
+                    <div class="np-track">Нет трека</div>
+                    <div class="np-artist">Выберите трек из поиска</div>
+                    <div class="np-status">ОЖИДАНИЕ</div>
                 </div>
             </div>
 
             <div class="visualizer-container">
                 <canvas id="visualizer"></canvas>
-                <div class="visualizer-overlay">СПЕКТР · ЦИФРОВОЙ ДИСТОРШН</div>
+                <div class="visualizer-overlay">СПЕКТР · ГИТАРНЫЙ ДИСТОРШН</div>
             </div>
 
             <!-- Панель регулировок -->
             <div class="controls-panel">
                 <div class="knob-group">
-                    <label>ПОРОГ БИТА <span id="thresholdVal">0.2</span></label>
-                    <input type="range" id="threshold" min="0.01" max="0.9" step="0.01" value="0.2">
+                    <label>DRIVE <span id="driveVal">60</span></label>
+                    <input type="range" id="drive" min="0" max="200" step="1" value="60">
                 </div>
                 <div class="knob-group">
-                    <label>ДЛИТЕЛЬНОСТЬ <span id="durationVal">0.15</span>с</label>
-                    <input type="range" id="burstDuration" min="0.02" max="0.6" step="0.01" value="0.15">
+                    <label>TONE <span id="toneVal">1200</span>Гц</label>
+                    <input type="range" id="toneFreq" min="200" max="5000" step="10" value="1200">
                 </div>
                 <div class="knob-group">
-                    <label>АТАКА <span id="attackVal">0.001</span>с</label>
-                    <input type="range" id="attackTime" min="0.001" max="0.1" step="0.001" value="0.001">
+                    <label>PRESENCE <span id="presenceVal">0.5</span></label>
+                    <input type="range" id="presence" min="0" max="1" step="0.01" value="0.5">
                 </div>
                 <div class="knob-group">
-                    <label>РЕЛИЗ <span id="releaseVal">0.05</span>с</label>
-                    <input type="range" id="releaseTime" min="0.01" max="0.3" step="0.01" value="0.05">
+                    <label>ГЕЙТ (РИТМ) <span id="gateVal">0.7</span></label>
+                    <input type="range" id="gateAmount" min="0" max="1" step="0.01" value="0.7">
                 </div>
                 <div class="knob-group">
-                    <label>ДИСТОРШН (CLIP) <span id="distVal">80</span></label>
-                    <input type="range" id="distortionAmount" min="0" max="250" step="1" value="80">
+                    <label>АТАКА ГЕЙТА <span id="gateAttackVal">0.005</span>с</label>
+                    <input type="range" id="gateAttack" min="0.001" max="0.1" step="0.001" value="0.005">
                 </div>
                 <div class="knob-group">
-                    <label>БИТКРАШ (BIT) <span id="bitcrusherVal">5</span></label>
-                    <input type="range" id="bitcrusherBits" min="1" max="16" step="1" value="5">
-                </div>
-                <div class="knob-group">
-                    <label>ДАУНСЕМПЛ (SR) <span id="downsampleVal">6000</span>Гц</label>
-                    <input type="range" id="downsampleRate" min="1000" max="22050" step="100" value="6000">
-                </div>
-                <div class="knob-group">
-                    <label>РЕВЕРБ <span id="reverbVal">0.4</span></label>
-                    <input type="range" id="reverbLevel" min="0" max="1" step="0.01" value="0.4">
-                </div>
-                <div class="knob-group">
-                    <label>ЧАСТОТА ФИЛЬТРА <span id="cutoffVal">1800</span>Гц</label>
-                    <input type="range" id="cutoffFreq" min="200" max="8000" step="10" value="1800">
-                </div>
-                <div class="knob-group">
-                    <label>РЕЗОНАНС <span id="resVal">4</span></label>
-                    <input type="range" id="resonance" min="0.1" max="25" step="0.1" value="4">
+                    <label>РЕЛИЗ ГЕЙТА <span id="gateReleaseVal">0.15</span>с</label>
+                    <input type="range" id="gateRelease" min="0.01" max="0.5" step="0.01" value="0.15">
                 </div>
                 <div class="knob-group">
                     <label>МИН. ИНТЕРВАЛ <span id="intervalVal">100</span>мс</label>
@@ -507,7 +242,7 @@
                 <button id="playBtn" disabled>▶ ЗАПУСК</button>
                 <button id="stopBtn" disabled>■ СТОП</button>
                 <button id="glitchBtn" disabled>⚡ ГЛИТЧ</button>
-                <button id="noiseTypeBtn" disabled>ТИП: ДИСТОРШН</button>
+                <button id="noiseTypeBtn" disabled>ТИП: ПРЕАМП</button>
             </div>
             <div class="status-text" id="statusText">СИСТЕМА ГОТОВА · ВВЕДИТЕ ЗАПРОС</div>
         </div>
@@ -528,9 +263,8 @@
                 isPlaying: false,
                 currentTrack: null,
                 noiseType: 0,
-                noiseTypeNames: ['ДИСТОРШН', 'РЕЗОНАНС', 'БИТКРАШ', 'ХАОС'],
+                noiseTypeNames: ['ПРЕАМП', 'КРАНЧ', 'ФУЗЗ', 'МЕТАЛ'],
                 dominantFreq: 0,
-                frequencyHistory: [],
                 glitchIntensity: 0,
                 isGlitching: false,
                 musicMuted: false,
@@ -538,8 +272,8 @@
                 lastBeatTime: 0,
                 rhythmCounter: 0,
                 loopEnabled: true,
-                previousSpectrum: null,
-                spectralFluxHistory: [],
+                previousRms: 0,
+                rmsHistory: [],
             };
 
             // DOM элементы
@@ -562,16 +296,12 @@
             const ctx = visualizer.getContext('2d');
 
             // Регуляторы
-            const thresholdSlider = document.getElementById('threshold');
-            const durationSlider = document.getElementById('burstDuration');
-            const attackSlider = document.getElementById('attackTime');
-            const releaseSlider = document.getElementById('releaseTime');
-            const distortionSlider = document.getElementById('distortionAmount');
-            const bitcrusherSlider = document.getElementById('bitcrusherBits');
-            const downsampleSlider = document.getElementById('downsampleRate');
-            const reverbSlider = document.getElementById('reverbLevel');
-            const cutoffSlider = document.getElementById('cutoffFreq');
-            const resonanceSlider = document.getElementById('resonance');
+            const driveSlider = document.getElementById('drive');
+            const toneFreqSlider = document.getElementById('toneFreq');
+            const presenceSlider = document.getElementById('presence');
+            const gateAmountSlider = document.getElementById('gateAmount');
+            const gateAttackSlider = document.getElementById('gateAttack');
+            const gateReleaseSlider = document.getElementById('gateRelease');
             const intervalSlider = document.getElementById('minInterval');
             const rhythmModeSelect = document.getElementById('rhythmMode');
             const musicVolumeSlider = document.getElementById('musicVolume');
@@ -580,22 +310,18 @@
             const muteNoiseBtn = document.getElementById('muteNoiseBtn');
             const loopBtn = document.getElementById('loopBtn');
 
-            // Функция обновления отображаемых значений
+            // Отображение значений
             function updateDisplay() {
-                document.getElementById('thresholdVal').textContent = thresholdSlider.value;
-                document.getElementById('durationVal').textContent = durationSlider.value;
-                document.getElementById('attackVal').textContent = attackSlider.value;
-                document.getElementById('releaseVal').textContent = releaseSlider.value;
-                document.getElementById('distVal').textContent = distortionSlider.value;
-                document.getElementById('bitcrusherVal').textContent = bitcrusherSlider.value;
-                document.getElementById('downsampleVal').textContent = downsampleSlider.value;
-                document.getElementById('reverbVal').textContent = reverbSlider.value;
-                document.getElementById('cutoffVal').textContent = cutoffSlider.value;
-                document.getElementById('resVal').textContent = resonanceSlider.value;
+                document.getElementById('driveVal').textContent = driveSlider.value;
+                document.getElementById('toneVal').textContent = toneFreqSlider.value;
+                document.getElementById('presenceVal').textContent = presenceSlider.value;
+                document.getElementById('gateVal').textContent = gateAmountSlider.value;
+                document.getElementById('gateAttackVal').textContent = gateAttackSlider.value;
+                document.getElementById('gateReleaseVal').textContent = gateReleaseSlider.value;
                 document.getElementById('intervalVal').textContent = intervalSlider.value;
             }
             updateDisplay();
-            [thresholdSlider, durationSlider, attackSlider, releaseSlider, distortionSlider, bitcrusherSlider, downsampleSlider, reverbSlider, cutoffSlider, resonanceSlider, intervalSlider].forEach(slider => {
+            [driveSlider, toneFreqSlider, presenceSlider, gateAmountSlider, gateAttackSlider, gateReleaseSlider, intervalSlider].forEach(slider => {
                 slider.addEventListener('input', updateDisplay);
             });
 
@@ -826,8 +552,8 @@
                 return state.audioContext;
             }
 
-            function createDistortionCurve(amount) {
-                const k = amount;
+            function createDistortionCurve(drive) {
+                const k = drive * 1.5;
                 const n_samples = 44100;
                 const curve = new Float32Array(n_samples);
                 const deg = Math.PI / 180;
@@ -838,115 +564,89 @@
                 return curve;
             }
 
-            function createBitcrusherCurve(bits) {
-                const steps = Math.pow(2, bits);
-                const curve = new Float32Array(256);
-                for (let i = 0; i < 256; i++) {
-                    const x = (i / 255) * 2 - 1;
-                    curve[i] = Math.round(x * steps) / steps;
-                }
-                return curve;
-            }
-
-            function createImpulseResponse(audioCtx, duration, decay) {
-                const length = Math.floor(audioCtx.sampleRate * duration);
-                const impulse = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
-                for (let channel = 0; channel < 2; channel++) {
-                    const data = impulse.getChannelData(channel);
-                    for (let i = 0; i < length; i++) {
-                        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
-                    }
-                }
-                return impulse;
-            }
-
             function createNoiseEngine(audioCtx, noiseGain) {
-                const inputNode = audioCtx.createGain();
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.value = parseFloat(cutoffSlider.value);
-                filter.Q.value = parseFloat(resonanceSlider.value);
-                const distortion = audioCtx.createWaveShaper();
-                distortion.curve = createDistortionCurve(parseFloat(distortionSlider.value));
-                distortion.oversample = '4x';
-                const bitcrusher = audioCtx.createWaveShaper();
-                bitcrusher.curve = createBitcrusherCurve(parseFloat(bitcrusherSlider.value));
-                const downsampleFilter = audioCtx.createBiquadFilter();
-                downsampleFilter.type = 'lowpass';
-                downsampleFilter.frequency.value = parseFloat(downsampleSlider.value);
-                const reverb = audioCtx.createConvolver();
-                reverb.buffer = createImpulseResponse(audioCtx, 2.0, 3.0);
-                const reverbGain = audioCtx.createGain();
-                reverbGain.gain.value = parseFloat(reverbSlider.value);
-                const dryGain = audioCtx.createGain();
-                dryGain.gain.value = 1.0;
+                // Постоянный источник шума с дисторшном (гитарный преамп)
+                const bufferSize = audioCtx.sampleRate * 2;
+                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noiseSource = audioCtx.createBufferSource();
+                noiseSource.buffer = noiseBuffer;
+                noiseSource.loop = true;
 
-                inputNode.connect(filter);
-                filter.connect(distortion);
-                distortion.connect(bitcrusher);
-                bitcrusher.connect(downsampleFilter);
-                downsampleFilter.connect(dryGain);
-                dryGain.connect(noiseGain);
-                downsampleFilter.connect(reverb);
-                reverb.connect(reverbGain);
-                reverbGain.connect(noiseGain);
+                // Дополнительный низкочастотный осциллятор для "тела" звука
+                const subOsc = audioCtx.createOscillator();
+                subOsc.type = 'sawtooth';
+                subOsc.frequency.value = 60; // низкий гул
+                const subGain = audioCtx.createGain();
+                subGain.gain.value = 0.5;
+
+                // Смешиваем шум и осциллятор
+                const inputMix = audioCtx.createGain();
+                noiseSource.connect(inputMix);
+                subOsc.connect(subGain);
+                subGain.connect(inputMix);
+
+                // Фильтр тембра (tone)
+                const toneFilter = audioCtx.createBiquadFilter();
+                toneFilter.type = 'lowpass';
+                toneFilter.frequency.value = parseFloat(toneFreqSlider.value);
+                toneFilter.Q.value = 0.8;
+
+                // Дисторшн (drive)
+                const driveWaveshaper = audioCtx.createWaveShaper();
+                driveWaveshaper.curve = createDistortionCurve(parseFloat(driveSlider.value));
+                driveWaveshaper.oversample = '4x';
+
+                // Присутствие (presence) – фильтр высоких частот
+                const presenceFilter = audioCtx.createBiquadFilter();
+                presenceFilter.type = 'highshelf';
+                presenceFilter.frequency.value = 3000;
+                presenceFilter.gain.value = parseFloat(presenceSlider.value) * 10;
+
+                // Гейт (управление громкостью по ритму)
+                const gate = audioCtx.createGain();
+                gate.gain.value = 0.2; // базовый уровень (постоянный фон)
+
+                // Соединения
+                inputMix.connect(toneFilter);
+                toneFilter.connect(driveWaveshaper);
+                driveWaveshaper.connect(presenceFilter);
+                presenceFilter.connect(gate);
+                gate.connect(noiseGain);
+
+                // Запуск источников
+                noiseSource.start();
+                subOsc.start();
+
+                // Управление параметрами
+                const setParameters = (params) => {
+                    if (params.drive !== undefined) driveWaveshaper.curve = createDistortionCurve(params.drive);
+                    if (params.tone !== undefined) toneFilter.frequency.value = params.tone;
+                    if (params.presence !== undefined) presenceFilter.gain.value = params.presence * 10;
+                    if (params.gateBaseLevel !== undefined) gate.gain.value = params.gateBaseLevel;
+                };
+
+                // Функция для ритмического открытия гейта
+                const triggerGate = (level = 1.0, attack, release) => {
+                    const now = audioCtx.currentTime;
+                    gate.gain.cancelScheduledValues(now);
+                    gate.gain.setValueAtTime(gate.gain.value, now);
+                    gate.gain.linearRampToValueAtTime(level, now + (attack || 0.005));
+                    gate.gain.setValueAtTime(level, now + (attack || 0.005));
+                    gate.gain.linearRampToValueAtTime(0.2, now + (attack || 0.005) + (release || 0.15));
+                };
 
                 return {
-                    inputNode,
-                    filter,
-                    distortion,
-                    bitcrusher,
-                    downsampleFilter,
-                    reverb,
-                    reverbGain,
-                    dryGain,
-                    setParameters: (params) => {
-                        if (params.distortion !== undefined) distortion.curve = createDistortionCurve(params.distortion);
-                        if (params.bitcrusherBits !== undefined) bitcrusher.curve = createBitcrusherCurve(params.bitcrusherBits);
-                        if (params.downsampleRate !== undefined) downsampleFilter.frequency.value = params.downsampleRate;
-                        if (params.reverbLevel !== undefined) reverbGain.gain.value = params.reverbLevel;
-                        if (params.cutoff !== undefined) filter.frequency.value = params.cutoff;
-                        if (params.resonance !== undefined) filter.Q.value = params.resonance;
-                    },
-                    triggerBurst: (params) => {
-                        const duration = params.duration || 0.2;
-                        const attack = params.attack || 0.002;
-                        const release = params.release || 0.08;
-                        const now = audioCtx.currentTime;
-
-                        const bufferSize = Math.floor(audioCtx.sampleRate * duration);
-                        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                        const data = noiseBuffer.getChannelData(0);
-                        for (let i = 0; i < bufferSize; i++) {
-                            data[i] = Math.random() * 2 - 1;
-                        }
-                        const noiseSource = audioCtx.createBufferSource();
-                        noiseSource.buffer = noiseBuffer;
-
-                        const osc = audioCtx.createOscillator();
-                        osc.type = 'square';
-                        osc.frequency.setValueAtTime(400 + Math.random() * 2000, now);
-                        osc.frequency.exponentialRampToValueAtTime(100 + Math.random() * 500, now + duration);
-
-                        const oscGain = audioCtx.createGain();
-                        oscGain.gain.setValueAtTime(0.5, now);
-                        oscGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
-
-                        const gainNode = audioCtx.createGain();
-                        gainNode.gain.setValueAtTime(0, now);
-                        gainNode.gain.linearRampToValueAtTime(1.0, now + attack);
-                        gainNode.gain.setValueAtTime(1.0, now + attack);
-                        gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-                        noiseSource.connect(gainNode);
-                        osc.connect(oscGain);
-                        oscGain.connect(gainNode);
-                        gainNode.connect(inputNode);
-
-                        noiseSource.start(now);
-                        osc.start(now);
-                        noiseSource.stop(now + duration + release);
-                        osc.stop(now + duration + release);
+                    setParameters,
+                    triggerGate,
+                    stop: () => {
+                        try {
+                            noiseSource.stop();
+                            subOsc.stop();
+                        } catch (e) {}
                     }
                 };
             }
@@ -980,25 +680,11 @@
                         state.isPlaying = true;
                         state.lastBeatTime = 0;
                         state.rhythmCounter = 0;
-                        state.previousSpectrum = null;
-                        state.spectralFluxHistory = [];
+                        state.previousRms = 0;
+                        state.rmsHistory = [];
 
-                        // Немедленно запускаем несколько тестовых бёрстов для демонстрации
-                        setTimeout(() => {
-                            if (state.isPlaying && state.noiseEngine) {
-                                for (let i = 0; i < 3; i++) {
-                                    setTimeout(() => {
-                                        if (state.isPlaying) {
-                                            state.noiseEngine.triggerBurst({
-                                                duration: parseFloat(durationSlider.value),
-                                                attack: parseFloat(attackSlider.value),
-                                                release: parseFloat(releaseSlider.value),
-                                            });
-                                        }
-                                    }, i * 200);
-                                }
-                            }
-                        }, 100);
+                        // Тестовый гейт
+                        noiseEngine.triggerGate(1.0, 0.01, 0.2);
 
                         source.onended = () => {
                             if (state.isPlaying && !state.loopEnabled) {
@@ -1011,7 +697,7 @@
                         stopBtn.disabled = false;
                         glitchBtn.disabled = false;
                         noiseTypeBtn.disabled = false;
-                        setStatus('▶ ИГРАЕТ · ЦИФРОВОЙ ДИСТОРШН АКТИВЕН');
+                        setStatus('▶ ИГРАЕТ · ГИТАРНЫЙ ДИСТОРШН');
                         npStatus.textContent = '▶ ИГРАЕТ';
                     })
                     .catch(err => {
@@ -1028,6 +714,7 @@
                     state.sourceNode = null;
                 }
                 if (state.noiseEngine) {
+                    state.noiseEngine.stop();
                     state.noiseEngine = null;
                 }
                 if (state.musicAnalyser) {
@@ -1036,7 +723,6 @@
                 }
                 state.isPlaying = false;
                 state.dominantFreq = 0;
-                state.frequencyHistory = [];
                 state.glitchIntensity = 0;
                 if (!silent) {
                     playBtn.disabled = false;
@@ -1057,12 +743,15 @@
                 stopBtn.disabled = true;
                 glitchBtn.disabled = true;
                 noiseTypeBtn.disabled = true;
-                state.noiseEngine = null;
+                if (state.noiseEngine) {
+                    state.noiseEngine.stop();
+                    state.noiseEngine = null;
+                }
                 state.musicAnalyser = null;
                 state.sourceNode = null;
             }
 
-            // ==================== ДЕТЕКТОР РИТМА (Спектральный поток + RMS) ====================
+            // ==================== ДЕТЕКТОР РИТМА (RMS) ====================
             function analyzeAndTrigger() {
                 if (!state.isPlaying || !state.musicAnalyser || !state.noiseEngine) return;
 
@@ -1071,56 +760,30 @@
                 const dataArray = new Uint8Array(bufferLength);
                 analyser.getByteFrequencyData(dataArray);
 
-                // Преобразуем в нормированный массив
-                const spectrum = new Float32Array(bufferLength);
-                for (let i = 0; i < bufferLength; i++) {
-                    spectrum[i] = dataArray[i] / 255;
-                }
-
-                // Вычисляем спектральный поток
-                let flux = 0;
-                if (state.previousSpectrum) {
-                    for (let i = 0; i < bufferLength; i++) {
-                        const diff = spectrum[i] - state.previousSpectrum[i];
-                        if (diff > 0) flux += diff;
-                    }
-                    flux /= bufferLength;
-                }
-                state.previousSpectrum = spectrum.slice();
-
-                // Вычисляем RMS низких частот (20-150 Гц)
+                // Вычисляем RMS низких частот (20-200 Гц) – бочка и бас
                 const sampleRate = state.audioContext.sampleRate;
                 const lowStart = Math.floor(20 / (sampleRate / 2) * (bufferLength - 1));
-                const lowEnd = Math.floor(150 / (sampleRate / 2) * (bufferLength - 1));
-                let rms = 0;
+                const lowEnd = Math.floor(200 / (sampleRate / 2) * (bufferLength - 1));
+                let sumSquares = 0;
                 for (let i = lowStart; i <= lowEnd; i++) {
-                    rms += dataArray[i] * dataArray[i];
+                    sumSquares += dataArray[i] * dataArray[i];
                 }
-                rms = Math.sqrt(rms / (lowEnd - lowStart + 1)) / 255;
+                const rms = Math.sqrt(sumSquares / (lowEnd - lowStart + 1)) / 255;
 
-                // Комбинированный сигнал: максимальный из спектрального потока и RMS
-                const combinedSignal = Math.max(flux, rms * 1.5);
-
-                // Сохраняем историю для адаптивного порога
-                state.spectralFluxHistory.push(combinedSignal);
-                if (state.spectralFluxHistory.length > 50) state.spectralFluxHistory.shift();
-
-                const mean = state.spectralFluxHistory.reduce((a, b) => a + b, 0) / state.spectralFluxHistory.length;
+                // Адаптивный порог: среднее + стандартное отклонение
+                state.rmsHistory.push(rms);
+                if (state.rmsHistory.length > 40) state.rmsHistory.shift();
+                const mean = state.rmsHistory.reduce((a, b) => a + b, 0) / state.rmsHistory.length;
                 let variance = 0;
-                for (let val of state.spectralFluxHistory) {
-                    variance += (val - mean) ** 2;
-                }
-                variance /= state.spectralFluxHistory.length;
+                for (let val of state.rmsHistory) variance += (val - mean) ** 2;
+                variance /= state.rmsHistory.length;
                 const std = Math.sqrt(variance);
-
-                const userThreshold = parseFloat(thresholdSlider.value);
-                const adaptiveThreshold = mean + 1.0 * std;
-                const threshold = Math.max(userThreshold, adaptiveThreshold);
+                const threshold = mean + 1.0 * std + 0.01; // небольшое смещение
 
                 const now = state.audioContext.currentTime;
                 const minInterval = parseFloat(intervalSlider.value) / 1000;
 
-                if (combinedSignal > threshold && (now - state.lastBeatTime) > minInterval) {
+                if (rms > threshold && (now - state.lastBeatTime) > minInterval) {
                     state.lastBeatTime = now;
                     state.rhythmCounter++;
                     let shouldTrigger = false;
@@ -1131,25 +794,10 @@
                         case 'random': shouldTrigger = (Math.random() < 0.7); break;
                     }
                     if (shouldTrigger) {
-                        const burstParams = {
-                            duration: parseFloat(durationSlider.value),
-                            attack: parseFloat(attackSlider.value),
-                            release: parseFloat(releaseSlider.value),
-                        };
-                        if (state.isGlitching) {
-                            burstParams.duration *= 1 + Math.random() * 0.8;
-                            burstParams.attack = Math.max(0.001, burstParams.attack * (0.5 + Math.random()));
-                        }
-                        state.noiseEngine.triggerBurst(burstParams);
-                        // Применяем актуальные параметры эффектов
-                        state.noiseEngine.setParameters({
-                            distortion: parseFloat(distortionSlider.value),
-                            bitcrusherBits: parseFloat(bitcrusherSlider.value),
-                            downsampleRate: parseFloat(downsampleSlider.value),
-                            reverbLevel: parseFloat(reverbSlider.value),
-                            cutoff: parseFloat(cutoffSlider.value),
-                            resonance: parseFloat(resonanceSlider.value),
-                        });
+                        const gateLevel = 0.7 + parseFloat(gateAmountSlider.value) * 0.3;
+                        const attack = parseFloat(gateAttackSlider.value);
+                        const release = parseFloat(gateReleaseSlider.value);
+                        state.noiseEngine.triggerGate(gateLevel, attack, release);
                     }
                 }
 
@@ -1188,58 +836,43 @@
                 } else {
                     glitchBtn.classList.remove('active-btn');
                     glitchBtn.textContent = '⚡ ГЛИТЧ';
-                    setStatus('▶ ЦИФРОВОЙ ДИСТОРШН ГЕНЕРАЦИЯ');
+                    setStatus('▶ ГИТАРНЫЙ ДИСТОРШН');
                 }
             });
 
             noiseTypeBtn.addEventListener('click', () => {
                 state.noiseType = (state.noiseType + 1) % state.noiseTypeNames.length;
                 noiseTypeBtn.textContent = `ТИП: ${state.noiseTypeNames[state.noiseType]}`;
-                let newDistortion, newBitcrusher, newDownsample, newResonance, newCutoff;
+                // Пресеты для разных типов приампа
+                let newDrive, newTone, newPresence;
                 switch (state.noiseType) {
-                    case 0: // ДИСТОРШН
-                        newDistortion = 80; newBitcrusher = 5; newDownsample = 6000; newResonance = 4; newCutoff = 1800;
-                        break;
-                    case 1: // РЕЗОНАНС
-                        newDistortion = 40; newBitcrusher = 4; newDownsample = 5000; newResonance = 15; newCutoff = 1000;
-                        break;
-                    case 2: // БИТКРАШ
-                        newDistortion = 120; newBitcrusher = 3; newDownsample = 3000; newResonance = 5; newCutoff = 2500;
-                        break;
-                    case 3: // ХАОС
-                        newDistortion = 200; newBitcrusher = 2; newDownsample = 2000; newResonance = 8; newCutoff = 4000;
-                        break;
+                    case 0: newDrive = 60; newTone = 1200; newPresence = 0.5; break;
+                    case 1: newDrive = 90; newTone = 900; newPresence = 0.7; break;
+                    case 2: newDrive = 120; newTone = 600; newPresence = 0.8; break;
+                    case 3: newDrive = 150; newTone = 1500; newPresence = 0.9; break;
                 }
-                distortionSlider.value = newDistortion;
-                bitcrusherSlider.value = newBitcrusher;
-                downsampleSlider.value = newDownsample;
-                resonanceSlider.value = newResonance;
-                cutoffSlider.value = newCutoff;
+                driveSlider.value = newDrive;
+                toneFreqSlider.value = newTone;
+                presenceSlider.value = newPresence;
                 updateDisplay();
                 if (state.noiseEngine) {
                     state.noiseEngine.setParameters({
-                        distortion: newDistortion,
-                        bitcrusherBits: newBitcrusher,
-                        downsampleRate: newDownsample,
-                        reverbLevel: parseFloat(reverbSlider.value),
-                        cutoff: newCutoff,
-                        resonance: newResonance,
+                        drive: newDrive,
+                        tone: newTone,
+                        presence: newPresence,
                     });
                 }
-                setStatus(`ТИП ШУМА: ${state.noiseTypeNames[state.noiseType]}`);
+                setStatus(`ТИП: ${state.noiseTypeNames[state.noiseType]}`);
             });
 
-            // Обновление параметров в реальном времени
-            [distortionSlider, bitcrusherSlider, downsampleSlider, reverbSlider, cutoffSlider, resonanceSlider].forEach(slider => {
+            // Регуляторы в реальном времени
+            [driveSlider, toneFreqSlider, presenceSlider, gateAmountSlider].forEach(slider => {
                 slider.addEventListener('input', () => {
                     if (state.noiseEngine) {
                         state.noiseEngine.setParameters({
-                            distortion: parseFloat(distortionSlider.value),
-                            bitcrusherBits: parseFloat(bitcrusherSlider.value),
-                            downsampleRate: parseFloat(downsampleSlider.value),
-                            reverbLevel: parseFloat(reverbSlider.value),
-                            cutoff: parseFloat(cutoffSlider.value),
-                            resonance: parseFloat(resonanceSlider.value),
+                            drive: parseFloat(driveSlider.value),
+                            tone: parseFloat(toneFreqSlider.value),
+                            presence: parseFloat(presenceSlider.value),
                         });
                     }
                 });
@@ -1293,7 +926,7 @@
             window.addEventListener('beforeunload', () => {
                 if (state.audioContext) state.audioContext.close();
             });
-            console.log('⬡ ЦИФРОВОЙ ДИСТОРШН СИНТЕЗАТОР ЗАГРУЖЕН');
+            console.log('⬡ ГИТАРНЫЙ ДИСТОРШН СИНТЕЗАТОР ЗАГРУЖЕН');
         })();
     </script>
 </body>
